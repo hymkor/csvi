@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -163,18 +164,14 @@ func cat(in io.Reader, out io.Writer) {
 	}
 }
 
-func main1() error {
-	out := colorable.NewColorableStdout()
-
-	io.WriteString(out, _ANSI_CURSOR_OFF)
-	defer io.WriteString(out, _ANSI_CURSOR_ON)
-
+func getIn() io.ReadCloser {
 	pin, pout := io.Pipe()
 	go func() {
-		if len(os.Args) <= 1 {
+		args := flag.Args()
+		if len(args) <= 0 {
 			cat(os.Stdin, pout)
 		} else {
-			for _, arg1 := range os.Args[1:] {
+			for _, arg1 := range args {
 				in, err := os.Open(arg1)
 				if err != nil {
 					fmt.Fprintf(pout, "\"%s\",\"not found\"\n", arg1)
@@ -186,10 +183,25 @@ func main1() error {
 		}
 		pout.Close()
 	}()
+	return pin
+}
+
+var optionTsv = flag.Bool("t", false, "use TAB as field-seperator")
+
+func main1() error {
+	out := colorable.NewColorableStdout()
+
+	io.WriteString(out, _ANSI_CURSOR_OFF)
+	defer io.WriteString(out, _ANSI_CURSOR_ON)
+
+	pin := getIn()
 	defer pin.Close()
 
 	in := csv.NewReader(pin)
 	in.FieldsPerRecord = -1
+	if *optionTsv {
+		in.Comma = '\t'
+	}
 
 	csvlines := [][]string{}
 	for {
@@ -293,6 +305,7 @@ func main1() error {
 }
 
 func main() {
+	flag.Parse()
 	if err := main1(); err != nil {
 		fmt.Fprint(os.Stderr, err.Error())
 		os.Exit(1)
