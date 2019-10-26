@@ -149,7 +149,9 @@ const (
 )
 
 const (
+	_KEY_CTRL_A = "\x01"
 	_KEY_CTRL_B = "\x02"
+	_KEY_CTRL_E = "\x05"
 	_KEY_CTRL_F = "\x06"
 	_KEY_CTRL_N = "\x0E"
 	_KEY_CTRL_P = "\x10"
@@ -283,6 +285,14 @@ func main1() error {
 			}
 		case "l", _KEY_RIGHT, _KEY_CTRL_F:
 			colIndex++
+		case "0", "^", _KEY_CTRL_A:
+			colIndex = 0
+		case "$", _KEY_CTRL_E:
+			colIndex = len(csvlines[rowIndex]) - 1
+		case "<":
+			rowIndex = 0
+		case ">":
+			rowIndex = len(csvlines) - 1
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
 			colIndex = len(csvlines[rowIndex]) - 1
