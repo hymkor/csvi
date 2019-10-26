@@ -42,6 +42,8 @@ type View struct {
 	Out       io.Writer
 }
 
+var replacer = strings.NewReplacer("\n", "\u2936")
+
 func (v View) Draw() {
 	leftWidth := v.MaxInLine
 	for i, s := range v.CSV {
@@ -49,6 +51,7 @@ func (v View) Draw() {
 		if cw > leftWidth {
 			cw = leftWidth
 		}
+		s = replacer.Replace(s)
 		ss, w := cutStrInWidth(s, cw)
 		if i == v.CursorPos {
 			io.WriteString(v.Out, CURSOR_COLOR)
@@ -86,16 +89,16 @@ func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (int, error) {
 		if count >= h {
 			return lfCount, nil
 		}
-		if count > 0 {
-			lfCount++
-			fmt.Fprintln(out, "\r") // "\r" is for Linux and go-tty
-		}
 		record, err := in.Read()
 		if err == io.EOF {
 			return lfCount, nil
 		}
 		if err != nil {
 			return lfCount, err
+		}
+		if count > 0 {
+			lfCount++
+			fmt.Fprintln(out, "\r") // "\r" is for Linux and go-tty
 		}
 		var buffer strings.Builder
 		v := View{
@@ -254,7 +257,7 @@ func main1() error {
 				fmt.Fprintf(out, "\x1B[0;33;1m(%d,%d):%s\x1B[0m",
 					rowIndex+1,
 					colIndex+1,
-					csvlines[rowIndex][colIndex])
+					replacer.Replace(csvlines[rowIndex][colIndex]))
 			}
 		}
 		fmt.Fprint(out, ERASE_LINE)
@@ -299,7 +302,7 @@ func main1() error {
 		if lf > 0 {
 			fmt.Fprintf(out, "\r\x1B[%dA", lf)
 		} else {
-			fmt.Fprintln(out)
+			fmt.Fprint(out, "\r")
 		}
 	}
 }
