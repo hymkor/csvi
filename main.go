@@ -274,7 +274,7 @@ func main1() error {
 				fmt.Fprintf(out, "\x1B[0;33;1m(%d,%d):%s\x1B[0m",
 					rowIndex+1,
 					colIndex+1,
-					replaceTable.Replace(csvlines[rowIndex][colIndex]))
+					runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-11, "..."))
 			}
 		}
 		fmt.Fprint(out, ERASE_LINE)
