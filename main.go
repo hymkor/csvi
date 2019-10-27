@@ -138,6 +138,8 @@ func (this *MemoryCsv) Read() ([]string, error) {
 	csv := this.Data[this.StartY]
 	if this.StartX <= len(csv) {
 		csv = csv[this.StartX:]
+	} else {
+		csv = []string{}
 	}
 	this.StartY++
 	return csv, nil
