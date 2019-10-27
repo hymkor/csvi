@@ -42,7 +42,13 @@ type LineView struct {
 	Out       io.Writer
 }
 
-var replacer = strings.NewReplacer("\n", "\u2936")
+var replaceTable = strings.NewReplacer(
+	"\r", "\u240A",
+	"\x1B", "\u241B",
+	"\n", "\u2936", // arrow pointing downwards then curving leftwards
+	"\t", "\u21E5") // rightwards arrow to bar (rightward tab)
+
+// See. en.wikipedia.org/wiki/Unicode_control_characters#Control_pictures
 
 func (v LineView) Draw() {
 	leftWidth := v.MaxInLine
@@ -51,7 +57,7 @@ func (v LineView) Draw() {
 		if cw > leftWidth {
 			cw = leftWidth
 		}
-		s = replacer.Replace(s)
+		s = replaceTable.Replace(s)
 		ss, w := cutStrInWidth(s, cw)
 		if i == v.CursorPos {
 			io.WriteString(v.Out, CURSOR_COLOR)
@@ -261,7 +267,7 @@ func main1() error {
 				fmt.Fprintf(out, "\x1B[0;33;1m(%d,%d):%s\x1B[0m",
 					rowIndex+1,
 					colIndex+1,
-					replacer.Replace(csvlines[rowIndex][colIndex]))
+					replaceTable.Replace(csvlines[rowIndex][colIndex]))
 			}
 		}
 		fmt.Fprint(out, ERASE_LINE)
