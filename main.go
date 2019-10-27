@@ -199,7 +199,8 @@ func getIn() io.ReadCloser {
 	return pin
 }
 
-var optionTsv = flag.Bool("t", false, "use TAB as field-seperator")
+var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
+var optionCsv = flag.Bool("c", false, "use Comma as field-separator")
 
 func main1() error {
 	out := colorable.NewColorableStdout()
@@ -212,8 +213,14 @@ func main1() error {
 
 	in := csv.NewReader(pin)
 	in.FieldsPerRecord = -1
+	if args := flag.Args(); len(args) >= 1 && strings.HasSuffix(strings.ToLower(args[0]), ".tsv") {
+		in.Comma = '\t'
+	}
 	if *optionTsv {
 		in.Comma = '\t'
+	}
+	if *optionCsv {
+		in.Comma = ','
 	}
 
 	csvlines := [][]string{}
