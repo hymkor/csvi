@@ -33,7 +33,7 @@ const (
 	ERASE_LINE   = "\x1B[0m\x1B[0K"
 )
 
-type View struct {
+type LineView struct {
 	CSV       []string
 	CellWidth int
 	MaxInLine int
@@ -44,7 +44,7 @@ type View struct {
 
 var replacer = strings.NewReplacer("\n", "\u2936")
 
-func (v View) Draw() {
+func (v LineView) Draw() {
 	leftWidth := v.MaxInLine
 	for i, s := range v.CSV {
 		cw := v.CellWidth
@@ -101,7 +101,7 @@ func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (int, error) {
 			fmt.Fprintln(out, "\r") // "\r" is for Linux and go-tty
 		}
 		var buffer strings.Builder
-		v := View{
+		v := LineView{
 			CSV:       record,
 			CellWidth: CELL_WIDTH,
 			MaxInLine: w,
