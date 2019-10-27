@@ -22,4 +22,5 @@ $ csview < FILENAME
     * Move Cursor: HJKL(like vi) , Ctrl-F/B/N/P(like Emacs) , arrow-key
     * Quit: "q" or ESC
 * Option
-    * -t ... use TAB as field-seperator
+    * -c ... use Comma as field-separator (default when suffix is not `.tsv`)
+    * -t ... use TAB as field-separator (default when suffix is `.tsv`)
