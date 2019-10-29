@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -12,6 +13,8 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-runewidth"
 	"github.com/mattn/go-tty"
+
+	"github.com/zetamatta/nyagos/readline"
 )
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
@@ -202,6 +205,20 @@ func getIn() io.ReadCloser {
 var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
 var optionCsv = flag.Bool("c", false, "use Comma as field-separator")
 
+func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int) {
+	for r < len(csvlines) {
+		for c < len(csvlines[r]) {
+			if strings.Contains(csvlines[r][c], target) {
+				return true, r, c
+			}
+			c++
+		}
+		r++
+		c = 0
+	}
+	return false, r, c
+}
+
 func main1() error {
 	out := colorable.NewColorableStdout()
 
@@ -261,6 +278,18 @@ func main1() error {
 	startCol := 0
 	cols := (screenWidth - 1) / CELL_WIDTH
 
+	editor := readline.Editor{
+		Writer: out,
+		Prompt: func() (int, error) {
+			io.WriteString(out, "\r\x1B[0;33;40;1m/"+ERASE_LINE)
+			return 2, nil
+		},
+		LineFeed: func(readline.Result) {
+			io.WriteString(out, _ANSI_CURSOR_OFF)
+		},
+	}
+
+	message := ""
 	for {
 		window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
 		lf, err := view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
@@ -269,7 +298,10 @@ func main1() error {
 		}
 		fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
 		lf++
-		if 0 <= rowIndex && rowIndex < len(csvlines) {
+		if message != "" {
+			fmt.Fprintf(out, "\x1B[0;33;1m%s\x1B[0m", message)
+			message = ""
+		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex]) {
 				fmt.Fprintf(out, "\x1B[0;33;1m(%d,%d):%s\x1B[0m",
 					rowIndex+1,
@@ -308,6 +340,20 @@ func main1() error {
 			rowIndex = 0
 		case ">":
 			rowIndex = len(csvlines) - 1
+		case "/":
+			target, err := editor.ReadLine(context.Background())
+			if err == nil {
+				found, r, c := searchForward(
+					csvlines, rowIndex, colIndex+1, target)
+				if found {
+					rowIndex = r
+					colIndex = c
+				} else {
+					message = fmt.Sprintf("%s: not found", target)
+				}
+			} else {
+				message = err.Error()
+			}
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
 			colIndex = len(csvlines[rowIndex]) - 1
