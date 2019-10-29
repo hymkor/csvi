@@ -219,6 +219,36 @@ func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int
 	return false, r, c
 }
 
+func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, int) {
+	for {
+		for c >= 0 {
+			if strings.Contains(csvlines[r][c], target) {
+				return true, r, c
+			}
+			c--
+		}
+		r--
+		if r < 0 {
+			return false, r, c
+		}
+		c = len(csvlines[r]) - 1
+	}
+}
+
+func getline(out io.Writer, prompt string) (string, error) {
+	editor := readline.Editor{
+		Writer: out,
+		Prompt: func() (int, error) {
+			fmt.Fprintf(out, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
+			return 2, nil
+		},
+		LineFeed: func(readline.Result) {
+			io.WriteString(out, _ANSI_CURSOR_OFF)
+		},
+	}
+	return editor.ReadLine(context.Background())
+}
+
 func main1() error {
 	out := colorable.NewColorableStdout()
 
@@ -278,17 +308,6 @@ func main1() error {
 	startCol := 0
 	cols := (screenWidth - 1) / CELL_WIDTH
 
-	editor := readline.Editor{
-		Writer: out,
-		Prompt: func() (int, error) {
-			io.WriteString(out, "\r\x1B[0;33;40;1m/"+ERASE_LINE)
-			return 2, nil
-		},
-		LineFeed: func(readline.Result) {
-			io.WriteString(out, _ANSI_CURSOR_OFF)
-		},
-	}
-
 	message := ""
 	for {
 		window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
@@ -340,11 +359,18 @@ func main1() error {
 			rowIndex = 0
 		case ">":
 			rowIndex = len(csvlines) - 1
-		case "/":
-			target, err := editor.ReadLine(context.Background())
+		case "/", "?":
+			target, err := getline(out, ch)
 			if err == nil {
-				found, r, c := searchForward(
-					csvlines, rowIndex, colIndex+1, target)
+				var found bool
+				var r, c int
+				if ch == "/" {
+					found, r, c = searchForward(
+						csvlines, rowIndex, colIndex+1, target)
+				} else {
+					found, r, c = searchBackward(
+						csvlines, rowIndex, colIndex-1, target)
+				}
 				if found {
 					rowIndex = r
 					colIndex = c
