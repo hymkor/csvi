@@ -366,48 +366,50 @@ func main1() error {
 		case ">":
 			rowIndex = len(csvlines) - 1
 		case "n":
-			if lastWord != "" {
-				found, r, c := lastSearch(csvlines, rowIndex, colIndex, lastWord)
-				if found {
-					rowIndex = r
-					colIndex = c
-				} else {
-					message = fmt.Sprintf("%s: not found", lastWord)
-				}
+			if lastWord == "" {
+				break
 			}
+			found, r, c := lastSearch(csvlines, rowIndex, colIndex, lastWord)
+			if !found {
+				message = fmt.Sprintf("%s: not found", lastWord)
+				break
+			}
+			rowIndex = r
+			colIndex = c
 		case "N":
-			if lastWord != "" {
-				found, r, c := lastSearchRev(csvlines, rowIndex, colIndex, lastWord)
-				if found {
-					rowIndex = r
-					colIndex = c
-				} else {
-					message = fmt.Sprintf("%s: not found", lastWord)
-				}
+			if lastWord == "" {
+				break
 			}
+			found, r, c := lastSearchRev(csvlines, rowIndex, colIndex, lastWord)
+			if !found {
+				message = fmt.Sprintf("%s: not found", lastWord)
+				break
+			}
+			rowIndex = r
+			colIndex = c
 		case "/", "?":
 			var err error
 			lastWord, err = getline(out, ch)
-			if err == nil {
-				var found bool
-				var r, c int
-				if ch == "/" {
-					lastSearch = searchForward
-					lastSearchRev = searchBackward
-				} else {
-					lastSearch = searchBackward
-					lastSearchRev = searchForward
+			if err != nil {
+				if err != readline.CtrlC {
+					message = err.Error()
 				}
-				found, r, c = lastSearch(csvlines, rowIndex, colIndex, lastWord)
-				if found {
-					rowIndex = r
-					colIndex = c
-				} else {
-					message = fmt.Sprintf("%s: not found", lastWord)
-				}
-			} else if err != readline.CtrlC {
-				message = err.Error()
+				break
 			}
+			if ch == "/" {
+				lastSearch = searchForward
+				lastSearchRev = searchBackward
+			} else {
+				lastSearch = searchBackward
+				lastSearchRev = searchForward
+			}
+			found, r, c := lastSearch(csvlines, rowIndex, colIndex, lastWord)
+			if !found {
+				message = fmt.Sprintf("%s: not found", lastWord)
+				break
+			}
+			rowIndex = r
+			colIndex = c
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
 			colIndex = len(csvlines[rowIndex]) - 1
