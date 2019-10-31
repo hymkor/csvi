@@ -206,6 +206,7 @@ var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
 var optionCsv = flag.Bool("c", false, "use Comma as field-separator")
 
 func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int) {
+	c++
 	for r < len(csvlines) {
 		for c < len(csvlines[r]) {
 			if strings.Contains(csvlines[r][c], target) {
@@ -220,6 +221,7 @@ func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int
 }
 
 func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, int) {
+	c--
 	for {
 		for c >= 0 {
 			if strings.Contains(csvlines[r][c], target) {
@@ -308,6 +310,10 @@ func main1() error {
 	startCol := 0
 	cols := (screenWidth - 1) / CELL_WIDTH
 
+	lastSearch := searchForward
+	lastSearchRev := searchBackward
+	lastWord := ""
+
 	message := ""
 	for {
 		window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
@@ -359,23 +365,45 @@ func main1() error {
 			rowIndex = 0
 		case ">":
 			rowIndex = len(csvlines) - 1
-		case "/", "?":
-			target, err := getline(out, ch)
-			if err == nil {
-				var found bool
-				var r, c int
-				if ch == "/" {
-					found, r, c = searchForward(
-						csvlines, rowIndex, colIndex+1, target)
-				} else {
-					found, r, c = searchBackward(
-						csvlines, rowIndex, colIndex-1, target)
-				}
+		case "n":
+			if lastWord != "" {
+				found, r, c := lastSearch(csvlines, rowIndex, colIndex, lastWord)
 				if found {
 					rowIndex = r
 					colIndex = c
 				} else {
-					message = fmt.Sprintf("%s: not found", target)
+					message = fmt.Sprintf("%s: not found", lastWord)
+				}
+			}
+		case "N":
+			if lastWord != "" {
+				found, r, c := lastSearchRev(csvlines, rowIndex, colIndex, lastWord)
+				if found {
+					rowIndex = r
+					colIndex = c
+				} else {
+					message = fmt.Sprintf("%s: not found", lastWord)
+				}
+			}
+		case "/", "?":
+			var err error
+			lastWord, err = getline(out, ch)
+			if err == nil {
+				var found bool
+				var r, c int
+				if ch == "/" {
+					lastSearch = searchForward
+					lastSearchRev = searchBackward
+				} else {
+					lastSearch = searchBackward
+					lastSearchRev = searchForward
+				}
+				found, r, c = lastSearch(csvlines, rowIndex, colIndex, lastWord)
+				if found {
+					rowIndex = r
+					colIndex = c
+				} else {
+					message = fmt.Sprintf("%s: not found", lastWord)
 				}
 			} else if err != readline.CtrlC {
 				message = err.Error()
