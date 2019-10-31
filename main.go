@@ -242,10 +242,9 @@ func getline(out io.Writer, prompt string) (string, error) {
 			fmt.Fprintf(out, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
 			return 2, nil
 		},
-		LineFeed: func(readline.Result) {
-			io.WriteString(out, _ANSI_CURSOR_OFF)
-		},
+		LineFeed: func(readline.Result) {},
 	}
+	defer io.WriteString(out, _ANSI_CURSOR_OFF)
 	readline.BindKeySymbol(readline.K_ESCAPE, readline.F_INTR)
 	return editor.ReadLine(context.Background())
 }
