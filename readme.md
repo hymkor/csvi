@@ -20,6 +20,7 @@ $ csview < FILENAME
     * Linux: UTF8
 * Key-binding:
     * Move Cursor: HJKL(like vi) , Ctrl-F/B/N/P(like Emacs) , arrow-key
+    * Search with `/`,`?`,`n` and `N`.
     * Quit: "q" or ESC
 * Option
     * -c ... use Comma as field-separator (default when suffix is not `.tsv`)
