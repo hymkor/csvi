@@ -246,6 +246,7 @@ func getline(out io.Writer, prompt string) (string, error) {
 			io.WriteString(out, _ANSI_CURSOR_OFF)
 		},
 	}
+	readline.BindKeySymbol(readline.K_ESCAPE, readline.F_INTR)
 	return editor.ReadLine(context.Background())
 }
 
@@ -377,7 +378,7 @@ func main1() error {
 				} else {
 					message = fmt.Sprintf("%s: not found", target)
 				}
-			} else {
+			} else if err != readline.CtrlC {
 				message = err.Error()
 			}
 		}
