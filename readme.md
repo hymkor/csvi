@@ -23,5 +23,5 @@ $ csview < FILENAME
     * Search with `/`,`?`,`n` and `N`.
     * Quit: "q" or ESC
 * Option
-    * -c ... use Comma as field-separator (default when suffix is not `.tsv`)
-    * -t ... use TAB as field-separator (default when suffix is `.tsv`)
+    * -c ... use Comma as field-separator (default when suffix is `.csv`)
+    * -t ... use TAB as field-separator (default when suffix is not `.csv`)
