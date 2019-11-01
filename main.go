@@ -171,6 +171,7 @@ const (
 	_KEY_LEFT   = "\x1B[D"
 	_KEY_RIGHT  = "\x1B[C"
 	_KEY_UP     = "\x1B[A"
+	_KEY_F2     = "\x1B[OQ"
 )
 
 func cat(in io.Reader, out io.Writer) {
@@ -237,9 +238,11 @@ func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, in
 	}
 }
 
-func getline(out io.Writer, prompt string) (string, error) {
+func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 	editor := readline.Editor{
-		Writer: out,
+		Writer:  out,
+		Default: defaultStr,
+		Cursor:  65535,
 		Prompt: func() (int, error) {
 			fmt.Fprintf(out, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
 			return 2, nil
@@ -390,7 +393,7 @@ func main1() error {
 			colIndex = c
 		case "/", "?":
 			var err error
-			lastWord, err = getline(out, ch)
+			lastWord, err = getline(out, ch, "")
 			if err != nil {
 				if err != readline.CtrlC {
 					message = err.Error()
@@ -412,7 +415,7 @@ func main1() error {
 			rowIndex = r
 			colIndex = c
 		case "i":
-			text, err := getline(out, "insert cell>")
+			text, err := getline(out, "insert cell>", "")
 			if err != nil {
 				break
 			}
@@ -421,13 +424,19 @@ func main1() error {
 			csvlines[rowIndex][colIndex] = text
 			colIndex++
 		case "a":
-			text, err := getline(out, "append cell>")
+			text, err := getline(out, "append cell>", "")
 			if err != nil {
 				break
 			}
 			csvlines[rowIndex] = append(csvlines[rowIndex], "")
 			colIndex++
 			copy(csvlines[rowIndex][colIndex+1:], csvlines[rowIndex][colIndex:])
+			csvlines[rowIndex][colIndex] = text
+		case "r", "R", _KEY_F2:
+			text, err := getline(out, "replace cell>", csvlines[rowIndex][colIndex])
+			if err != nil {
+				break
+			}
 			csvlines[rowIndex][colIndex] = text
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
