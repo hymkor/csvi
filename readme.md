@@ -1,5 +1,5 @@
-csview - simple csv viewer
-==========================
+csview - simple csv viewer/editor
+=================================
 
 <img src="./csview.png" />
 
@@ -20,7 +20,17 @@ $ csview < FILENAME
     * Linux: UTF8
 * Key-binding:
     * Move Cursor: HJKL(like vi) , Ctrl-F/B/N/P(like Emacs) , arrow-key
-    * Search with `/`,`?`,`n` and `N`.
+    * Search
+        * `/` (search forward)
+        * `?` (search backward)
+        * `n` (search next)
+        * `N` (search next reverse)
+    * Edit:
+        * `i` (insert cell)
+        * `a` (append cell)
+        * `r` (replace cell)
+        * `d` (delete cell)
+        * `w` (write to file)
     * Quit: "q" or ESC
 * Option
     * -c ... use Comma as field-separator (default when suffix is `.csv`)
