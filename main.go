@@ -262,7 +262,8 @@ func main1() error {
 
 	in := csv.NewReader(pin)
 	in.FieldsPerRecord = -1
-	if args := flag.Args(); len(args) >= 1 && strings.HasSuffix(strings.ToLower(args[0]), ".tsv") {
+	args := flag.Args()
+	if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
 		in.Comma = '\t'
 	}
 	if *optionTsv {
