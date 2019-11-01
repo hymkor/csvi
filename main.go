@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -438,6 +439,31 @@ func main1() error {
 				break
 			}
 			csvlines[rowIndex][colIndex] = text
+		case "w":
+			fname, err := filepath.Abs("output.csv")
+			if err != nil {
+				message = err.Error()
+				break
+			}
+			fname, err = getline(out, "write to>", fname)
+			if err != nil {
+				break
+			}
+			fd, err := os.Create(fname)
+			if err != nil {
+				message = err.Error()
+				break
+			}
+			w := csv.NewWriter(fd)
+			if strings.EqualFold(filepath.Ext(fname), ".csv") {
+				w.Comma = ','
+			} else {
+				w.Comma = '\t'
+			}
+			w.UseCRLF = true
+			w.WriteAll(csvlines)
+			w.Flush()
+			fd.Close()
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
 			colIndex = len(csvlines[rowIndex]) - 1
