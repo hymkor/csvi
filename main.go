@@ -411,6 +411,24 @@ func main1() error {
 			}
 			rowIndex = r
 			colIndex = c
+		case "i":
+			text, err := getline(out, "insert cell>")
+			if err != nil {
+				break
+			}
+			csvlines[rowIndex] = append(csvlines[rowIndex], "")
+			copy(csvlines[rowIndex][colIndex+1:], csvlines[rowIndex][colIndex:])
+			csvlines[rowIndex][colIndex] = text
+			colIndex++
+		case "a":
+			text, err := getline(out, "append cell>")
+			if err != nil {
+				break
+			}
+			csvlines[rowIndex] = append(csvlines[rowIndex], "")
+			colIndex++
+			copy(csvlines[rowIndex][colIndex+1:], csvlines[rowIndex][colIndex:])
+			csvlines[rowIndex][colIndex] = text
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
 			colIndex = len(csvlines[rowIndex]) - 1
