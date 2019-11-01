@@ -439,6 +439,13 @@ func main1() error {
 				break
 			}
 			csvlines[rowIndex][colIndex] = text
+		case "d":
+			if len(csvlines[rowIndex]) <= 1 {
+				csvlines[rowIndex][0] = ""
+			} else {
+				copy(csvlines[rowIndex][colIndex:], csvlines[rowIndex][colIndex+1:])
+				csvlines[rowIndex] = csvlines[rowIndex][:len(csvlines[rowIndex])-1]
+			}
 		case "w":
 			fname, err := filepath.Abs("output.csv")
 			if err != nil {
