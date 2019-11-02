@@ -340,7 +340,7 @@ func main1() error {
 		lf++
 		if message != "" {
 			io.WriteString(out, _ANSI_YELLOW)
-			io.WriteString(out, message)
+			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 			io.WriteString(out, _ANSI_RESET)
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
@@ -479,7 +479,7 @@ func main1() error {
 			if fname == "-" {
 				fd = &WriteNopCloser{Writer: os.Stdout}
 			} else {
-				fd, err = os.Create(fname)
+				fd, err = os.OpenFile(fname, os.O_EXCL|os.O_CREATE, 0666)
 				if err != nil {
 					message = err.Error()
 					break
