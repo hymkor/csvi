@@ -158,6 +158,8 @@ func (this *MemoryCsv) Read() ([]string, error) {
 const (
 	_ANSI_CURSOR_OFF = "\x1B[?25l"
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
+	_ANSI_YELLOW     = "\x1B[0;33;1m"
+	_ANSI_RESET      = "\x1B[0m"
 )
 
 const (
@@ -329,7 +331,9 @@ func main1() error {
 		fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
 		lf++
 		if message != "" {
-			fmt.Fprintf(out, "\x1B[0;33;1m%s\x1B[0m", message)
+			io.WriteString(out, _ANSI_YELLOW)
+			io.WriteString(out, message)
+			io.WriteString(out, _ANSI_RESET)
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex]) {
@@ -346,8 +350,11 @@ func main1() error {
 		}
 		switch ch {
 		case "q", _KEY_ESC:
-			fmt.Fprintln(out, "\r")
-			return nil
+			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
+			if ch, err := getKey(tty1); err == nil && ch == "y" {
+				io.WriteString(out, "\n")
+				return nil
+			}
 		case "j", _KEY_DOWN, _KEY_CTRL_N:
 			if rowIndex < len(csvlines)-1 {
 				rowIndex++
