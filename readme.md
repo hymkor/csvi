@@ -34,7 +34,8 @@ $ csview < FILENAME
         * `a` (append the new cell after the current one)
         * `r` (replace the current cell)
         * `d` (delete the current cell)
-        * `w` (write to the file)
+        * `w` (write to the **new** file or STDOUT(`'-'`).)
+    * Repaint: `Ctrl`-`L`
     * Quit: `q` or `ESC`
 * Option
     * -c ... use Comma as field-separator (default when suffix is `.csv`)
