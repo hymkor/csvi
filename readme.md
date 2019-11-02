@@ -35,7 +35,7 @@ $ csview < FILENAME
         * `r` (replace the current cell)
         * `d` (delete the current cell)
         * `w` (write to the file)
-    * Quit: "q" or ESC
+    * Quit: `q` or `ESC`
 * Option
     * -c ... use Comma as field-separator (default when suffix is `.csv`)
     * -t ... use TAB as field-separator (default when suffix is not `.csv`)
