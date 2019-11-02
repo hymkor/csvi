@@ -486,11 +486,7 @@ func main1() error {
 				}
 			}
 			w := csv.NewWriter(fd)
-			if strings.EqualFold(filepath.Ext(fname), ".csv") {
-				w.Comma = ','
-			} else {
-				w.Comma = '\t'
-			}
+			w.Comma = in.Comma
 			w.UseCRLF = true
 			w.WriteAll(csvlines)
 			w.Flush()
