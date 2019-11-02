@@ -258,7 +258,7 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 }
 
 func main1() error {
-	out := colorable.NewColorableStdout()
+	out := colorable.NewColorableStderr()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
