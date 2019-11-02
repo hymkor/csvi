@@ -257,6 +257,14 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 	return editor.ReadLine(context.Background())
 }
 
+type WriteNopCloser struct {
+	io.Writer
+}
+
+func (*WriteNopCloser) Close() error {
+	return nil
+}
+
 func main1() error {
 	out := colorable.NewColorableStderr()
 
@@ -463,10 +471,15 @@ func main1() error {
 			if err != nil {
 				break
 			}
-			fd, err := os.Create(fname)
-			if err != nil {
-				message = err.Error()
-				break
+			var fd io.WriteCloser
+			if fname == "-" {
+				fd = &WriteNopCloser{Writer: os.Stdout}
+			} else {
+				fd, err = os.Create(fname)
+				if err != nil {
+					message = err.Error()
+					break
+				}
 			}
 			w := csv.NewWriter(fd)
 			if strings.EqualFold(filepath.Ext(fname), ".csv") {
