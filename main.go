@@ -167,6 +167,7 @@ const (
 	_KEY_CTRL_B = "\x02"
 	_KEY_CTRL_E = "\x05"
 	_KEY_CTRL_F = "\x06"
+	_KEY_CTRL_L = "\x0C"
 	_KEY_CTRL_N = "\x0E"
 	_KEY_CTRL_P = "\x10"
 	_KEY_DOWN   = "\x1B[B"
@@ -357,6 +358,8 @@ func main1() error {
 			return err
 		}
 		switch ch {
+		case _KEY_CTRL_L:
+			cache = map[int]string{}
 		case "q", _KEY_ESC:
 			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
 			if ch, err := getKey(tty1); err == nil && ch == "y" {
