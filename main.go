@@ -462,10 +462,14 @@ func main1() error {
 				csvlines[rowIndex] = csvlines[rowIndex][:len(csvlines[rowIndex])-1]
 			}
 		case "w":
-			fname, err := filepath.Abs("output.csv")
-			if err != nil {
-				message = err.Error()
-				break
+			fname := "-"
+			var err error
+			if len(args) >= 1 {
+				fname, err = filepath.Abs(args[0])
+				if err != nil {
+					message = err.Error()
+					break
+				}
 			}
 			fname, err = getline(out, "write to>", fname)
 			if err != nil {
