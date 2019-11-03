@@ -336,6 +336,7 @@ func main1() error {
 			cache = map[int]string{}
 			lastWidth = screenWidth
 			lastHeight = screenHeight
+			io.WriteString(out, _ANSI_CURSOR_OFF)
 		}
 		cols := (screenWidth - 1) / CELL_WIDTH
 
