@@ -303,18 +303,8 @@ func main1() error {
 	if err != nil {
 		return err
 	}
-	disposer := ignoreSigwinch(tty1)
 
-	defer func() {
-		tty1.Close()
-		disposer()
-	}()
-
-	clean, err := tty1.Raw()
-	if err != nil {
-		return err
-	}
-	defer clean()
+	defer tty1.Close()
 
 	colIndex := 0
 	rowIndex := 0

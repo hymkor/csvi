@@ -32,21 +32,3 @@ func getKey(tty1 *tty.TTY) (string, error) {
 		}
 	}
 }
-
-func ignoreSigwinch(tty1 *tty.TTY) func() {
-	quit := make(chan struct{})
-	ws := tty1.SIGWINCH()
-	go func() {
-		for {
-			select {
-			case <-quit:
-				return
-			case <-ws:
-			}
-		}
-	}()
-
-	return func() {
-		quit <- struct{}{}
-	}
-}
