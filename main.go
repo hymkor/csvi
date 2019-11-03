@@ -310,10 +310,6 @@ func main1() error {
 		disposer()
 	}()
 
-	screenWidth, screenHeight, err := tty1.Size()
-	if err != nil {
-		return err
-	}
 	clean, err := tty1.Raw()
 	if err != nil {
 		return err
@@ -324,14 +320,25 @@ func main1() error {
 	rowIndex := 0
 	startRow := 0
 	startCol := 0
-	cols := (screenWidth - 1) / CELL_WIDTH
 
 	lastSearch := searchForward
 	lastSearchRev := searchBackward
 	lastWord := ""
+	var lastWidth, lastHeight int
 
 	message := ""
 	for {
+		screenWidth, screenHeight, err := tty1.Size()
+		if err != nil {
+			return err
+		}
+		if lastWidth != screenWidth || lastHeight != screenHeight {
+			cache = map[int]string{}
+			lastWidth = screenWidth
+			lastHeight = screenHeight
+		}
+		cols := (screenWidth - 1) / CELL_WIDTH
+
 		window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
 		lf, err := view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 		if err != nil {
