@@ -15,7 +15,7 @@ import (
 	"github.com/mattn/go-runewidth"
 	"github.com/mattn/go-tty"
 
-	"github.com/zetamatta/nyagos/readline"
+	"github.com/zetamatta/go-readline-ny"
 )
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
@@ -254,7 +254,7 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 		LineFeed: func(readline.Result) {},
 	}
 	defer io.WriteString(out, _ANSI_CURSOR_OFF)
-	readline.BindKeySymbol(readline.K_ESCAPE, readline.F_INTR)
+	editor.BindKeySymbol(readline.K_ESCAPE, readline.F_INTR)
 	return editor.ReadLine(context.Background())
 }
 
