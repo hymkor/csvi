@@ -31,10 +31,11 @@ func cutStrInWidth(s string, cellwidth int) (string, int) {
 }
 
 const (
-	CURSOR_COLOR = "\x1B[0;40;37;1;7m"
-	CELL1_COLOR  = "\x1B[0;44;37;1m"
-	CELL2_COLOR  = "\x1B[0;40;37;1m"
-	ERASE_LINE   = "\x1B[0m\x1B[0K"
+	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
+	CELL1_COLOR      = "\x1B[0;44;37;1m"
+	CELL2_COLOR      = "\x1B[0;40;37;1m"
+	ERASE_LINE       = "\x1B[0m\x1B[0K"
+	ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
 )
 
 type LineView struct {
@@ -350,7 +351,7 @@ func main1() error {
 					runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-11, "..."))
 			}
 		}
-		fmt.Fprint(out, ERASE_LINE)
+		fmt.Fprint(out, ERASE_SCRN_AFTER)
 		ch, err := getKey(tty1)
 		if err != nil {
 			return err
@@ -442,6 +443,16 @@ func main1() error {
 			if len(csvlines) >= rowIndex+1 {
 				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
 				csvlines[rowIndex] = []string{""}
+			}
+			break
+		case "D":
+			if len(csvlines) <= 1 {
+				break
+			}
+			copy(csvlines[rowIndex:], csvlines[rowIndex+1:])
+			csvlines = csvlines[:len(csvlines)-1]
+			if rowIndex >= len(csvlines) {
+				rowIndex--
 			}
 			break
 		case "i":
