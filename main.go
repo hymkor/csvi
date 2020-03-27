@@ -431,6 +431,19 @@ func main1() error {
 			}
 			rowIndex = r
 			colIndex = c
+		case "o":
+			if rowIndex > len(csvlines)-1 {
+				break
+			}
+			rowIndex++
+			fallthrough
+		case "O":
+			csvlines = append(csvlines, []string{})
+			if len(csvlines) >= rowIndex+1 {
+				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
+				csvlines[rowIndex] = []string{""}
+			}
+			break
 		case "i":
 			text, err := getline(out, "insert cell>", "")
 			if err != nil {
