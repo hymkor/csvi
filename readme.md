@@ -35,8 +35,9 @@ $ csview < FILENAME
         * `r` (replace the current cell)
         * `d` (delete the current cell)
         * `w` (write to the **new** file or STDOUT(`'-'`).)
-        * `o` (append a new row after the current one)
-        * `O` (insert a new row before the current one)
+        * `o` (append a new line after the current one)
+        * `O` (insert a new line before the current one)
+        * `D` (delete the current line)
     * Repaint: `Ctrl`-`L`
     * Quit: `q` or `ESC`
 * Option
