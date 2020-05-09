@@ -300,6 +300,9 @@ func main1() error {
 		}
 		csvlines = append(csvlines, csv1)
 	}
+	if len(csvlines) <= 0 {
+		return io.EOF
+	}
 	tty1, err := tty.Open()
 	if err != nil {
 		return err
@@ -543,7 +546,7 @@ func main1() error {
 func main() {
 	flag.Parse()
 	if err := main1(); err != nil {
-		fmt.Fprint(os.Stderr, err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 }
