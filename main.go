@@ -279,6 +279,14 @@ func (*WriteNopCloser) Close() error {
 	return nil
 }
 
+var overWritten = map[string]struct{}{}
+
+func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
+	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, ERASE_LINE)
+	ch, err := getKey(tty1)
+	return err == nil && ch == "y"
+}
+
 func main1() error {
 	out := colorable.NewColorableStderr()
 
@@ -520,6 +528,20 @@ func main1() error {
 				fd = &WriteNopCloser{Writer: os.Stdout}
 			} else {
 				fd, err = os.OpenFile(fname, os.O_EXCL|os.O_CREATE, 0666)
+				if os.IsExist(err) {
+					if _, ok := overWritten[fname]; ok {
+						os.Remove(fname)
+					} else {
+						if !yesNo(tty1, out, "Overwrite as \""+fname+"\" [y/n] ?") {
+							break
+						}
+						backupName := fname + "~"
+						os.Remove(backupName)
+						os.Rename(fname, backupName)
+						overWritten[fname] = struct{}{}
+					}
+					fd, err = os.OpenFile(fname, os.O_EXCL|os.O_CREATE, 0666)
+				}
 				if err != nil {
 					message = err.Error()
 					break
