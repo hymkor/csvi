@@ -57,9 +57,20 @@ var replaceTable = strings.NewReplacer(
 
 func (v LineView) Draw() {
 	leftWidth := v.MaxInLine
-	for i, s := range v.CSV {
+	i := 0
+	csvs := v.CSV
+	for len(csvs) > 0 {
+		s := csvs[0]
+		csvs = csvs[1:]
+		nextI := i + 1
+
 		cw := v.CellWidth
-		if cw > leftWidth {
+		for len(csvs) > 0 && csvs[0] == "" && nextI != v.CursorPos {
+			cw += v.CellWidth
+			csvs = csvs[1:]
+			nextI++
+		}
+		if cw > leftWidth || len(csvs) <= 0 {
 			cw = leftWidth
 		}
 		s = replaceTable.Replace(s)
@@ -73,13 +84,14 @@ func (v LineView) Draw() {
 		}
 		io.WriteString(v.Out, ss)
 		leftWidth -= w
-		for i := cw - w; i > 0; i-- {
+		for j := cw - w; j > 0; j-- {
 			v.Out.Write([]byte{' '})
 			leftWidth--
 		}
 		if leftWidth <= 0 {
 			break
 		}
+		i = nextI
 	}
 	io.WriteString(v.Out, ERASE_LINE)
 }
