@@ -102,7 +102,7 @@ type CsvIn interface {
 
 var cache = map[int]string{}
 
-const CELL_WIDTH = 12
+const CELL_WIDTH = 14
 
 func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (int, error) {
 	reverse := false
