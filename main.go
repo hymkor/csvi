@@ -584,7 +584,7 @@ func mains() error {
 			if fname == "-" {
 				fd = &WriteNopCloser{Writer: os.Stdout}
 			} else {
-				fd, err = os.OpenFile(fname, os.O_EXCL|os.O_CREATE, 0666)
+				fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
 				if os.IsExist(err) {
 					if _, ok := overWritten[fname]; ok {
 						os.Remove(fname)
@@ -597,7 +597,7 @@ func mains() error {
 						os.Rename(fname, backupName)
 						overWritten[fname] = struct{}{}
 					}
-					fd, err = os.OpenFile(fname, os.O_EXCL|os.O_CREATE, 0666)
+					fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
 				}
 				if err != nil {
 					message = err.Error()
