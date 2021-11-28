@@ -15,7 +15,7 @@ import (
 	"github.com/mattn/go-runewidth"
 	"github.com/mattn/go-tty"
 
-	"github.com/zetamatta/go-readline-ny"
+	"github.com/nyaosorg/go-readline-ny"
 )
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
