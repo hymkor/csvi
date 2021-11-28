@@ -5,6 +5,8 @@
     - Show all cell string when the rightside cell is empty
 - `w` can override exist file
     - Output with ansi-encoding if input file is encoded by ansi-encoding
+    - Fix: on Linux, the size of the output was zero bytes
+    - BOM is restored to the saved file when original file has a BOM
 
 v0.5.0
 ------
