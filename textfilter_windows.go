@@ -20,11 +20,13 @@ func atou(bin []byte) (string, error) {
 	return windows.UTF16ToString(buffer), nil
 }
 
-func textfilter(s string) string {
+func textfilter(s string) (string, bool) {
+	ansi := false
 	if !utf8.ValidString(s) {
 		if t, err := atou([]byte(s)); err == nil {
 			s = t
+			ansi = true
 		}
 	}
-	return s
+	return s, ansi
 }

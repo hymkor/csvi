@@ -3,6 +3,6 @@
 
 package main
 
-func textfilter(s string) string {
-	return s
+func textfilter(s string) (string, bool) {
+	return s, false
 }

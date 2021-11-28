@@ -17,6 +17,7 @@ import (
 	"github.com/mattn/go-tty"
 
 	"github.com/nyaosorg/go-readline-ny"
+	"github.com/nyaosorg/go-windows-mbcs"
 )
 
 var version string
@@ -194,17 +195,24 @@ const (
 	_KEY_F2     = "\x1B[OQ"
 )
 
-func cat(in io.Reader, out io.Writer) {
+func cat(in io.Reader, out io.Writer) (ansi bool) {
 	sc := bufio.NewScanner(in)
 	for sc.Scan() {
-		fmt.Fprintln(out, textfilter(sc.Text()))
+		text, _ansi := textfilter(sc.Text())
+		fmt.Fprintln(out, text)
+		ansi = ansi || _ansi
 	}
+	return ansi
 }
 
-func getIn() io.ReadCloser {
+var encodingIsAnsi = false
+
+func getIn() (io.ReadCloser, <-chan bool) {
+	chIsAnsi := make(chan bool, 1)
 	pin, pout := io.Pipe()
 	go func() {
 		args := flag.Args()
+		ansi := false
 		if len(args) <= 0 {
 			cat(os.Stdin, pout)
 		} else {
@@ -214,13 +222,14 @@ func getIn() io.ReadCloser {
 					fmt.Fprintf(pout, "\"%s\",\"not found\"\n", arg1)
 					continue
 				}
-				cat(in, pout)
+				ansi = ansi || cat(in, pout)
 				in.Close()
 			}
 		}
 		pout.Close()
+		chIsAnsi <- ansi
 	}()
-	return pin
+	return pin, chIsAnsi
 }
 
 var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
@@ -290,6 +299,35 @@ func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
 	return err == nil && ch == "y"
 }
 
+func writeCsvTo(csvlines [][]string, comma rune, isAnsi bool, fd io.Writer) {
+	if isAnsi {
+		pipeIn, pipeOut := io.Pipe()
+		go func() {
+			w := csv.NewWriter(pipeOut)
+			w.Comma = comma
+			w.UseCRLF = true
+			w.WriteAll(csvlines)
+			w.Flush()
+			pipeOut.Close()
+		}()
+		sc := bufio.NewScanner(pipeIn)
+		bw := bufio.NewWriter(fd)
+		for sc.Scan() {
+			bytes, _ := mbcs.UtoA(sc.Text(), mbcs.ACP)
+			bw.Write(bytes)
+			bw.WriteByte('\r')
+			bw.WriteByte('\n')
+		}
+		bw.Flush()
+	} else {
+		w := csv.NewWriter(fd)
+		w.Comma = comma
+		w.UseCRLF = true
+		w.WriteAll(csvlines)
+		w.Flush()
+	}
+}
+
 func mains() error {
 	fmt.Printf("csview %s-%s-%s by %s\n",
 		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
@@ -299,7 +337,7 @@ func mains() error {
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	pin := getIn()
+	pin, chIsAnsi := getIn()
 	defer pin.Close()
 
 	in := csv.NewReader(pin)
@@ -525,6 +563,11 @@ func mains() error {
 					break
 				}
 			}
+			if len(chIsAnsi) <= 0 {
+				message = "stream has not beed read"
+				break
+			}
+			isAnsi := <-chIsAnsi
 			fname, err = getline(out, "write to>", fname)
 			if err != nil {
 				break
@@ -553,11 +596,7 @@ func mains() error {
 					break
 				}
 			}
-			w := csv.NewWriter(fd)
-			w.Comma = in.Comma
-			w.UseCRLF = true
-			w.WriteAll(csvlines)
-			w.Flush()
+			writeCsvTo(csvlines, in.Comma, isAnsi, fd)
 			fd.Close()
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
