@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -17,6 +18,8 @@ import (
 
 	"github.com/nyaosorg/go-readline-ny"
 )
+
+var version string
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
 	w := 0
@@ -287,7 +290,10 @@ func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
 	return err == nil && ch == "y"
 }
 
-func main1() error {
+func mains() error {
+	fmt.Printf("csview %s-%s-%s by %s\n",
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
 	out := colorable.NewColorableStderr()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
@@ -579,7 +585,7 @@ func main1() error {
 
 func main() {
 	flag.Parse()
-	if err := main1(); err != nil {
+	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
