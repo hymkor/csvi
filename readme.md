@@ -51,3 +51,9 @@ Options
     * `D` (delete the current line)
 * Repaint: `Ctrl`-`L`
 * Quit: `q` or `ESC`
+
+Release Note
+============
+
+- [English](./release_note_en.md)
+- [Japanese](./release_note_ja.md)
