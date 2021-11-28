@@ -32,7 +32,7 @@ func cutStrInWidth(s string, cellwidth int) (string, int) {
 
 const (
 	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
-	CELL1_COLOR      = "\x1B[0;44;37;1m"
+	CELL1_COLOR      = "\x1B[0;48;5;235;37;1m"
 	CELL2_COLOR      = "\x1B[0;40;37;1m"
 	ERASE_LINE       = "\x1B[0m\x1B[0K"
 	ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
@@ -77,10 +77,10 @@ func (v LineView) Draw() {
 		ss, w := cutStrInWidth(s, cw)
 		if i == v.CursorPos {
 			io.WriteString(v.Out, CURSOR_COLOR)
-		} else if ((i & 1) == 0) == v.Reverse {
-			io.WriteString(v.Out, CELL1_COLOR)
-		} else {
+		} else if v.Reverse {
 			io.WriteString(v.Out, CELL2_COLOR)
+		} else {
+			io.WriteString(v.Out, CELL1_COLOR)
 		}
 		io.WriteString(v.Out, ss)
 		leftWidth -= w
