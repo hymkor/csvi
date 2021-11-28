@@ -20,6 +20,16 @@ import (
 	"github.com/nyaosorg/go-windows-mbcs"
 )
 
+type _CodeFlag int
+
+const (
+	nonBomUtf8 _CodeFlag = 0
+	isAnsi               = 1
+	hasBom               = 2
+)
+
+const bomCode = "\uFEFF"
+
 var version string
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
@@ -195,24 +205,23 @@ const (
 	_KEY_F2     = "\x1B[OQ"
 )
 
-func cat(in io.Reader, out io.Writer) (ansi bool) {
+func cat(in io.Reader, out io.Writer) _CodeFlag {
 	sc := bufio.NewScanner(in)
+	codeFlag := nonBomUtf8
 	for sc.Scan() {
-		text, _ansi := textfilter(sc.Text())
+		text, codeFlag1 := textfilter(sc.Text())
 		fmt.Fprintln(out, text)
-		ansi = ansi || _ansi
+		codeFlag = codeFlag | codeFlag1
 	}
-	return ansi
+	return codeFlag
 }
 
-var encodingIsAnsi = false
-
-func getIn() (io.ReadCloser, <-chan bool) {
-	chIsAnsi := make(chan bool, 1)
+func getIn() (io.ReadCloser, <-chan _CodeFlag) {
+	chCodeFlag := make(chan _CodeFlag, 1)
 	pin, pout := io.Pipe()
 	go func() {
 		args := flag.Args()
-		ansi := false
+		codeFlag := nonBomUtf8
 		if len(args) <= 0 {
 			cat(os.Stdin, pout)
 		} else {
@@ -222,14 +231,14 @@ func getIn() (io.ReadCloser, <-chan bool) {
 					fmt.Fprintf(pout, "\"%s\",\"not found\"\n", arg1)
 					continue
 				}
-				ansi = ansi || cat(in, pout)
+				codeFlag |= cat(in, pout)
 				in.Close()
 			}
 		}
 		pout.Close()
-		chIsAnsi <- ansi
+		chCodeFlag <- codeFlag
 	}()
-	return pin, chIsAnsi
+	return pin, chCodeFlag
 }
 
 var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
@@ -299,8 +308,8 @@ func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
 	return err == nil && ch == "y"
 }
 
-func writeCsvTo(csvlines [][]string, comma rune, isAnsi bool, fd io.Writer) {
-	if isAnsi {
+func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Writer) {
+	if (codeFlag & isAnsi) != 0 {
 		pipeIn, pipeOut := io.Pipe()
 		go func() {
 			w := csv.NewWriter(pipeOut)
@@ -320,6 +329,9 @@ func writeCsvTo(csvlines [][]string, comma rune, isAnsi bool, fd io.Writer) {
 		}
 		bw.Flush()
 	} else {
+		if (codeFlag & hasBom) != 0 {
+			io.WriteString(fd, "\uFEFF")
+		}
 		w := csv.NewWriter(fd)
 		w.Comma = comma
 		w.UseCRLF = true
@@ -337,7 +349,7 @@ func mains() error {
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	pin, chIsAnsi := getIn()
+	pin, chCodeFlag := getIn()
 	defer pin.Close()
 
 	in := csv.NewReader(pin)
@@ -423,6 +435,7 @@ func mains() error {
 		if err != nil {
 			return err
 		}
+		codeFlag := nonBomUtf8
 		switch ch {
 		case _KEY_CTRL_L:
 			cache = map[int]string{}
@@ -563,11 +576,6 @@ func mains() error {
 					break
 				}
 			}
-			if len(chIsAnsi) <= 0 {
-				message = "stream has not beed read"
-				break
-			}
-			isAnsi := <-chIsAnsi
 			fname, err = getline(out, "write to>", fname)
 			if err != nil {
 				break
@@ -596,7 +604,13 @@ func mains() error {
 					break
 				}
 			}
-			writeCsvTo(csvlines, in.Comma, isAnsi, fd)
+
+			select {
+			case val := <-chCodeFlag:
+				codeFlag = val
+			default:
+			}
+			writeCsvTo(csvlines, in.Comma, codeFlag, fd)
 			fd.Close()
 		}
 		if colIndex >= len(csvlines[rowIndex]) {

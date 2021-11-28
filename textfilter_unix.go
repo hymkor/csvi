@@ -3,6 +3,13 @@
 
 package main
 
-func textfilter(s string) (string, bool) {
-	return s, false
+import (
+	"strings"
+)
+
+func textfilter(s string) (string, _CodeFlag) {
+	if strings.HasPrefix(s, bomCode) {
+		return s[len(bomCode):], hasBom
+	}
+	return s, nonBomUtf8
 }
