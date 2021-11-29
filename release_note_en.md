@@ -8,6 +8,7 @@
     - Fix: on Linux, the size of the output was zero bytes
     - BOM is restored to the saved file when original file has a BOM
 - Fix: empty lines in the input data were ignored.
+- `x`: assign delete cell same as `d`
 
 v0.5.0
 ------
