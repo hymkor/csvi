@@ -205,13 +205,23 @@ const (
 	_KEY_F2     = "\x1B[OQ"
 )
 
+const (
+	emptyDummyCode = "\uF8FF" // one of the Unicode Private Use Area
+)
+
 func cat(in io.Reader, out io.Writer) _CodeFlag {
 	sc := bufio.NewScanner(in)
 	codeFlag := nonBomUtf8
 	for sc.Scan() {
-		text, codeFlag1 := textfilter(sc.Text())
+		text := sc.Text()
+		if text == "" {
+			text = emptyDummyCode
+		} else {
+			var codeFlag1 _CodeFlag
+			text, codeFlag1 = textfilter(sc.Text())
+			codeFlag = codeFlag | codeFlag1
+		}
 		fmt.Fprintln(out, text)
-		codeFlag = codeFlag | codeFlag1
 	}
 	return codeFlag
 }
@@ -373,6 +383,9 @@ func mains() error {
 				return err
 			}
 			break
+		}
+		for i, c := range csv1 {
+			csv1[i] = strings.ReplaceAll(c, emptyDummyCode, "")
 		}
 		csvlines = append(csvlines, csv1)
 	}
