@@ -7,6 +7,7 @@
     - Output with ansi-encoding if input file is encoded by ansi-encoding
     - Fix: on Linux, the size of the output was zero bytes
     - BOM is restored to the saved file when original file has a BOM
+- Fix: empty lines in the input data were ignored.
 
 v0.5.0
 ------
