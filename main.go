@@ -572,7 +572,7 @@ func mains() error {
 				break
 			}
 			csvlines[rowIndex][colIndex] = text
-		case "d":
+		case "d", "x":
 			if len(csvlines[rowIndex]) <= 1 {
 				csvlines[rowIndex][0] = ""
 			} else {
