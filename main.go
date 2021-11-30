@@ -410,6 +410,7 @@ func mains() error {
 	var lastWidth, lastHeight int
 
 	message := ""
+	codeFlag := nonBomUtf8
 	for {
 		screenWidth, screenHeight, err := tty1.Size()
 		if err != nil {
@@ -430,25 +431,39 @@ func mains() error {
 		}
 		fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
 		lf++
+
+		select {
+		case val := <-chCodeFlag:
+			codeFlag = val
+		default:
+		}
+
+		io.WriteString(out, _ANSI_YELLOW)
 		if message != "" {
-			io.WriteString(out, _ANSI_YELLOW)
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
-			io.WriteString(out, _ANSI_RESET)
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
+			if (codeFlag & hasBom) != 0 {
+				io.WriteString(out, "[BOM]")
+			}
+			if (codeFlag & isAnsi) != 0 {
+				io.WriteString(out, "[ANSI]")
+			}
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex]) {
-				fmt.Fprintf(out, "\x1B[0;33;1m(%d,%d):%s\x1B[0m",
+				fmt.Fprintf(out, "(%d,%d):%s",
 					rowIndex+1,
 					colIndex+1,
 					runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-11, "..."))
 			}
 		}
-		fmt.Fprint(out, ERASE_SCRN_AFTER)
+		io.WriteString(out, _ANSI_RESET)
+		io.WriteString(out, ERASE_SCRN_AFTER)
+
 		ch, err := getKey(tty1)
 		if err != nil {
 			return err
 		}
-		codeFlag := nonBomUtf8
+
 		switch ch {
 		case _KEY_CTRL_L:
 			cache = map[int]string{}
@@ -618,11 +633,6 @@ func mains() error {
 				}
 			}
 
-			select {
-			case val := <-chCodeFlag:
-				codeFlag = val
-			default:
-			}
 			writeCsvTo(csvlines, in.Comma, codeFlag, fd)
 			fd.Close()
 		}
