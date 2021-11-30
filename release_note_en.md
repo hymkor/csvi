@@ -3,6 +3,7 @@
     - Change the field width 12 to 14
     - Change the background pattern: blue-ichimatsu -> gray-stripe
     - Show all cell string when the rightside cell is empty
+    - Show `[BOM]``[ANSI]` marks
 - `w` can override exist file
     - Output with ansi-encoding if input file is encoded by ansi-encoding
     - Fix: on Linux, the size of the output was zero bytes
