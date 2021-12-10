@@ -1,3 +1,6 @@
+v0.6.0
+------
+on Dec.10, 2021
 
 - Change visual:
     - Change the field width 12 to 14
