@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"unicode/utf8"
 
 	"golang.org/x/sys/windows"
@@ -20,11 +21,16 @@ func atou(bin []byte) (string, error) {
 	return windows.UTF16ToString(buffer), nil
 }
 
-func textfilter(s string) string {
-	if !utf8.ValidString(s) {
-		if t, err := atou([]byte(s)); err == nil {
-			s = t
+func textfilter(s string) (string, _CodeFlag) {
+	codeFlag := nonBomUtf8
+	if utf8.ValidString(s) {
+		if strings.HasPrefix(s, bomCode) {
+			s = s[len(bomCode):]
+			codeFlag |= hasBom
 		}
+	} else if ansiStr, err := atou([]byte(s)); err == nil {
+		s = ansiStr
+		codeFlag |= isAnsi
 	}
-	return s
+	return s, codeFlag
 }

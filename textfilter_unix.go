@@ -1,7 +1,15 @@
+//go:build !windows
 // +build !windows
 
 package main
 
-func textfilter(s string) string {
-	return s
+import (
+	"strings"
+)
+
+func textfilter(s string) (string, _CodeFlag) {
+	if strings.HasPrefix(s, bomCode) {
+		return s[len(bomCode):], hasBom
+	}
+	return s, nonBomUtf8
 }

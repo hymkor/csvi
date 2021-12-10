@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -16,7 +17,20 @@ import (
 	"github.com/mattn/go-tty"
 
 	"github.com/nyaosorg/go-readline-ny"
+	"github.com/nyaosorg/go-windows-mbcs"
 )
+
+type _CodeFlag int
+
+const (
+	nonBomUtf8 _CodeFlag = 0
+	isAnsi               = 1
+	hasBom               = 2
+)
+
+const bomCode = "\uFEFF"
+
+var version string
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
 	w := 0
@@ -32,7 +46,7 @@ func cutStrInWidth(s string, cellwidth int) (string, int) {
 
 const (
 	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
-	CELL1_COLOR      = "\x1B[0;44;37;1m"
+	CELL1_COLOR      = "\x1B[0;48;5;235;37;1m"
 	CELL2_COLOR      = "\x1B[0;40;37;1m"
 	ERASE_LINE       = "\x1B[0m\x1B[0K"
 	ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
@@ -57,29 +71,41 @@ var replaceTable = strings.NewReplacer(
 
 func (v LineView) Draw() {
 	leftWidth := v.MaxInLine
-	for i, s := range v.CSV {
+	i := 0
+	csvs := v.CSV
+	for len(csvs) > 0 {
+		s := csvs[0]
+		csvs = csvs[1:]
+		nextI := i + 1
+
 		cw := v.CellWidth
-		if cw > leftWidth {
+		for len(csvs) > 0 && csvs[0] == "" && nextI != v.CursorPos {
+			cw += v.CellWidth
+			csvs = csvs[1:]
+			nextI++
+		}
+		if cw > leftWidth || len(csvs) <= 0 {
 			cw = leftWidth
 		}
 		s = replaceTable.Replace(s)
 		ss, w := cutStrInWidth(s, cw)
 		if i == v.CursorPos {
 			io.WriteString(v.Out, CURSOR_COLOR)
-		} else if ((i & 1) == 0) == v.Reverse {
-			io.WriteString(v.Out, CELL1_COLOR)
-		} else {
+		} else if v.Reverse {
 			io.WriteString(v.Out, CELL2_COLOR)
+		} else {
+			io.WriteString(v.Out, CELL1_COLOR)
 		}
 		io.WriteString(v.Out, ss)
 		leftWidth -= w
-		for i := cw - w; i > 0; i-- {
+		for j := cw - w; j > 0; j-- {
 			v.Out.Write([]byte{' '})
 			leftWidth--
 		}
 		if leftWidth <= 0 {
 			break
 		}
+		i = nextI
 	}
 	io.WriteString(v.Out, ERASE_LINE)
 }
@@ -90,7 +116,7 @@ type CsvIn interface {
 
 var cache = map[int]string{}
 
-const CELL_WIDTH = 12
+const CELL_WIDTH = 14
 
 func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (int, error) {
 	reverse := false
@@ -179,17 +205,33 @@ const (
 	_KEY_F2     = "\x1B[OQ"
 )
 
-func cat(in io.Reader, out io.Writer) {
+const (
+	emptyDummyCode = "\uF8FF" // one of the Unicode Private Use Area
+)
+
+func cat(in io.Reader, out io.Writer) _CodeFlag {
 	sc := bufio.NewScanner(in)
+	codeFlag := nonBomUtf8
 	for sc.Scan() {
-		fmt.Fprintln(out, textfilter(sc.Text()))
+		text := sc.Text()
+		if text == "" {
+			text = emptyDummyCode
+		} else {
+			var codeFlag1 _CodeFlag
+			text, codeFlag1 = textfilter(sc.Text())
+			codeFlag = codeFlag | codeFlag1
+		}
+		fmt.Fprintln(out, text)
 	}
+	return codeFlag
 }
 
-func getIn() io.ReadCloser {
+func getIn() (io.ReadCloser, <-chan _CodeFlag) {
+	chCodeFlag := make(chan _CodeFlag, 1)
 	pin, pout := io.Pipe()
 	go func() {
 		args := flag.Args()
+		codeFlag := nonBomUtf8
 		if len(args) <= 0 {
 			cat(os.Stdin, pout)
 		} else {
@@ -199,13 +241,14 @@ func getIn() io.ReadCloser {
 					fmt.Fprintf(pout, "\"%s\",\"not found\"\n", arg1)
 					continue
 				}
-				cat(in, pout)
+				codeFlag |= cat(in, pout)
 				in.Close()
 			}
 		}
 		pout.Close()
+		chCodeFlag <- codeFlag
 	}()
-	return pin
+	return pin, chCodeFlag
 }
 
 var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
@@ -267,13 +310,56 @@ func (*WriteNopCloser) Close() error {
 	return nil
 }
 
-func main1() error {
+var overWritten = map[string]struct{}{}
+
+func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
+	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, ERASE_LINE)
+	ch, err := getKey(tty1)
+	return err == nil && ch == "y"
+}
+
+func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Writer) {
+	if (codeFlag & isAnsi) != 0 {
+		pipeIn, pipeOut := io.Pipe()
+		go func() {
+			w := csv.NewWriter(pipeOut)
+			w.Comma = comma
+			w.UseCRLF = true
+			w.WriteAll(csvlines)
+			w.Flush()
+			pipeOut.Close()
+		}()
+		sc := bufio.NewScanner(pipeIn)
+		bw := bufio.NewWriter(fd)
+		for sc.Scan() {
+			bytes, _ := mbcs.UtoA(sc.Text(), mbcs.ACP)
+			bw.Write(bytes)
+			bw.WriteByte('\r')
+			bw.WriteByte('\n')
+		}
+		bw.Flush()
+	} else {
+		if (codeFlag & hasBom) != 0 {
+			io.WriteString(fd, "\uFEFF")
+		}
+		w := csv.NewWriter(fd)
+		w.Comma = comma
+		w.UseCRLF = true
+		w.WriteAll(csvlines)
+		w.Flush()
+	}
+}
+
+func mains() error {
+	fmt.Printf("csview %s-%s-%s by %s\n",
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
 	out := colorable.NewColorableStderr()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	pin := getIn()
+	pin, chCodeFlag := getIn()
 	defer pin.Close()
 
 	in := csv.NewReader(pin)
@@ -298,6 +384,9 @@ func main1() error {
 			}
 			break
 		}
+		for i, c := range csv1 {
+			csv1[i] = strings.ReplaceAll(c, emptyDummyCode, "")
+		}
 		csvlines = append(csvlines, csv1)
 	}
 	if len(csvlines) <= 0 {
@@ -321,6 +410,7 @@ func main1() error {
 	var lastWidth, lastHeight int
 
 	message := ""
+	codeFlag := nonBomUtf8
 	for {
 		screenWidth, screenHeight, err := tty1.Size()
 		if err != nil {
@@ -341,24 +431,39 @@ func main1() error {
 		}
 		fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
 		lf++
+
+		select {
+		case val := <-chCodeFlag:
+			codeFlag = val
+		default:
+		}
+
+		io.WriteString(out, _ANSI_YELLOW)
 		if message != "" {
-			io.WriteString(out, _ANSI_YELLOW)
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
-			io.WriteString(out, _ANSI_RESET)
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
+			if (codeFlag & hasBom) != 0 {
+				io.WriteString(out, "[BOM]")
+			}
+			if (codeFlag & isAnsi) != 0 {
+				io.WriteString(out, "[ANSI]")
+			}
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex]) {
-				fmt.Fprintf(out, "\x1B[0;33;1m(%d,%d):%s\x1B[0m",
+				fmt.Fprintf(out, "(%d,%d):%s",
 					rowIndex+1,
 					colIndex+1,
 					runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-11, "..."))
 			}
 		}
-		fmt.Fprint(out, ERASE_SCRN_AFTER)
+		io.WriteString(out, _ANSI_RESET)
+		io.WriteString(out, ERASE_SCRN_AFTER)
+
 		ch, err := getKey(tty1)
 		if err != nil {
 			return err
 		}
+
 		switch ch {
 		case _KEY_CTRL_L:
 			cache = map[int]string{}
@@ -482,7 +587,7 @@ func main1() error {
 				break
 			}
 			csvlines[rowIndex][colIndex] = text
-		case "d":
+		case "d", "x":
 			if len(csvlines[rowIndex]) <= 1 {
 				csvlines[rowIndex][0] = ""
 			} else {
@@ -507,17 +612,28 @@ func main1() error {
 			if fname == "-" {
 				fd = &WriteNopCloser{Writer: os.Stdout}
 			} else {
-				fd, err = os.OpenFile(fname, os.O_EXCL|os.O_CREATE, 0666)
+				fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
+				if os.IsExist(err) {
+					if _, ok := overWritten[fname]; ok {
+						os.Remove(fname)
+					} else {
+						if !yesNo(tty1, out, "Overwrite as \""+fname+"\" [y/n] ?") {
+							break
+						}
+						backupName := fname + "~"
+						os.Remove(backupName)
+						os.Rename(fname, backupName)
+						overWritten[fname] = struct{}{}
+					}
+					fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
+				}
 				if err != nil {
 					message = err.Error()
 					break
 				}
 			}
-			w := csv.NewWriter(fd)
-			w.Comma = in.Comma
-			w.UseCRLF = true
-			w.WriteAll(csvlines)
-			w.Flush()
+
+			writeCsvTo(csvlines, in.Comma, codeFlag, fd)
 			fd.Close()
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
@@ -545,7 +661,7 @@ func main1() error {
 
 func main() {
 	flag.Parse()
-	if err := main1(); err != nil {
+	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
