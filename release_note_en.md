@@ -1,3 +1,6 @@
+
+- Display [TSV] or [CSV] on the status line.
+
 v0.6.0
 ------
 on Dec.10, 2021
