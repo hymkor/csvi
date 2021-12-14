@@ -443,6 +443,11 @@ func mains() error {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
+			if in.Comma == '\t' {
+				io.WriteString(out, "[TSV]")
+			} else if in.Comma == ',' {
+				io.WriteString(out, "[CSV]")
+			}
 			if (codeFlag & hasBom) != 0 {
 				io.WriteString(out, "[BOM]")
 			}
