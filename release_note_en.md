@@ -1,5 +1,5 @@
 
-- Display [TSV] or [CSV] on the status line.
+- Display [TSV],[CSV],[LF],[CRLF] on the status line.
 
 v0.6.0
 ------
