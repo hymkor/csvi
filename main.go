@@ -26,6 +26,7 @@ const (
 	nonBomUtf8 _CodeFlag = 0
 	isAnsi               = 1
 	hasBom               = 2
+	hasCR                = 4
 )
 
 const bomCode = "\uFEFF"
@@ -210,18 +211,24 @@ const (
 )
 
 func cat(in io.Reader, out io.Writer) _CodeFlag {
-	sc := bufio.NewScanner(in)
+	br := bufio.NewReader(in)
 	codeFlag := nonBomUtf8
-	for sc.Scan() {
-		text := sc.Text()
+	for {
+		text, err := br.ReadString('\n')
+		if err != nil {
+			break
+		}
 		if text == "" {
 			text = emptyDummyCode
 		} else {
+			if L := len(text); L >= 2 && text[L-2] == '\r' {
+				codeFlag = codeFlag | hasCR
+			}
 			var codeFlag1 _CodeFlag
-			text, codeFlag1 = textfilter(sc.Text())
+			text, codeFlag1 = textfilter(text)
 			codeFlag = codeFlag | codeFlag1
 		}
-		fmt.Fprintln(out, text)
+		io.WriteString(out, text)
 	}
 	return codeFlag
 }
@@ -447,6 +454,11 @@ func mains() error {
 				io.WriteString(out, "[TSV]")
 			} else if in.Comma == ',' {
 				io.WriteString(out, "[CSV]")
+			}
+			if (codeFlag & hasCR) != 0 {
+				io.WriteString(out, "[CRLF]")
+			} else {
+				io.WriteString(out, "[LF]")
 			}
 			if (codeFlag & hasBom) != 0 {
 				io.WriteString(out, "[BOM]")
