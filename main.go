@@ -361,7 +361,11 @@ func mains() error {
 	fmt.Printf("csview %s-%s-%s by %s\n",
 		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
-	out := colorable.NewColorableStderr()
+	disable := colorable.EnableColorsStdout(nil)
+	if disable != nil {
+		defer disable()
+	}
+	out := colorable.NewColorableStdout()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
