@@ -1,4 +1,4 @@
-module github.com/zetamatta/csview
+module github.com/hymkor/csview
 
 go 1.16
 
