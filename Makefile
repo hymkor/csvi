@@ -1,6 +1,7 @@
 NAME=$(lastword $(subst /, ,$(abspath .)))
 VERSION=$(shell git.exe describe --tags)
 GOOPT=-ldflags "-s -w -X main.version=$(VERSION)"
+EXE=$(shell go env GOEXE)
 ifeq ($(OS),Windows_NT)
     SHELL=CMD.EXE
     SET=set
@@ -22,10 +23,10 @@ _package:
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 package:
-	$(SET) "GOOS=linux" && $(SET) "GOARCH=386"   && $(MAKE) _package EXE=
-	$(SET) "GOOS=linux" && $(SET) "GOARCH=amd64" && $(MAKE) _package EXE=
-	$(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _package EXE=.exe
-	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _package EXE=.exe
+	$(SET) "GOOS=linux" && $(SET) "GOARCH=386"   && $(MAKE) _package
+	$(SET) "GOOS=linux" && $(SET) "GOARCH=amd64" && $(MAKE) _package
+	$(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _package
+	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _package
 
 clean:
 	$(DEL) *.zip *.tar.gz $(NAME) $(NAME).exe
