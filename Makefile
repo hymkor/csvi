@@ -29,4 +29,4 @@ package:
 	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _package
 
 clean:
-	$(DEL) *.zip *.tar.gz $(NAME) $(NAME).exe
+	$(DEL) *.zip $(NAME) $(NAME).exe
