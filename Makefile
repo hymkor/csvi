@@ -19,7 +19,7 @@ test:
 	go test -v
 
 _package:
-	$(SET) "CGO_ENABLED=0" && go build $(GOOPT) && \
+	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 package:
@@ -29,4 +29,4 @@ package:
 	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _package
 
 clean:
-	$(DEL) *.zip $(NAME) $(NAME).exe
+	$(DEL) *.zip $(NAME)$(EXE)
