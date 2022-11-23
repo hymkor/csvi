@@ -1,3 +1,7 @@
+v0.6.2
+------
+on Nov.23, 2022
+
 - Fix: (#3) Too long field breaks the screen layout
 
 v0.6.1
