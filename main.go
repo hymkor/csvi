@@ -357,6 +357,10 @@ func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Write
 	}
 }
 
+func first[T any](value T, _ error) T {
+	return value
+}
+
 func mains() error {
 	fmt.Printf("csview %s-%s-%s by %s\n",
 		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
@@ -454,27 +458,29 @@ func mains() error {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
+			n := 0
 			if in.Comma == '\t' {
-				io.WriteString(out, "[TSV]")
+				n += first(io.WriteString(out, "[TSV]"))
 			} else if in.Comma == ',' {
-				io.WriteString(out, "[CSV]")
+				n += first(io.WriteString(out, "[CSV]"))
 			}
 			if (codeFlag & hasCR) != 0 {
-				io.WriteString(out, "[CRLF]")
+				n += first(io.WriteString(out, "[CRLF]"))
 			} else {
-				io.WriteString(out, "[LF]")
+				n += first(io.WriteString(out, "[LF]"))
 			}
 			if (codeFlag & hasBom) != 0 {
-				io.WriteString(out, "[BOM]")
+				n += first(io.WriteString(out, "[BOM]"))
 			}
 			if (codeFlag & isAnsi) != 0 {
-				io.WriteString(out, "[ANSI]")
+				n += first(io.WriteString(out, "[ANSI]"))
 			}
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex]) {
-				fmt.Fprintf(out, "(%d,%d):%s",
+				n += first(fmt.Fprintf(out, "(%d,%d):",
 					rowIndex+1,
-					colIndex+1,
-					runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-11, "..."))
+					colIndex+1))
+
+				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-n, "..."))
 			}
 		}
 		io.WriteString(out, _ANSI_RESET)
