@@ -1,3 +1,8 @@
+- Fix: (#3) Too long field breaks the screen layout
+
+v0.6.1
+------
+on Feb.19, 2022
 
 - Display [TSV],[CSV],[LF],[CRLF] on the status line.
 
