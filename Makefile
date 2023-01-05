@@ -30,3 +30,6 @@ package:
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
+
+manifest:
+	go run ./mkmanifest.go *-windows-*.zip > $(NAME).json

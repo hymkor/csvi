@@ -1,0 +1,33 @@
+{
+    "version": "0.6.2",
+    "description": "Simple CSV viewer/editor",
+    "homepage": "https://github.com/hymkor/csview",
+    "license": "MIT License",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/hymkor/csview/releases/download/v0.6.2/csview-v0.6.2-windows-386.zip",
+            "hash": "ec9b865a032e61a472cb80e2c9c7f911f92ad51b76d4f6d7ff279eb1bd97ebea"
+        },
+        "64bit": {
+            "url": "https://github.com/hymkor/csview/releases/download/v0.6.2/csview-v0.6.2-windows-amd64.zip",
+            "hash": "21814a90e3843bcb35ee47731ba824d5dbc3c8154856a3a1e0f239ec0964352f"
+        }
+    },
+    "bin": [
+        "csview.exe"
+    ],
+    "checkver": {
+        "github": "https://github.com/hymkor/csview",
+        "regex": "tag/([\\d\\._]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/hymkor/csview/releases/download/v$version/csview-v$version-windows-386.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/hymkor/csview/releases/download/v$version/csview-v$version-windows-amd64.zip"
+            }
+        }
+    }
+}
