@@ -6,6 +6,7 @@ package main
 import (
 	"archive/zip"
 	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -206,6 +207,24 @@ func getNameAndRepo() (string, string, error) {
 	return user, repo, nil
 }
 
+func writeWithCRLF(source []byte, w io.Writer) error {
+	for {
+		before, after, found := bytes.Cut(source, []byte{'\n'})
+		_, err := w.Write(before)
+		if err != nil {
+			return err
+		}
+		_, err = w.Write([]byte{'\r', '\n'})
+		if err != nil {
+			return err
+		}
+		if !found {
+			return nil
+		}
+		source = after
+	}
+}
+
 func mains(args []string) error {
 	name, repo, err := getNameAndRepo()
 	if err != nil {
@@ -315,13 +334,11 @@ func mains(args []string) error {
 		}
 	}
 
-	output, err := json.MarshalIndent(&manifest, "", "    ")
+	jsonBin, err := json.MarshalIndent(&manifest, "", "    ")
 	if err != nil {
 		return err
 	}
-	os.Stdout.Write(output)
-	fmt.Println()
-	return nil
+	return writeWithCRLF(jsonBin, os.Stdout)
 }
 
 func main() {
