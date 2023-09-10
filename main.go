@@ -17,6 +17,7 @@ import (
 	"github.com/mattn/go-tty"
 
 	"github.com/nyaosorg/go-readline-ny"
+	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-windows-mbcs"
 )
 
@@ -305,7 +306,7 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 		LineFeed: func(readline.Result) {},
 	}
 	defer io.WriteString(out, _ANSI_CURSOR_OFF)
-	editor.BindKeySymbol(readline.K_ESCAPE, readline.F_INTR)
+	editor.BindKey(keys.Escape, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }
 
