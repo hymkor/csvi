@@ -1,15 +1,18 @@
-NAME=$(lastword $(subst /, ,$(abspath .)))
-VERSION=$(shell git.exe describe --tags)
-GOOPT=-ldflags "-s -w -X main.version=$(VERSION)"
-EXE=$(shell go env GOEXE)
 ifeq ($(OS),Windows_NT)
     SHELL=CMD.EXE
     SET=set
     DEL=del
+    NUL=nul
 else
     SET=export
     DEL=rm
+    NUL=/dev/null
 endif
+
+NAME:=$(notdir $(CURDIR))
+VERSION:=$(shell git.exe describe --tags 2>$(NUL) || echo v0.0.0)
+GOOPT:=-ldflags "-s -w -X main.version=$(VERSION)"
+EXE:=$(shell go env GOEXE)
 
 all:
 	go fmt
