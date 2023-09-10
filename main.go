@@ -299,11 +299,12 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 		Writer:  out,
 		Default: defaultStr,
 		Cursor:  65535,
-		Prompt: func() (int, error) {
-			fmt.Fprintf(out, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
-			return 2, nil
+		PromptWriter: func(w io.Writer) (int, error) {
+			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
 		},
-		LineFeed: func(readline.Result) {},
+		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
+			return 0, nil
+		},
 	}
 	defer io.WriteString(out, _ANSI_CURSOR_OFF)
 	editor.BindKey(keys.Escape, readline.CmdInterrupt)
