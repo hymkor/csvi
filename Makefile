@@ -34,5 +34,8 @@ package:
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
+release:
+	gh release create -d --notes "" -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
+
 manifest:
 	go run ./mkmanifest.go *-windows-*.zip > $(NAME).json
