@@ -1,3 +1,7 @@
+v1.0.0
+======
+on Sep 11, 2023
+
 - Fix for the the imcompatibility between v0.8.3 and v0.14.0 of go-readline-ny
 
 v0.6.2
