@@ -580,7 +580,8 @@ func mains() error {
 			csvlines = append(csvlines, []string{})
 			if len(csvlines) >= rowIndex+1 {
 				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
-				csvlines[rowIndex] = []string{""}
+				text, _ := getline(out, "new line>", "")
+				csvlines[rowIndex] = []string{text}
 			}
 			break
 		case "D":
