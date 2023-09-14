@@ -428,6 +428,7 @@ func mains() error {
 
 	message := ""
 	codeFlag := nonBomUtf8
+	var killbuffer string
 	for {
 		screenWidth, screenHeight, err := tty1.Size()
 		if err != nil {
@@ -616,6 +617,12 @@ func mains() error {
 				break
 			}
 			csvlines[rowIndex][colIndex] = text
+		case "y":
+			killbuffer = csvlines[rowIndex][colIndex]
+			message = "yanked the current cell: " + killbuffer
+		case "p":
+			csvlines[rowIndex][colIndex] = killbuffer
+			message = "pasted: " + killbuffer
 		case "d", "x":
 			if len(csvlines[rowIndex]) <= 1 {
 				csvlines[rowIndex][0] = ""
