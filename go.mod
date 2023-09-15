@@ -9,6 +9,7 @@ require (
 	github.com/nyaosorg/go-readline-ny v0.14.0
 	github.com/nyaosorg/go-windows-mbcs v0.4.2
 	golang.org/x/sys v0.12.0
+	golang.org/x/term v0.7.0
 )
 
 require (
