@@ -331,7 +331,7 @@ func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Write
 		sc := bufio.NewScanner(pipeIn)
 		bw := bufio.NewWriter(fd)
 		for sc.Scan() {
-			bytes, _ := mbcs.UtoA(sc.Text(), mbcs.ACP)
+			bytes, _ := mbcs.Utf8ToAnsi(sc.Text(), mbcs.ACP)
 			bw.Write(bytes)
 			bw.WriteByte('\r')
 			bw.WriteByte('\n')
