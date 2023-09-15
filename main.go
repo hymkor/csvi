@@ -12,6 +12,8 @@ import (
 	"runtime"
 	"strings"
 
+	"golang.org/x/term"
+
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-runewidth"
 	"github.com/mattn/go-tty"
@@ -363,28 +365,40 @@ func mains() error {
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
+	var chCodeFlag <-chan _CodeFlag
 
-	pin, chCodeFlag := getIn()
-	defer pin.Close()
+	var csvlines [][]string
+	var fieldSeperator rune
+	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
+		csvlines = [][]string{[]string{""}}
+		fieldSeperator = '\t'
+	} else {
+		var pin io.ReadCloser
 
-	in := csv.NewReader(pin)
-	in.FieldsPerRecord = -1
-	args := flag.Args()
-	if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
-		in.Comma = '\t'
-	}
-	if *optionTsv {
-		in.Comma = '\t'
-	}
-	if *optionCsv {
-		in.Comma = ','
-	}
-	csvlines, err := readCsvAll(in)
-	if err != nil {
-		return err
-	}
-	if len(csvlines) <= 0 {
-		return io.EOF
+		pin, chCodeFlag = getIn()
+		defer pin.Close()
+
+		in := csv.NewReader(pin)
+		in.FieldsPerRecord = -1
+		args := flag.Args()
+		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
+			in.Comma = '\t'
+		}
+		if *optionTsv {
+			in.Comma = '\t'
+		}
+		if *optionCsv {
+			in.Comma = ','
+		}
+		fieldSeperator = in.Comma
+		var err error
+		csvlines, err = readCsvAll(in)
+		if err != nil {
+			return err
+		}
+		if len(csvlines) <= 0 {
+			return io.EOF
+		}
 	}
 	tty1, err := tty.Open()
 	if err != nil {
@@ -427,10 +441,12 @@ func mains() error {
 		fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
 		lf++
 
-		select {
-		case val := <-chCodeFlag:
-			codeFlag = val
-		default:
+		if chCodeFlag != nil {
+			select {
+			case val := <-chCodeFlag:
+				codeFlag = val
+			default:
+			}
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
@@ -439,9 +455,9 @@ func mains() error {
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
 			n := 0
-			if in.Comma == '\t' {
+			if fieldSeperator == '\t' {
 				n += first(io.WriteString(out, "[TSV]"))
-			} else if in.Comma == ',' {
+			} else if fieldSeperator == ',' {
 				n += first(io.WriteString(out, "[CSV]"))
 			}
 			if (codeFlag & hasCR) != 0 {
@@ -611,7 +627,7 @@ func mains() error {
 		case "w":
 			fname := "-"
 			var err error
-			if len(args) >= 1 {
+			if args := flag.Args(); len(args) >= 1 {
 				fname, err = filepath.Abs(args[0])
 				if err != nil {
 					message = err.Error()
@@ -647,7 +663,7 @@ func mains() error {
 				}
 			}
 
-			writeCsvTo(csvlines, in.Comma, codeFlag, fd)
+			writeCsvTo(csvlines, fieldSeperator, codeFlag, fd)
 			fd.Close()
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
