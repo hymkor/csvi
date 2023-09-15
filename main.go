@@ -238,21 +238,7 @@ func getIn() (io.ReadCloser, <-chan _CodeFlag) {
 	chCodeFlag := make(chan _CodeFlag, 1)
 	pin, pout := io.Pipe()
 	go func() {
-		args := flag.Args()
-		codeFlag := nonBomUtf8
-		if len(args) <= 0 {
-			cat(os.Stdin, pout)
-		} else {
-			for _, arg1 := range args {
-				in, err := os.Open(arg1)
-				if err != nil {
-					fmt.Fprintf(pout, "\"%s\",\"not found\"\n", arg1)
-					continue
-				}
-				codeFlag |= cat(in, pout)
-				in.Close()
-			}
-		}
+		codeFlag := cat(multiFileReader(flag.Args()...), pout)
 		pout.Close()
 		chCodeFlag <- codeFlag
 	}()
