@@ -13,8 +13,8 @@ github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZ
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-tty v0.0.5 h1:s09uXI7yDbXzzTTfw3zonKFzwGkyYlgU3OMjqA0ddz4=
 github.com/mattn/go-tty v0.0.5/go.mod h1:u5GGXBtZU6RQoKV8gY5W6UhMudbR5vXnUe7j3pxse28=
-github.com/nyaosorg/go-readline-ny v0.14.0 h1:Cq3g/YLG5q8vaU3gKVfjWrD7zjsIwPkisi8HJKcsI1g=
-github.com/nyaosorg/go-readline-ny v0.14.0/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
+github.com/nyaosorg/go-readline-ny v0.14.1 h1:obIkG8K1sTCmo6an3cJSSXOJ2/h69MdtjYVcBrQxAnM=
+github.com/nyaosorg/go-readline-ny v0.14.1/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
 github.com/nyaosorg/go-windows-mbcs v0.4.2 h1:2znrE0YIgDIRlq6YB4l1n8DOlG89dV+hYsBqywL8MrM=
 github.com/nyaosorg/go-windows-mbcs v0.4.2/go.mod h1:FuQCaPRzyLbBL4ZXG+gtSA/hAAgVvIWtpqR2YLWYZiA=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
@@ -27,7 +27,7 @@ golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=
 golang.org/x/sys v0.12.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/term v0.7.0 h1:BEvjmm5fURWqcfbSKTdpkDXYBrUS1c0m8agp14W48vQ=
-golang.org/x/term v0.7.0/go.mod h1:P32HKFT3hSsZrRxla30E9HqToFYAQPCMs/zFMBUFqPY=
+golang.org/x/term v0.12.0 h1:/ZfYdc3zq+q02Rv9vGqTeSItdzZTSNDmfTi0mBAuidU=
+golang.org/x/term v0.12.0/go.mod h1:owVbMEjm3cBLCHdkQu9b1opXd4ETQWc3BhuQGKgXgvU=
 golang.org/x/text v0.13.0 h1:ablQoSUd0tRdKxZewP80B+BaqeKJuVhuRxj/dkrun3k=
 golang.org/x/text v0.13.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
