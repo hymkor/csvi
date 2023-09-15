@@ -313,7 +313,7 @@ var overWritten = map[string]struct{}{}
 
 func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, ERASE_LINE)
-	ch, err := getKey(tty1)
+	ch, err := readline.GetKey(tty1)
 	return err == nil && ch == "y"
 }
 
@@ -482,7 +482,7 @@ func mains() error {
 		io.WriteString(out, _ANSI_RESET)
 		io.WriteString(out, ERASE_SCRN_AFTER)
 
-		ch, err := getKey(tty1)
+		ch, err := readline.GetKey(tty1)
 		if err != nil {
 			return err
 		}
@@ -492,7 +492,7 @@ func mains() error {
 			cache = map[int]string{}
 		case "q", _KEY_ESC:
 			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
-			if ch, err := getKey(tty1); err == nil && ch == "y" {
+			if ch, err := readline.GetKey(tty1); err == nil && ch == "y" {
 				io.WriteString(out, "\n")
 				return nil
 			}
