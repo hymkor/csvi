@@ -379,20 +379,9 @@ func mains() error {
 	if *optionCsv {
 		in.Comma = ','
 	}
-
-	csvlines := [][]string{}
-	for {
-		csv1, err := in.Read()
-		if err != nil {
-			if err != io.EOF {
-				return err
-			}
-			break
-		}
-		for i, c := range csv1 {
-			csv1[i] = strings.ReplaceAll(c, emptyDummyCode, "")
-		}
-		csvlines = append(csvlines, csv1)
+	csvlines, err := readCsvAll(in)
+	if err != nil {
+		return err
 	}
 	if len(csvlines) <= 0 {
 		return io.EOF
