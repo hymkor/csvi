@@ -27,9 +27,9 @@ type _CodeFlag int
 
 const (
 	nonBomUtf8 _CodeFlag = 0
-	isAnsi               = 1
-	hasBom               = 2
-	hasCR                = 4
+	isAnsi     _CodeFlag = 1
+	hasBom     _CodeFlag = 2
+	hasCR      _CodeFlag = 4
 )
 
 const bomCode = "\uFEFF"
