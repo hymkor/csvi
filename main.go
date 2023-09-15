@@ -211,13 +211,16 @@ const (
 	emptyDummyCode = "\uF8FF" // one of the Unicode Private Use Area
 )
 
-func cat(in io.Reader, out io.Writer) _CodeFlag {
+func cat(in io.Reader, out io.Writer) (_CodeFlag, error) {
 	br := bufio.NewReader(in)
 	codeFlag := nonBomUtf8
 	for {
 		text, err := br.ReadString('\n')
 		if err != nil {
-			break
+			if err == io.EOF {
+				return codeFlag, nil
+			}
+			return codeFlag, err
 		}
 		if text == "" {
 			text = emptyDummyCode
@@ -231,15 +234,14 @@ func cat(in io.Reader, out io.Writer) _CodeFlag {
 		}
 		io.WriteString(out, text)
 	}
-	return codeFlag
 }
 
 func getIn() (io.ReadCloser, <-chan _CodeFlag) {
 	chCodeFlag := make(chan _CodeFlag, 1)
 	pin, pout := io.Pipe()
 	go func() {
-		codeFlag := cat(multiFileReader(flag.Args()...), pout)
-		pout.Close()
+		codeFlag, err := cat(multiFileReader(flag.Args()...), pout)
+		pout.CloseWithError(err)
 		chCodeFlag <- codeFlag
 	}()
 	return pin, chCodeFlag
