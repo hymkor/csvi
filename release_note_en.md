@@ -1,3 +1,7 @@
+v1.1.0
+======
+Sep 20 2023
+
 - Backport from [lispread]
     - Implement 'y'(yank) and 'p'(paste)
     - "o" and "O" query the text for the new cell now
