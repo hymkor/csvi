@@ -2,6 +2,9 @@
 - "o" and "O" query the text for the new cell now
 - Fix: error was not reported when the specified file is a directory
 - When no arguments are given and stdin is terminal, start with 1 cell immidiately
+- Support [go-readline-skk]
+
+[go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 v1.0.0
 ======

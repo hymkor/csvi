@@ -2,6 +2,9 @@
 - `o` と `O` で新セル用のテキストを入力するようにした
 - 指定したファイルがディレクトリだった時にエラーを表示しない問題を修正
 - 引数なしで標準入力が端末だった時、1セルでただちに開始するようにした
+- [go-readline-skk] による SKK 入力をサポート
+
+[go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 v1.0.0
 ======
