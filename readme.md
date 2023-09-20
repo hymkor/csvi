@@ -6,12 +6,14 @@ It supports UTF8 and the Windows current codepage(ANSI)
 
 ![image](./csview.png)
 
-### Install
+Install
+-------
 
 Download the binary package from [Releases](https://github.com/zetamatta/csview/releases)
 and extract the executable.
 
-### Usage
+Usage
+-----
 
 ```
 $ csview FILENAME(...)
@@ -28,7 +30,8 @@ Options
 * `-c` ... use Comma as field-separator (default when suffix is `.csv`)
 * `-t` ... use TAB as field-separator (default when suffix is not `.csv`)
 
-### Key-binding:
+Key-binding
+-----------
 
 * Move Cursor
     * `h`,`Ctrl`-`B`,&#x2190; (move cursor left)
@@ -53,7 +56,7 @@ Options
 * Quit: `q` or `ESC`
 
 Release Note
-============
+------------
 
 - [English](./release_note_en.md)
 - [Japanese](./release_note_ja.md)
