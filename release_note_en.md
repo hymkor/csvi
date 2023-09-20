@@ -1,3 +1,7 @@
+v1.1.1
+======
+Sep 20 2023
+
 - Use `:` for the path list separator instead of `;` from %GOREADLINESKK% on Linux
 
 v1.1.0
