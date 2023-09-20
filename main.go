@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"golang.org/x/term"
 
@@ -20,6 +21,7 @@ import (
 
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/keys"
+	"github.com/nyaosorg/go-readline-skk"
 	"github.com/nyaosorg/go-windows-mbcs"
 )
 
@@ -284,7 +286,21 @@ func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, in
 	}
 }
 
+var skkInit sync.Once
+
 func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
+	skkInit.Do(func() {
+		env := os.Getenv("GOREADLINESKK")
+		if env != "" {
+			_, err := skk.Config{
+				MiniBuffer: skk.MiniBufferOnCurrentLine{},
+			}.SetupWithString(env)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+			}
+		}
+	})
+
 	editor := readline.Editor{
 		Writer:  out,
 		Default: defaultStr,
