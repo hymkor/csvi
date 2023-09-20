@@ -1,3 +1,5 @@
+- Use `:` for the path list separator instead of `;` from %GOREADLINESKK% on Linux
+
 v1.1.0
 ======
 Sep 20 2023
