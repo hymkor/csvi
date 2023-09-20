@@ -503,6 +503,12 @@ func mains() error {
 			return err
 		}
 
+		getline := func(out io.Writer, prompt string, defaultStr string) (string, error) {
+			text, err := getline(out, prompt, defaultStr)
+			cache = map[int]string{}
+			return text, err
+		}
+
 		switch ch {
 		case _KEY_CTRL_L:
 			cache = map[int]string{}
