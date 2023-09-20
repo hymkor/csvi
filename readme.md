@@ -55,6 +55,21 @@ Key-binding
 * Repaint: `Ctrl`-`L`
 * Quit: `q` or `ESC`
 
+Readline with SKK[^SKK]
+-----------------------
+
+When the environment variable GOREADLINESKK is defined, [go-readline-skk] is used.
+
+- Windows
+    - `set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
+    - (example) `set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo`
+- Linux
+    - `export GOREADLINE=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
+
+[^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editor.
+
+[go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
+
 Release Note
 ------------
 
