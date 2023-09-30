@@ -13,10 +13,10 @@ github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZ
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-tty v0.0.5 h1:s09uXI7yDbXzzTTfw3zonKFzwGkyYlgU3OMjqA0ddz4=
 github.com/mattn/go-tty v0.0.5/go.mod h1:u5GGXBtZU6RQoKV8gY5W6UhMudbR5vXnUe7j3pxse28=
-github.com/nyaosorg/go-readline-ny v0.14.2-0.20230920061636-989fb80d349e h1:nUHPV+RQG7YttX7iP4Yu+uCwA8xmJW7yubX3ElEwDLY=
-github.com/nyaosorg/go-readline-ny v0.14.2-0.20230920061636-989fb80d349e/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
-github.com/nyaosorg/go-readline-skk v0.0.0-20230920062950-27561e297101 h1:vjszm99EygBOYAY6i86kEt7nuiFp2pk80Tv6z7VWRT0=
-github.com/nyaosorg/go-readline-skk v0.0.0-20230920062950-27561e297101/go.mod h1:X2Y9c9Lg5svynzLJAInXuJ0EUz2tFgjwZHWK5+X5GJo=
+github.com/nyaosorg/go-readline-ny v0.15.1 h1:44lJ9NWl2CwCllP0iT/ssCLlz/W1RYSbN0ODULrGpPo=
+github.com/nyaosorg/go-readline-ny v0.15.1/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
+github.com/nyaosorg/go-readline-skk v0.0.0-20230929171227-5464e4859dba h1:+bEQXgS2c1mgtCH1aDH/JTG0zVTIvvogwMzvcx/xGSI=
+github.com/nyaosorg/go-readline-skk v0.0.0-20230929171227-5464e4859dba/go.mod h1:oqzxw4c5qdrfl/a1lQ6fLVR3QqHwEgYgbeE+51tIkSQ=
 github.com/nyaosorg/go-windows-mbcs v0.4.2 h1:2znrE0YIgDIRlq6YB4l1n8DOlG89dV+hYsBqywL8MrM=
 github.com/nyaosorg/go-windows-mbcs v0.4.2/go.mod h1:FuQCaPRzyLbBL4ZXG+gtSA/hAAgVvIWtpqR2YLWYZiA=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
