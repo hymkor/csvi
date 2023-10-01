@@ -1,3 +1,5 @@
+- Strings being converted with SKK are now displayed as reversed or underlined
+
 v1.1.1
 ======
 Sep 20 2023
