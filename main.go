@@ -311,6 +311,7 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
+		Coloring: &skk.Coloring{},
 	}
 	defer io.WriteString(out, _ANSI_CURSOR_OFF)
 	editor.BindKey(keys.Escape, readline.CmdInterrupt)
