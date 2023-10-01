@@ -1,4 +1,5 @@
 - Strings being converted with SKK are now displayed as reversed or underlined
+- Fix: SKK failed to start when user-jisyo file did not exist
 
 v1.1.1
 ======
