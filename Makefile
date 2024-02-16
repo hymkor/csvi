@@ -38,6 +38,6 @@ release:
 	gh release create -d --notes "" -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
-	go run ./mkmanifest.go *-windows-*.zip > $(NAME).json
+	make-scoop-manifest *-windows-*.zip > $(NAME).json
 
 .PHONY: all test dist _dist clean release manifest
