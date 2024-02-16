@@ -1,3 +1,7 @@
+v1.1.3
+======
+Feb 16 2024
+
 - Fix: the attributes of text converted by SKK were incorrect on Windows 8.1
 
 v1.1.2
