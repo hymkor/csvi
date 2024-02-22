@@ -116,15 +116,11 @@ func (v LineView) Draw() {
 	io.WriteString(v.Out, ERASE_LINE)
 }
 
-type CsvIn interface {
-	Read() ([]string, error)
-}
-
 var cache = map[int]string{}
 
 const CELL_WIDTH = 14
 
-func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
+func view(read func() ([]string, error), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -132,7 +128,7 @@ func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 		if count >= h {
 			break
 		}
-		record, err := in.Read()
+		record, err := read()
 		if err == io.EOF {
 			break
 		}
@@ -195,6 +191,11 @@ func (M *MemoryCsv) Read() ([]string, error) {
 	}
 	M.StartY++
 	return csv, nil
+}
+
+func drawView(csvlines [][]string, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
+	window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
+	return view(window.Read, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 }
 
 const (
@@ -489,8 +490,7 @@ func mains() error {
 		}
 		cols := (screenWidth - 1) / CELL_WIDTH
 
-		window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
-		rewind, err := view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+		rewind, err := drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 		if err != nil {
 			return err
 		}
@@ -635,8 +635,7 @@ func mains() error {
 				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
 				csvlines[rowIndex] = []string{""}
 				rewind()
-				window = &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
-				rewind, err = view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+				rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 				if err != nil {
 					return err
 				}
