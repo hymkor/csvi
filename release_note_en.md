@@ -1,5 +1,6 @@
 - "o","O": repaint before getline is called
 - Readline: Ctrl-P: fetch the value of the cell above the same column
+- Readline: TAB: complete with the values of the cell above the same column
 
 v1.1.3
 ======
