@@ -124,20 +124,20 @@ var cache = map[int]string{}
 
 const CELL_WIDTH = 14
 
-func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (int, error) {
+func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 	reverse := false
 	count := 0
 	lfCount := 0
 	for {
 		if count >= h {
-			return lfCount, nil
+			break
 		}
 		record, err := in.Read()
 		if err == io.EOF {
-			return lfCount, nil
+			break
 		}
 		if err != nil {
-			return lfCount, err
+			return func() {}, err
 		}
 		if count > 0 {
 			lfCount++
@@ -166,6 +166,15 @@ func view(in CsvIn, csrpos, csrlin, w, h int, out io.Writer) (int, error) {
 		reverse = !reverse
 		count++
 	}
+	fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
+	lfCount++
+	return func() {
+		if lfCount > 0 {
+			fmt.Fprintf(out, "\r\x1B[%dA", lfCount)
+		} else {
+			fmt.Fprint(out, "\r")
+		}
+	}, nil
 }
 
 type MemoryCsv struct {
@@ -481,12 +490,10 @@ func mains() error {
 		cols := (screenWidth - 1) / CELL_WIDTH
 
 		window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
-		lf, err := view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+		rewind, err := view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
-		lf++
 
 		if chCodeFlag != nil {
 			select {
@@ -626,8 +633,15 @@ func mains() error {
 			csvlines = append(csvlines, []string{})
 			if len(csvlines) >= rowIndex+1 {
 				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
+				csvlines[rowIndex] = []string{""}
+				rewind()
+				window = &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
+				rewind, err = view(window, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+				if err != nil {
+					return err
+				}
 				text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
-				csvlines[rowIndex] = []string{text}
+				csvlines[rowIndex][0] = text
 			}
 		case "D":
 			if len(csvlines) <= 1 {
@@ -731,12 +745,7 @@ func mains() error {
 		} else if colIndex >= startCol+cols {
 			startCol = colIndex - cols + 1
 		}
-
-		if lf > 0 {
-			fmt.Fprintf(out, "\r\x1B[%dA", lf)
-		} else {
-			fmt.Fprint(out, "\r")
-		}
+		rewind()
 	}
 }
 
