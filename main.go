@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
@@ -23,7 +22,6 @@ import (
 	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
-	"github.com/nyaosorg/go-windows-mbcs"
 )
 
 type _CodeFlag int
@@ -336,52 +334,12 @@ func getline(out io.Writer, prompt string, defaultStr string, c candidate) (stri
 	return editor.ReadLine(context.Background())
 }
 
-type WriteNopCloser struct {
-	io.Writer
-}
-
-func (*WriteNopCloser) Close() error {
-	return nil
-}
-
 var overWritten = map[string]struct{}{}
 
 func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, ERASE_LINE)
 	ch, err := readline.GetKey(tty1)
 	return err == nil && ch == "y"
-}
-
-func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Writer) {
-	if (codeFlag & isAnsi) != 0 {
-		pipeIn, pipeOut := io.Pipe()
-		go func() {
-			w := csv.NewWriter(pipeOut)
-			w.Comma = comma
-			w.UseCRLF = true
-			w.WriteAll(csvlines)
-			w.Flush()
-			pipeOut.Close()
-		}()
-		sc := bufio.NewScanner(pipeIn)
-		bw := bufio.NewWriter(fd)
-		for sc.Scan() {
-			bytes, _ := mbcs.Utf8ToAnsi(sc.Text(), mbcs.ACP)
-			bw.Write(bytes)
-			bw.WriteByte('\r')
-			bw.WriteByte('\n')
-		}
-		bw.Flush()
-	} else {
-		if (codeFlag & hasBom) != 0 {
-			io.WriteString(fd, "\uFEFF")
-		}
-		w := csv.NewWriter(fd)
-		w.Comma = comma
-		w.UseCRLF = true
-		w.WriteAll(csvlines)
-		w.Flush()
-	}
 }
 
 func first[T any](value T, _ error) T {
@@ -708,46 +666,9 @@ func mains() error {
 				csvlines[rowIndex] = csvlines[rowIndex][:len(csvlines[rowIndex])-1]
 			}
 		case "w":
-			fname := "-"
-			var err error
-			if args := flag.Args(); len(args) >= 1 {
-				fname, err = filepath.Abs(args[0])
-				if err != nil {
-					message = err.Error()
-					break
-				}
+			if s := cmdWrite(csvlines, fieldSeperator, codeFlag, tty1, out); s != "" {
+				message = s
 			}
-			fname, err = getline(out, "write to>", fname, nil)
-			if err != nil {
-				break
-			}
-			var fd io.WriteCloser
-			if fname == "-" {
-				fd = &WriteNopCloser{Writer: os.Stdout}
-			} else {
-				fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
-				if os.IsExist(err) {
-					if _, ok := overWritten[fname]; ok {
-						os.Remove(fname)
-					} else {
-						if !yesNo(tty1, out, "Overwrite as \""+fname+"\" [y/n] ?") {
-							break
-						}
-						backupName := fname + "~"
-						os.Remove(backupName)
-						os.Rename(fname, backupName)
-						overWritten[fname] = struct{}{}
-					}
-					fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
-				}
-				if err != nil {
-					message = err.Error()
-					break
-				}
-			}
-
-			writeCsvTo(csvlines, fieldSeperator, codeFlag, fd)
-			fd.Close()
 		}
 		if colIndex >= len(csvlines[rowIndex]) {
 			colIndex = len(csvlines[rowIndex]) - 1
