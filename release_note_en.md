@@ -1,3 +1,5 @@
+- Readline: Ctrl-P: fetch the value of the cell above the same column
+
 v1.1.3
 ======
 Feb 16 2024
