@@ -1,3 +1,4 @@
+- "o","O": repaint before getline is called
 - Readline: Ctrl-P: fetch the value of the cell above the same column
 
 v1.1.3
