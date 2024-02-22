@@ -20,6 +20,7 @@ import (
 	"github.com/mattn/go-tty"
 
 	"github.com/nyaosorg/go-readline-ny"
+	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
 	"github.com/nyaosorg/go-windows-mbcs"
@@ -311,7 +312,7 @@ func getline(out io.Writer, prompt string, defaultStr string, c candidate) (stri
 		}
 	})
 
-	editor := readline.Editor{
+	editor := &readline.Editor{
 		Writer:  out,
 		Default: defaultStr,
 		History: c,
@@ -324,6 +325,12 @@ func getline(out io.Writer, prompt string, defaultStr string, c candidate) (stri
 		},
 		Coloring: &skk.Coloring{},
 	}
+	if c != nil && len(c) > 0 {
+		editor.BindKey(keys.CtrlI, completion.CmdCompletion{
+			Completion: c,
+		})
+	}
+
 	defer io.WriteString(out, _ANSI_CURSOR_OFF)
 	editor.BindKey(keys.Escape, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
@@ -389,6 +396,18 @@ func (c candidate) Len() int {
 
 func (c candidate) At(n int) string {
 	return c[len(c)-n-1]
+}
+
+func (c candidate) Delimiters() string {
+	return ""
+}
+
+func (c candidate) Enclosures() string {
+	return ""
+}
+
+func (c candidate) List(field []string) (fullnames, basenames []string) {
+	return c, c
 }
 
 func makeCandidate(row, col int, csvlines [][]string) candidate {
