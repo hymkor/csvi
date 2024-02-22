@@ -13,6 +13,8 @@ github.com/mattn/go-runewidth v0.0.15 h1:UNAjwbU9l54TA3KzvqLGxwWjHmMgBUVhBiTjelZ
 github.com/mattn/go-runewidth v0.0.15/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-tty v0.0.5 h1:s09uXI7yDbXzzTTfw3zonKFzwGkyYlgU3OMjqA0ddz4=
 github.com/mattn/go-tty v0.0.5/go.mod h1:u5GGXBtZU6RQoKV8gY5W6UhMudbR5vXnUe7j3pxse28=
+github.com/nyaosorg/go-box/v2 v2.1.4 h1:kD+hlbceIG93HiI2wxOvnuPGZzNcEt/gWNu1krgZf6E=
+github.com/nyaosorg/go-box/v2 v2.1.4/go.mod h1:raYiz1+ScY4DdrnuoJ8IO5BkE65AldpV9HHuXLg2O1U=
 github.com/nyaosorg/go-readline-ny v0.15.2 h1:uNf3qxDCkXftmR2tD7UoLGOvOByMSjWgv7rmZ1o8jO0=
 github.com/nyaosorg/go-readline-ny v0.15.2/go.mod h1:/JojGEnLMPy6g+oHBMqy1/AEUDUgjiG2lUYOalhtQpY=
 github.com/nyaosorg/go-readline-skk v0.0.0-20231001094233-149849a81046 h1:HDoMV3E7cUDl+UZV04FYEBNXelfrydRveToRMfopi3c=
