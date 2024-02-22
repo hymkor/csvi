@@ -288,7 +288,7 @@ func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, in
 
 var skkInit sync.Once
 
-func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
+func getline(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
 	skkInit.Do(func() {
 		env := os.Getenv("GOREADLINESKK")
 		if env != "" {
@@ -304,6 +304,7 @@ func getline(out io.Writer, prompt string, defaultStr string) (string, error) {
 	editor := readline.Editor{
 		Writer:  out,
 		Default: defaultStr,
+		History: c,
 		Cursor:  65535,
 		PromptWriter: func(w io.Writer) (int, error) {
 			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
@@ -368,6 +369,35 @@ func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Write
 
 func first[T any](value T, _ error) T {
 	return value
+}
+
+type candidate []string
+
+func (c candidate) Len() int {
+	return len(c)
+}
+
+func (c candidate) At(n int) string {
+	return c[len(c)-n-1]
+}
+
+func makeCandidate(row, col int, csvlines [][]string) candidate {
+	result := candidate(make([]string, 0, row))
+	set := make(map[string]struct{})
+	for ; row >= 0; row-- {
+		if col >= len(csvlines[row]) {
+			break
+		}
+		value := csvlines[row][col]
+		if value == "" {
+			break
+		}
+		if _, ok := set[value]; !ok {
+			result = append(result, value)
+			set[value] = struct{}{}
+		}
+	}
+	return result
 }
 
 func mains() error {
@@ -504,8 +534,8 @@ func mains() error {
 			return err
 		}
 
-		getline := func(out io.Writer, prompt string, defaultStr string) (string, error) {
-			text, err := getline(out, prompt, defaultStr)
+		getline := func(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
+			text, err := getline(out, prompt, defaultStr, c)
 			cache = map[int]string{}
 			return text, err
 		}
@@ -565,7 +595,7 @@ func mains() error {
 			colIndex = c
 		case "/", "?":
 			var err error
-			lastWord, err = getline(out, ch, "")
+			lastWord, err = getline(out, ch, "", nil)
 			if err != nil {
 				if err != readline.CtrlC {
 					message = err.Error()
@@ -596,7 +626,7 @@ func mains() error {
 			csvlines = append(csvlines, []string{})
 			if len(csvlines) >= rowIndex+1 {
 				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
-				text, _ := getline(out, "new line>", "")
+				text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
 				csvlines[rowIndex] = []string{text}
 			}
 		case "D":
@@ -609,7 +639,7 @@ func mains() error {
 				rowIndex--
 			}
 		case "i":
-			text, err := getline(out, "insert cell>", "")
+			text, err := getline(out, "insert cell>", "", nil)
 			if err != nil {
 				break
 			}
@@ -618,7 +648,7 @@ func mains() error {
 			csvlines[rowIndex][colIndex] = text
 			colIndex++
 		case "a":
-			text, err := getline(out, "append cell>", "")
+			text, err := getline(out, "append cell>", "", makeCandidate(rowIndex-1, colIndex+1, csvlines))
 			if err != nil {
 				break
 			}
@@ -627,7 +657,7 @@ func mains() error {
 			copy(csvlines[rowIndex][colIndex+1:], csvlines[rowIndex][colIndex:])
 			csvlines[rowIndex][colIndex] = text
 		case "r", "R", _KEY_F2:
-			text, err := getline(out, "replace cell>", csvlines[rowIndex][colIndex])
+			text, err := getline(out, "replace cell>", csvlines[rowIndex][colIndex], makeCandidate(rowIndex-1, colIndex, csvlines))
 			if err != nil {
 				break
 			}
@@ -655,7 +685,7 @@ func mains() error {
 					break
 				}
 			}
-			fname, err = getline(out, "write to>", fname)
+			fname, err = getline(out, "write to>", fname, nil)
 			if err != nil {
 				break
 			}
