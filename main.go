@@ -303,17 +303,11 @@ func first[T any](value T, _ error) T {
 }
 
 func mains() error {
-	fmt.Printf("csview %s-%s-%s by %s\n",
-		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
-
-	disable := colorable.EnableColorsStdout(nil)
-	if disable != nil {
-		defer disable()
-	}
 	out := colorable.NewColorableStdout()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
+
 	var chCodeFlag <-chan _CodeFlag
 
 	var csvlines [][]string
@@ -604,6 +598,14 @@ func mains() error {
 }
 
 func main() {
+	fmt.Printf("csview %s-%s-%s by %s\n",
+		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
+	disable := colorable.EnableColorsStdout(nil)
+	if disable != nil {
+		defer disable()
+	}
+
 	flag.Parse()
 	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
