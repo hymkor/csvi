@@ -251,38 +251,6 @@ func getIn() (io.ReadCloser, <-chan _CodeFlag) {
 var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
 var optionCsv = flag.Bool("c", false, "use Comma as field-separator")
 
-func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int) {
-	c++
-	for r < len(csvlines) {
-		for c < len(csvlines[r]) {
-			if strings.Contains(csvlines[r][c], target) {
-				return true, r, c
-			}
-			c++
-		}
-		r++
-		c = 0
-	}
-	return false, r, c
-}
-
-func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, int) {
-	c--
-	for {
-		for c >= 0 {
-			if strings.Contains(csvlines[r][c], target) {
-				return true, r, c
-			}
-			c--
-		}
-		r--
-		if r < 0 {
-			return false, r, c
-		}
-		c = len(csvlines[r]) - 1
-	}
-}
-
 var skkInit sync.Once
 
 func getline(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
