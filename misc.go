@@ -4,6 +4,8 @@ import (
 	"encoding/csv"
 	"io"
 	"strings"
+
+	"github.com/mattn/go-runewidth"
 )
 
 func readCsvAll(in *csv.Reader) ([][]string, error) {
@@ -21,4 +23,16 @@ func readCsvAll(in *csv.Reader) ([][]string, error) {
 		}
 		csvlines = append(csvlines, csv1)
 	}
+}
+
+func cutStrInWidth(s string, cellwidth int) (string, int) {
+	w := 0
+	for n, c := range s {
+		w1 := runewidth.RuneWidth(c)
+		if w+w1 > cellwidth {
+			return s[:n], w
+		}
+		w += w1
+	}
+	return s, w
 }

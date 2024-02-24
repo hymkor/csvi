@@ -37,18 +37,6 @@ const bomCode = "\uFEFF"
 
 var version string
 
-func cutStrInWidth(s string, cellwidth int) (string, int) {
-	w := 0
-	for n, c := range s {
-		w1 := runewidth.RuneWidth(c)
-		if w+w1 > cellwidth {
-			return s[:n], w
-		}
-		w += w1
-	}
-	return s, w
-}
-
 const (
 	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
 	CELL1_COLOR      = "\x1B[0;48;5;235;37;1m"
