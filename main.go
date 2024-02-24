@@ -544,7 +544,7 @@ func mains() error {
 				rowIndex--
 			}
 		case "i":
-			text, err := getline(out, "insert cell>", "", nil)
+			text, err := getline(out, "insert cell>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
 			if err != nil {
 				break
 			}
