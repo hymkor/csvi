@@ -24,6 +24,11 @@ import (
 	"github.com/nyaosorg/go-readline-skk"
 )
 
+var (
+	flagTsv = flag.Bool("t", false, "use TAB as field-separator")
+	flagCsv = flag.Bool("c", false, "use Comma as field-separator")
+)
+
 type _CodeFlag int
 
 const (
@@ -248,9 +253,6 @@ func getIn() (io.ReadCloser, <-chan _CodeFlag) {
 	return pin, chCodeFlag
 }
 
-var optionTsv = flag.Bool("t", false, "use TAB as field-separator")
-var optionCsv = flag.Bool("c", false, "use Comma as field-separator")
-
 var skkInit sync.Once
 
 func getline(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
@@ -327,10 +329,10 @@ func mains() error {
 		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
 			in.Comma = '\t'
 		}
-		if *optionTsv {
+		if *flagTsv {
 			in.Comma = '\t'
 		}
-		if *optionCsv {
+		if *flagCsv {
 			in.Comma = ','
 		}
 		fieldSeperator = in.Comma
