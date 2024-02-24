@@ -36,3 +36,44 @@ func cutStrInWidth(s string, cellwidth int) (string, int) {
 	}
 	return s, w
 }
+
+type candidate []string
+
+func (c candidate) Len() int {
+	return len(c)
+}
+
+func (c candidate) At(n int) string {
+	return c[len(c)-n-1]
+}
+
+func (c candidate) Delimiters() string {
+	return ""
+}
+
+func (c candidate) Enclosures() string {
+	return ""
+}
+
+func (c candidate) List(field []string) (fullnames, basenames []string) {
+	return c, c
+}
+
+func makeCandidate(row, col int, csvlines [][]string) candidate {
+	result := candidate(make([]string, 0, row))
+	set := make(map[string]struct{})
+	for ; row >= 0; row-- {
+		if col >= len(csvlines[row]) {
+			break
+		}
+		value := csvlines[row][col]
+		if value == "" {
+			break
+		}
+		if _, ok := set[value]; !ok {
+			result = append(result, value)
+			set[value] = struct{}{}
+		}
+	}
+	return result
+}
