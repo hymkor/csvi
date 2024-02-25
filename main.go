@@ -3,12 +3,12 @@ package main
 import (
 	"bufio"
 	"context"
-	"encoding/csv"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"runtime"
+	"slices"
 	"strings"
 	"sync"
 
@@ -22,6 +22,8 @@ import (
 	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
+
+	"github.com/hymkor/csview/csv"
 )
 
 var (
@@ -51,7 +53,7 @@ const (
 )
 
 type LineView struct {
-	CSV       []string
+	CSV       []csv.Cell
 	CellWidth int
 	MaxInLine int
 	CursorPos int
@@ -72,12 +74,12 @@ func (v LineView) Draw() {
 	i := 0
 	csvs := v.CSV
 	for len(csvs) > 0 {
-		s := csvs[0]
+		s := csvs[0].Text()
 		csvs = csvs[1:]
 		nextI := i + 1
 
 		cw := v.CellWidth
-		for len(csvs) > 0 && csvs[0] == "" && nextI != v.CursorPos {
+		for len(csvs) > 0 && csvs[0].Text() == "" && nextI != v.CursorPos {
 			cw += v.CellWidth
 			csvs = csvs[1:]
 			nextI++
@@ -112,7 +114,7 @@ var cache = map[int]string{}
 
 const CELL_WIDTH = 14
 
-func view(read func() ([]string, error), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
+func view(read func() ([]csv.Cell, error), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -166,26 +168,27 @@ func view(read func() ([]string, error), csrpos, csrlin, w, h int, out io.Writer
 }
 
 type MemoryCsv struct {
-	Data   [][]string
+	Data   []csv.Row
 	StartX int
 	StartY int
 }
 
-func (M *MemoryCsv) Read() ([]string, error) {
+func (M *MemoryCsv) Read() ([]csv.Cell, error) {
 	if M.StartY >= len(M.Data) {
 		return nil, io.EOF
 	}
-	csv := M.Data[M.StartY]
-	if M.StartX <= len(csv) {
-		csv = csv[M.StartX:]
+	row := M.Data[M.StartY]
+	var cells []csv.Cell
+	if M.StartX <= len(row.Cell) {
+		cells = row.Cell[M.StartX:]
 	} else {
-		csv = []string{}
+		cells = []csv.Cell{}
 	}
 	M.StartY++
-	return csv, nil
+	return cells, nil
 }
 
-func drawView(csvlines [][]string, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
+func drawView(csvlines []csv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
 	window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
 	return view(window.Read, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 }
@@ -312,32 +315,31 @@ func mains() error {
 
 	var chCodeFlag <-chan _CodeFlag
 
-	var csvlines [][]string
-	var fieldSeperator rune
+	var csvlines []csv.Row
+	mode := &csv.Mode{}
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
-		csvlines = [][]string{[]string{""}}
-		fieldSeperator = '\t'
+		csvlines = []csv.Row{}
+		mode.Comma = '\t'
 	} else {
 		var pin io.ReadCloser
 
 		pin, chCodeFlag = getIn()
 		defer pin.Close()
 
-		in := csv.NewReader(pin)
-		in.FieldsPerRecord = -1
+		in := bufio.NewReader(pin)
+		mode.Comma = byte(',')
 		args := flag.Args()
 		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
-			in.Comma = '\t'
+			mode.Comma = byte('\t')
 		}
 		if *flagTsv {
-			in.Comma = '\t'
+			mode.Comma = byte('\t')
 		}
 		if *flagCsv {
-			in.Comma = ','
+			mode.Comma = byte(',')
 		}
-		fieldSeperator = in.Comma
 		var err error
-		csvlines, err = readCsvAll(in)
+		csvlines, err = readCsvAll(bufio.NewReader(in), mode)
 		if err != nil {
 			return err
 		}
@@ -397,9 +399,9 @@ func mains() error {
 			message = ""
 		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
 			n := 0
-			if fieldSeperator == '\t' {
+			if mode.Comma == '\t' {
 				n += first(io.WriteString(out, "[TSV]"))
-			} else if fieldSeperator == ',' {
+			} else if mode.Comma == ',' {
 				n += first(io.WriteString(out, "[CSV]"))
 			}
 			if (codeFlag & hasCR) != 0 {
@@ -413,12 +415,12 @@ func mains() error {
 			if (codeFlag & isAnsi) != 0 {
 				n += first(io.WriteString(out, "[ANSI]"))
 			}
-			if 0 <= colIndex && colIndex < len(csvlines[rowIndex]) {
+			if 0 <= colIndex && colIndex < len(csvlines[rowIndex].Cell) {
 				n += first(fmt.Fprintf(out, "(%d,%d):",
 					rowIndex+1,
 					colIndex+1))
 
-				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex][colIndex]), screenWidth-n, "..."))
+				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex].Cell[colIndex].Text()), screenWidth-n, "..."))
 			}
 		}
 		io.WriteString(out, _ANSI_RESET)
@@ -461,7 +463,7 @@ func mains() error {
 		case "0", "^", _KEY_CTRL_A:
 			colIndex = 0
 		case "$", _KEY_CTRL_E:
-			colIndex = len(csvlines[rowIndex]) - 1
+			colIndex = len(csvlines[rowIndex].Cell) - 1
 		case "<":
 			rowIndex = 0
 		case ">":
@@ -518,24 +520,22 @@ func mains() error {
 			rowIndex++
 			fallthrough
 		case "O":
-			csvlines = append(csvlines, []string{})
-			if len(csvlines) >= rowIndex+1 {
-				copy(csvlines[rowIndex+1:], csvlines[rowIndex:])
-				csvlines[rowIndex] = []string{""}
-				rewind()
-				rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
-				if err != nil {
-					return err
-				}
-				text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
-				csvlines[rowIndex][0] = text
+			csvlines = slices.Insert(csvlines, rowIndex, csv.Row{
+				Cell: []csv.Cell{},
+				Term: "\n",
+			})
+			rewind()
+			rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+			if err != nil {
+				return err
 			}
+			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
+			csvlines[rowIndex].Replace(0, text, mode)
 		case "D":
 			if len(csvlines) <= 1 {
 				break
 			}
-			copy(csvlines[rowIndex:], csvlines[rowIndex+1:])
-			csvlines = csvlines[:len(csvlines)-1]
+			csvlines = slices.Delete(csvlines, rowIndex, rowIndex+1)
 			if rowIndex >= len(csvlines) {
 				rowIndex--
 			}
@@ -544,45 +544,40 @@ func mains() error {
 			if err != nil {
 				break
 			}
-			csvlines[rowIndex] = append(csvlines[rowIndex], "")
-			copy(csvlines[rowIndex][colIndex+1:], csvlines[rowIndex][colIndex:])
-			csvlines[rowIndex][colIndex] = text
+			csvlines[rowIndex].Insert(colIndex, text, mode)
 			colIndex++
 		case "a":
 			text, err := getline(out, "append cell>", "", makeCandidate(rowIndex-1, colIndex+1, csvlines))
 			if err != nil {
 				break
 			}
-			csvlines[rowIndex] = append(csvlines[rowIndex], "")
 			colIndex++
-			copy(csvlines[rowIndex][colIndex+1:], csvlines[rowIndex][colIndex:])
-			csvlines[rowIndex][colIndex] = text
+			csvlines[rowIndex].Insert(colIndex, text, mode)
 		case "r", "R", _KEY_F2:
-			text, err := getline(out, "replace cell>", csvlines[rowIndex][colIndex], makeCandidate(rowIndex-1, colIndex, csvlines))
+			text, err := getline(out, "replace cell>", csvlines[rowIndex].Cell[colIndex].Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
 			if err != nil {
 				break
 			}
-			csvlines[rowIndex][colIndex] = text
+			csvlines[rowIndex].Replace(colIndex, text, mode)
 		case "y":
-			killbuffer = csvlines[rowIndex][colIndex]
+			killbuffer = csvlines[rowIndex].Cell[colIndex].Text()
 			message = "yanked the current cell: " + killbuffer
 		case "p":
-			csvlines[rowIndex][colIndex] = killbuffer
+			csvlines[rowIndex].Cell[colIndex] = csv.NewCell(killbuffer, mode)
 			message = "pasted: " + killbuffer
 		case "d", "x":
-			if len(csvlines[rowIndex]) <= 1 {
-				csvlines[rowIndex][0] = ""
+			if len(csvlines[rowIndex].Cell) <= 1 {
+				csvlines[rowIndex].Replace(0, "", mode)
 			} else {
-				copy(csvlines[rowIndex][colIndex:], csvlines[rowIndex][colIndex+1:])
-				csvlines[rowIndex] = csvlines[rowIndex][:len(csvlines[rowIndex])-1]
+				csvlines[rowIndex].Delete(colIndex)
 			}
 		case "w":
-			if s := cmdWrite(csvlines, fieldSeperator, codeFlag, tty1, out); s != "" {
+			if s := cmdWrite(csvlines, mode, codeFlag, tty1, out); s != "" {
 				message = s
 			}
 		}
-		if colIndex >= len(csvlines[rowIndex]) {
-			colIndex = len(csvlines[rowIndex]) - 1
+		if colIndex >= len(csvlines[rowIndex].Cell) {
+			colIndex = len(csvlines[rowIndex].Cell) - 1
 		}
 
 		if rowIndex < startRow {

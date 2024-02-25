@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/csv"
 	"flag"
 	"io"
 	"os"
@@ -10,6 +9,8 @@ import (
 
 	"github.com/mattn/go-tty"
 	"github.com/nyaosorg/go-windows-mbcs"
+
+	"github.com/hymkor/csview/csv"
 )
 
 type WriteNopCloser struct {
@@ -20,15 +21,15 @@ func (*WriteNopCloser) Close() error {
 	return nil
 }
 
-func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Writer) {
+func writeCsvTo(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, fd io.Writer) {
 	if (codeFlag & isAnsi) != 0 {
 		pipeIn, pipeOut := io.Pipe()
 		go func() {
-			w := csv.NewWriter(pipeOut)
-			w.Comma = comma
-			w.UseCRLF = true
-			w.WriteAll(csvlines)
-			w.Flush()
+			bw := bufio.NewWriter(pipeOut)
+			for _, row := range csvlines {
+				bw.WriteString(row.Rebuild(mode))
+			}
+			bw.Flush()
 			pipeOut.Close()
 		}()
 		sc := bufio.NewScanner(pipeIn)
@@ -44,15 +45,15 @@ func writeCsvTo(csvlines [][]string, comma rune, codeFlag _CodeFlag, fd io.Write
 		if (codeFlag & hasBom) != 0 {
 			io.WriteString(fd, "\uFEFF")
 		}
-		w := csv.NewWriter(fd)
-		w.Comma = comma
-		w.UseCRLF = true
-		w.WriteAll(csvlines)
-		w.Flush()
+		bw := bufio.NewWriter(fd)
+		for _, row := range csvlines {
+			bw.WriteString(row.Rebuild(mode))
+		}
+		bw.Flush()
 	}
 }
 
-func cmdWrite(csvlines [][]string, comma rune, codeFlag _CodeFlag, tty1 *tty.TTY, out io.Writer) (message string) {
+func cmdWrite(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, tty1 *tty.TTY, out io.Writer) (message string) {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {
@@ -89,7 +90,7 @@ func cmdWrite(csvlines [][]string, comma rune, codeFlag _CodeFlag, tty1 *tty.TTY
 		}
 	}
 
-	writeCsvTo(csvlines, comma, codeFlag, fd)
+	writeCsvTo(csvlines, mode, codeFlag, fd)
 	fd.Close()
 	return
 }

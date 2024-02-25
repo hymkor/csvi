@@ -1,27 +1,25 @@
 package main
 
 import (
-	"encoding/csv"
 	"io"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
+
+	"github.com/hymkor/csview/csv"
 )
 
-func readCsvAll(in *csv.Reader) ([][]string, error) {
-	csvlines := [][]string{}
+func readCsvAll(in io.ByteReader, mode *csv.Mode) ([]csv.Row, error) {
+	csvlines := []csv.Row{}
 	for {
-		csv1, err := in.Read()
+		row, err := csv.ReadLine(in, mode)
 		if err != nil {
 			if err != io.EOF {
 				return nil, err
 			}
 			return csvlines, nil
 		}
-		for i, c := range csv1 {
-			csv1[i] = strings.ReplaceAll(c, emptyDummyCode, "")
-		}
-		csvlines = append(csvlines, csv1)
+		csvlines = append(csvlines, *row)
 	}
 }
 
@@ -59,14 +57,14 @@ func (c candidate) List(field []string) (fullnames, basenames []string) {
 	return c, c
 }
 
-func makeCandidate(row, col int, csvlines [][]string) candidate {
+func makeCandidate(row, col int, csvlines []csv.Row) candidate {
 	result := candidate(make([]string, 0, row))
 	set := make(map[string]struct{})
 	for ; row >= 0; row-- {
-		if col >= len(csvlines[row]) {
+		if col >= len(csvlines[row].Cell) {
 			break
 		}
-		value := csvlines[row][col]
+		value := csvlines[row].Cell[col].Text()
 		if value == "" {
 			break
 		}
@@ -78,11 +76,11 @@ func makeCandidate(row, col int, csvlines [][]string) candidate {
 	return result
 }
 
-func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int) {
+func searchForward(csvlines []csv.Row, r, c int, target string) (bool, int, int) {
 	c++
 	for r < len(csvlines) {
-		for c < len(csvlines[r]) {
-			if strings.Contains(csvlines[r][c], target) {
+		for c < len(csvlines[r].Cell) {
+			if strings.Contains(csvlines[r].Cell[c].Text(), target) {
 				return true, r, c
 			}
 			c++
@@ -93,11 +91,11 @@ func searchForward(csvlines [][]string, r, c int, target string) (bool, int, int
 	return false, r, c
 }
 
-func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, int) {
+func searchBackward(csvlines []csv.Row, r, c int, target string) (bool, int, int) {
 	c--
 	for {
 		for c >= 0 {
-			if strings.Contains(csvlines[r][c], target) {
+			if strings.Contains(csvlines[r].Cell[c].Text(), target) {
 				return true, r, c
 			}
 			c--
@@ -106,6 +104,6 @@ func searchBackward(csvlines [][]string, r, c int, target string) (bool, int, in
 		if r < 0 {
 			return false, r, c
 		}
-		c = len(csvlines[r]) - 1
+		c = len(csvlines[r].Cell) - 1
 	}
 }
