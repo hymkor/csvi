@@ -540,14 +540,14 @@ func mains() error {
 				rowIndex--
 			}
 		case "i":
-			text, err := getline(out, "insert cell>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
+			text, err := getline(out, "insert cell>", "", makeCandidate(rowIndex, colIndex, csvlines))
 			if err != nil {
 				break
 			}
 			csvlines[rowIndex].Insert(colIndex, text, mode)
 			colIndex++
 		case "a":
-			text, err := getline(out, "append cell>", "", makeCandidate(rowIndex-1, colIndex+1, csvlines))
+			text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, csvlines))
 			if err != nil {
 				break
 			}
