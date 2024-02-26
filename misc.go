@@ -1,27 +1,12 @@
 package main
 
 import (
-	"io"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
 
 	"github.com/hymkor/csview/unbreakable-csv"
 )
-
-func readCsvAll(in io.ByteReader, mode *csv.Mode) ([]csv.Row, error) {
-	csvlines := []csv.Row{}
-	for {
-		row, err := csv.ReadLine(in, mode)
-		if err != nil {
-			if err != io.EOF {
-				return nil, err
-			}
-			return csvlines, nil
-		}
-		csvlines = append(csvlines, *row)
-	}
-}
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
 	w := 0

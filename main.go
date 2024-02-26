@@ -339,7 +339,7 @@ func mains() error {
 			mode.Comma = byte(',')
 		}
 		var err error
-		csvlines, err = readCsvAll(bufio.NewReader(in), mode)
+		csvlines, err = csv.ReadAll(in, mode)
 		if err != nil {
 			return err
 		}

@@ -1,6 +1,7 @@
 package csv
 
 import (
+	"bufio"
 	"bytes"
 	"io"
 	"slices"
@@ -10,10 +11,23 @@ import (
 	"github.com/nyaosorg/go-windows-mbcs"
 )
 
+type tristate int
+
+const (
+	triNotSet tristate = iota
+	triFalse
+	triTrue
+)
+
 type Mode struct {
 	NonUTF8     bool
 	Comma       byte
 	DefaultTerm string
+	hasBom      tristate
+}
+
+func (m *Mode) Bom() bool {
+	return m.hasBom == triTrue
 }
 
 func (m *Mode) decode(s []byte) string {
@@ -62,10 +76,23 @@ type Row struct {
 	Term string
 }
 
-func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
+type Reader interface {
+	io.RuneScanner
+	io.ByteReader
+}
+
+func ReadLine(br Reader, mode *Mode) (*Row, error) {
 	row := &Row{}
 	quoted := false
 	source := []byte{}
+	if mode.hasBom == triNotSet {
+		if ch, n, err := br.ReadRune(); err == nil && n == 3 && ch == '\uFEFF' {
+			mode.hasBom = triTrue
+		} else {
+			mode.hasBom = triFalse
+			br.UnreadRune()
+		}
+	}
 	for {
 		c, err := br.ReadByte()
 		if err != nil {
@@ -111,14 +138,34 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 	}
 }
 
+func ReadAll(r io.Reader, mode *Mode) ([]Row, error) {
+	reader, ok := r.(Reader)
+	if !ok {
+		reader = bufio.NewReader(r)
+	}
+	rows := []Row{}
+	for {
+		row, err := ReadLine(reader, mode)
+		if err != nil && err != io.EOF {
+			return rows, err
+		}
+		rows = append(rows, *row)
+		if err == io.EOF {
+			return rows, nil
+		}
+	}
+}
+
 func (row *Row) Rebuild(mode *Mode) []byte {
 	var buffer bytes.Buffer
-	for i, end := 0, len(row.Cell); ; {
-		buffer.Write(row.Cell[i].source)
-		if i++; i >= end {
-			break
+	if len(row.Cell) > 0 {
+		for i, end := 0, len(row.Cell); ; {
+			buffer.Write(row.Cell[i].source)
+			if i++; i >= end {
+				break
+			}
+			buffer.WriteByte(mode.Comma)
 		}
-		buffer.WriteByte(mode.Comma)
 	}
 	buffer.WriteString(row.Term)
 	if mode.NonUTF8 {
@@ -128,6 +175,17 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 		}
 	}
 	return buffer.Bytes()
+}
+
+func (mode *Mode) Dump(rows []Row, w io.Writer) {
+	bw := bufio.NewWriter(w)
+	if mode.hasBom == triTrue {
+		bw.WriteString("\uFEFF")
+	}
+	for _, row := range rows {
+		bw.Write(row.Rebuild(mode))
+	}
+	bw.Flush()
 }
 
 func newCell(text string, mode *Mode) Cell {

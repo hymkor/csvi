@@ -25,11 +25,7 @@ func writeCsvTo(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, fd io.Wr
 	if (codeFlag & isAnsi) != 0 {
 		pipeIn, pipeOut := io.Pipe()
 		go func() {
-			bw := bufio.NewWriter(pipeOut)
-			for _, row := range csvlines {
-				bw.Write(row.Rebuild(mode))
-			}
-			bw.Flush()
+			mode.Dump(csvlines, pipeOut)
 			pipeOut.Close()
 		}()
 		sc := bufio.NewScanner(pipeIn)
@@ -45,11 +41,7 @@ func writeCsvTo(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, fd io.Wr
 		if (codeFlag & hasBom) != 0 {
 			io.WriteString(fd, "\uFEFF")
 		}
-		bw := bufio.NewWriter(fd)
-		for _, row := range csvlines {
-			bw.Write(row.Rebuild(mode))
-		}
-		bw.Flush()
+		mode.Dump(csvlines, fd)
 	}
 }
 

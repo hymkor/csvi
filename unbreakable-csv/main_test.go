@@ -35,20 +35,44 @@ func TestReadLine(t *testing.T) {
 	try(t, "\"abcdef\n12\"\"345\",44444", "abcdef\n12\"345", "44444")
 }
 
-func tryUpdate(t *testing.T, source string, n int, newText, expect string) {
+func upd(t *testing.T, source string, expect string, f func([]Row, *Mode)) {
+	t.Helper()
 	mode := &Mode{Comma: ','}
-	row, err := ReadLine(strings.NewReader(source), mode)
-	if err != nil && err != io.EOF {
+	rows, err := ReadAll(strings.NewReader(source), mode)
+	if err != nil {
 		t.Fatalf("error=%s", err.Error())
 	}
-	row.Replace(n, newText, mode)
-	result := string(row.Rebuild(mode))
+
+	f(rows, mode)
+
+	var buffer strings.Builder
+	mode.Dump(rows, &buffer)
+	result := buffer.String()
 	if result != expect {
-		t.Fatalf("expect %v, but %v", expect, result)
+		t.Fatalf("expect `%v`, but `%v`", expect, result)
 	}
 }
 
-func TestRebuild(t *testing.T) {
-	tryUpdate(t, "abcdef,12345\r\n", 1, "123\n456", "abcdef,\"123\n456\"\r\n")
-	tryUpdate(t, "abcdef,12345\n", 1, "777777", "abcdef,777777\n")
+func TestUpdateWithCRLF(t *testing.T) {
+	upd(t, "abcdef,12345\r\n", "abcdef,\"123\r\n456\"\r\n", func(r []Row, m *Mode) {
+		r[0].Replace(1, "123\r\n456", m)
+	})
+}
+
+func TestUpdateWithLFOnly(t *testing.T) {
+	upd(t, "abcdef,12345\n", "abcdef,777777\n", func(r []Row, m *Mode) {
+		r[0].Replace(1, "777777", m)
+	})
+}
+
+func TestUpdateWithBom(t *testing.T) {
+	upd(t, "\uFEFF12345\r\n", "\uFEFF77777\r\n", func(r []Row, m *Mode) {
+		r[0].Replace(0, "77777", m)
+	})
+}
+
+func TestDeleteWithBom(t *testing.T) {
+	upd(t, "\uFEFF123,456,789\r\nXYZ", "\uFEFF456,789\r\nXYZ", func(r []Row, m *Mode) {
+		r[0].Delete(0)
+	})
 }
