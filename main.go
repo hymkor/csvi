@@ -472,12 +472,21 @@ func mains() error {
 			csvlines[rowIndex].Insert(colIndex, text, mode)
 			colIndex++
 		case "a":
-			text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, csvlines))
-			if err != nil {
-				break
+			if cell := csvlines[rowIndex].Cell; len(cell) == 1 && cell[0].Text() == "" {
+				// current column is the last one and it is empty
+				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, csvlines))
+				if err != nil {
+					break
+				}
+				csvlines[rowIndex].Replace(colIndex, text, mode)
+			} else {
+				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, csvlines))
+				if err != nil {
+					break
+				}
+				colIndex++
+				csvlines[rowIndex].Insert(colIndex, text, mode)
 			}
-			colIndex++
-			csvlines[rowIndex].Insert(colIndex, text, mode)
 		case "r", "R", _KEY_F2:
 			text, err := getline(out, "replace cell>", csvlines[rowIndex].Cell[colIndex].Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
 			if err != nil {
