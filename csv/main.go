@@ -11,8 +11,9 @@ import (
 )
 
 type Mode struct {
-	NonUTF8 bool
-	Comma   byte
+	NonUTF8     bool
+	Comma       byte
+	DefaultTerm string
 }
 
 func (m *Mode) toText(s []byte) string {
@@ -74,6 +75,9 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 						Source: mode.toText(source),
 					})
 					row.Term = "\n"
+				}
+				if mode.DefaultTerm == "" {
+					mode.DefaultTerm = row.Term
 				}
 				return row, nil
 			}
@@ -144,6 +148,13 @@ func NewCell(text string, mode *Mode) Cell {
 		return Cell{Source: source.String()}
 	} else {
 		return Cell{Source: source.String()[1:]}
+	}
+}
+
+func NewRow(mode *Mode) Row {
+	return Row{
+		Cell: nil,
+		Term: mode.DefaultTerm,
 	}
 }
 

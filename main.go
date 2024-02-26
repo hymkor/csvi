@@ -520,10 +520,7 @@ func mains() error {
 			rowIndex++
 			fallthrough
 		case "O":
-			csvlines = slices.Insert(csvlines, rowIndex, csv.Row{
-				Cell: []csv.Cell{},
-				Term: "\n",
-			})
+			csvlines = slices.Insert(csvlines, rowIndex, csv.NewRow(mode))
 			rewind()
 			rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 			if err != nil {
