@@ -27,7 +27,7 @@ func writeCsvTo(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, fd io.Wr
 		go func() {
 			bw := bufio.NewWriter(pipeOut)
 			for _, row := range csvlines {
-				bw.WriteString(row.Rebuild(mode))
+				bw.Write(row.Rebuild(mode))
 			}
 			bw.Flush()
 			pipeOut.Close()
@@ -47,7 +47,7 @@ func writeCsvTo(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, fd io.Wr
 		}
 		bw := bufio.NewWriter(fd)
 		for _, row := range csvlines {
-			bw.WriteString(row.Rebuild(mode))
+			bw.Write(row.Rebuild(mode))
 		}
 		bw.Flush()
 	}

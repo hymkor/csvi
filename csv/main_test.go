@@ -24,7 +24,7 @@ func try(t *testing.T, source string, expect ...string) {
 			t.Fatalf("[%d] expect %v but %v\n", i, expect1, text)
 		}
 	}
-	if j := row.Rebuild(mode); j != source {
+	if j := string(row.Rebuild(mode)); j != source {
 		t.Fatalf("joined string expects %v but %v", source, j)
 	}
 }
@@ -43,7 +43,7 @@ func tryUpdate(t *testing.T, source string, n int, newcell, expect string) {
 	}
 	c := NewCell(newcell, mode)
 	row.Cell[n] = c
-	result := row.Rebuild(mode)
+	result := string(row.Rebuild(mode))
 	if result != expect {
 		t.Fatalf("expect %v, but %v", expect, result)
 	}

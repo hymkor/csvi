@@ -5,14 +5,30 @@ import (
 	"io"
 	"slices"
 	"strings"
+	"unicode/utf8"
+
+	"github.com/nyaosorg/go-windows-mbcs"
 )
 
 type Mode struct {
-	Comma byte
+	NonUTF8 bool
+	Comma   byte
+}
+
+func (m *Mode) toText(s []byte) string {
+	if !m.NonUTF8 && utf8.Valid(s) {
+		return string(s)
+	}
+	result, err := mbcs.AnsiToUtf8(s, mbcs.ACP)
+	if err != nil {
+		return string(s)
+	}
+	m.NonUTF8 = true
+	return result
 }
 
 type Cell struct {
-	Source []byte
+	Source string
 	text   string
 }
 
@@ -30,7 +46,7 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 		if err != nil {
 			if len(source) > 0 {
 				row.Cell = append(row.Cell, Cell{
-					Source: source,
+					Source: mode.toText(source),
 				})
 			}
 			row.Term = ""
@@ -43,19 +59,19 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 			switch c {
 			case mode.Comma:
 				row.Cell = append(row.Cell, Cell{
-					Source: source,
+					Source: mode.toText(source),
 				})
 				source = []byte{}
 				continue
 			case '\n':
 				if len(source) > 0 && source[len(source)-1] == '\r' {
 					row.Cell = append(row.Cell, Cell{
-						Source: source[:len(source)-1],
+						Source: mode.toText(source[:len(source)-1]),
 					})
 					row.Term = "\r\n"
 				} else {
 					row.Cell = append(row.Cell, Cell{
-						Source: source,
+						Source: mode.toText(source),
 					})
 					row.Term = "\n"
 				}
@@ -82,7 +98,7 @@ func (cell *Cell) Text() string {
 				prevIsQuote = true
 			}
 		} else {
-			text.WriteByte(c)
+			text.WriteRune(c)
 			prevIsQuote = false
 		}
 	}
@@ -90,17 +106,23 @@ func (cell *Cell) Text() string {
 	return cell.text
 }
 
-func (row *Row) Rebuild(mode *Mode) string {
-	var buffer strings.Builder
+func (row *Row) Rebuild(mode *Mode) []byte {
+	var buffer bytes.Buffer
 	for i, end := 0, len(row.Cell); ; {
-		buffer.Write(row.Cell[i].Source)
+		buffer.WriteString(row.Cell[i].Source)
 		if i++; i >= end {
 			break
 		}
 		buffer.WriteByte(mode.Comma)
 	}
 	buffer.WriteString(row.Term)
-	return buffer.String()
+	if mode.NonUTF8 {
+		ansi, err := mbcs.Utf8ToAnsi(buffer.String(), mbcs.ACP)
+		if err == nil {
+			return ansi
+		}
+	}
+	return buffer.Bytes()
 }
 
 func NewCell(text string, mode *Mode) Cell {
@@ -119,9 +141,9 @@ func NewCell(text string, mode *Mode) Cell {
 	}
 	if quote {
 		source.WriteByte('"')
-		return Cell{Source: source.Bytes()}
+		return Cell{Source: source.String()}
 	} else {
-		return Cell{Source: source.Bytes()[1:]}
+		return Cell{Source: source.String()[1:]}
 	}
 }
 
