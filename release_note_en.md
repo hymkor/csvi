@@ -6,7 +6,7 @@
     - Do not insert ByteOrderMark if there is no BOM at the beginning of the file
     - For cells that do not contain line breaks or commas, double quotation marks are not added or deleted , and the current status is kept
     - Even if the line break code is different from LF or CRLF for each line, maintain it as much as possible.
-
+- "a": works same as "r" when the current line is empty
 
 v1.1.3
 ======
