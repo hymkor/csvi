@@ -16,7 +16,7 @@ type Mode struct {
 	DefaultTerm string
 }
 
-func (m *Mode) toText(s []byte) string {
+func (m *Mode) decode(s []byte) string {
 	if !m.NonUTF8 && utf8.Valid(s) {
 		return string(s)
 	}
@@ -28,9 +28,33 @@ func (m *Mode) toText(s []byte) string {
 	return result
 }
 
+func dequote(raw string) string {
+	var text strings.Builder
+
+	prevIsQuote := false
+	for _, c := range raw {
+		if c == '"' {
+			if prevIsQuote {
+				text.WriteByte('"')
+				prevIsQuote = false
+			} else {
+				prevIsQuote = true
+			}
+		} else {
+			text.WriteRune(c)
+			prevIsQuote = false
+		}
+	}
+	return text.String()
+}
+
 type Cell struct {
-	Source string
+	source []byte
 	text   string
+}
+
+func (c Cell) Text() string {
+	return c.text
 }
 
 type Row struct {
@@ -47,7 +71,8 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 		if err != nil {
 			if len(source) > 0 {
 				row.Cell = append(row.Cell, Cell{
-					Source: mode.toText(source),
+					source: source,
+					text:   dequote(mode.decode(source)),
 				})
 			}
 			row.Term = ""
@@ -60,22 +85,22 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 			switch c {
 			case mode.Comma:
 				row.Cell = append(row.Cell, Cell{
-					Source: mode.toText(source),
+					source: source,
+					text:   dequote(mode.decode(source)),
 				})
 				source = []byte{}
 				continue
 			case '\n':
 				if len(source) > 0 && source[len(source)-1] == '\r' {
-					row.Cell = append(row.Cell, Cell{
-						Source: mode.toText(source[:len(source)-1]),
-					})
+					source = source[:len(source)-1]
 					row.Term = "\r\n"
 				} else {
-					row.Cell = append(row.Cell, Cell{
-						Source: mode.toText(source),
-					})
 					row.Term = "\n"
 				}
+				row.Cell = append(row.Cell, Cell{
+					source: source,
+					text:   dequote(mode.decode(source)),
+				})
 				if mode.DefaultTerm == "" {
 					mode.DefaultTerm = row.Term
 				}
@@ -86,34 +111,10 @@ func ReadLine(br io.ByteReader, mode *Mode) (*Row, error) {
 	}
 }
 
-func (cell *Cell) Text() string {
-	if cell.text != "" {
-		return cell.text
-	}
-	var text strings.Builder
-
-	prevIsQuote := false
-	for _, c := range cell.Source {
-		if c == '"' {
-			if prevIsQuote {
-				text.WriteByte('"')
-				prevIsQuote = false
-			} else {
-				prevIsQuote = true
-			}
-		} else {
-			text.WriteRune(c)
-			prevIsQuote = false
-		}
-	}
-	cell.text = text.String()
-	return cell.text
-}
-
 func (row *Row) Rebuild(mode *Mode) []byte {
 	var buffer bytes.Buffer
 	for i, end := 0, len(row.Cell); ; {
-		buffer.WriteString(row.Cell[i].Source)
+		buffer.Write(row.Cell[i].source)
 		if i++; i >= end {
 			break
 		}
@@ -131,24 +132,27 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 
 func NewCell(text string, mode *Mode) Cell {
 	quote := false
-	var source bytes.Buffer
-	source.WriteByte('"')
+	source := make([]byte, 0, len(text)+4)
 	for i, end := 0, len(text); i < end; i++ {
 		switch text[i] {
 		case '"':
-			source.WriteByte('"')
+			source = append(source, '"')
 			quote = true
 		case '\n', mode.Comma:
 			quote = true
 		}
-		source.WriteByte(text[i])
+		source = append(source, text[i])
 	}
 	if quote {
-		source.WriteByte('"')
-		return Cell{Source: source.String()}
-	} else {
-		return Cell{Source: source.String()[1:]}
+		source = append(source, '"')
+		source = slices.Insert(source, 0, '"')
 	}
+	if mode.NonUTF8 {
+		if s, err := mbcs.Utf8ToAnsi(string(source), mbcs.CP_ACP); err == nil {
+			source = s
+		}
+	}
+	return Cell{source: source, text: text}
 }
 
 func NewRow(mode *Mode) Row {
