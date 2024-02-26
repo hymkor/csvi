@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/mattn/go-tty"
-	"github.com/nyaosorg/go-windows-mbcs"
 
 	"github.com/hymkor/csview/unbreakable-csv"
 )
@@ -21,31 +19,7 @@ func (*WriteNopCloser) Close() error {
 	return nil
 }
 
-func writeCsvTo(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, fd io.Writer) {
-	if (codeFlag & isAnsi) != 0 {
-		pipeIn, pipeOut := io.Pipe()
-		go func() {
-			mode.Dump(csvlines, pipeOut)
-			pipeOut.Close()
-		}()
-		sc := bufio.NewScanner(pipeIn)
-		bw := bufio.NewWriter(fd)
-		for sc.Scan() {
-			bytes, _ := mbcs.Utf8ToAnsi(sc.Text(), mbcs.ACP)
-			bw.Write(bytes)
-			bw.WriteByte('\r')
-			bw.WriteByte('\n')
-		}
-		bw.Flush()
-	} else {
-		if (codeFlag & hasBom) != 0 {
-			io.WriteString(fd, "\uFEFF")
-		}
-		mode.Dump(csvlines, fd)
-	}
-}
-
-func cmdWrite(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, tty1 *tty.TTY, out io.Writer) (message string) {
+func cmdWrite(csvlines []csv.Row, mode *csv.Mode, tty1 *tty.TTY, out io.Writer) (message string) {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {
@@ -82,7 +56,7 @@ func cmdWrite(csvlines []csv.Row, mode *csv.Mode, codeFlag _CodeFlag, tty1 *tty.
 		}
 	}
 
-	writeCsvTo(csvlines, mode, codeFlag, fd)
+	mode.Dump(csvlines, fd)
 	fd.Close()
 	return
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"flag"
 	"fmt"
@@ -220,42 +219,6 @@ const (
 	emptyDummyCode = "\uF8FF" // one of the Unicode Private Use Area
 )
 
-func cat(in io.Reader, out io.Writer) (_CodeFlag, error) {
-	br := bufio.NewReader(in)
-	codeFlag := nonBomUtf8
-	for {
-		text, err := br.ReadString('\n')
-		if err != nil {
-			if err == io.EOF {
-				return codeFlag, nil
-			}
-			return codeFlag, err
-		}
-		if text == "" {
-			text = emptyDummyCode
-		} else {
-			if L := len(text); L >= 2 && text[L-2] == '\r' {
-				codeFlag = codeFlag | hasCR
-			}
-			var codeFlag1 _CodeFlag
-			text, codeFlag1 = textfilter(text)
-			codeFlag = codeFlag | codeFlag1
-		}
-		io.WriteString(out, text)
-	}
-}
-
-func getIn() (io.ReadCloser, <-chan _CodeFlag) {
-	chCodeFlag := make(chan _CodeFlag, 1)
-	pin, pout := io.Pipe()
-	go func() {
-		codeFlag, err := cat(multiFileReader(flag.Args()...), pout)
-		pout.CloseWithError(err)
-		chCodeFlag <- codeFlag
-	}()
-	return pin, chCodeFlag
-}
-
 var skkInit sync.Once
 
 func getline(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
@@ -313,20 +276,13 @@ func mains() error {
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	var chCodeFlag <-chan _CodeFlag
-
 	var csvlines []csv.Row
 	mode := &csv.Mode{}
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
+		// Start with one empty line
 		csvlines = []csv.Row{}
 		mode.Comma = '\t'
 	} else {
-		var pin io.ReadCloser
-
-		pin, chCodeFlag = getIn()
-		defer pin.Close()
-
-		in := bufio.NewReader(pin)
 		mode.Comma = byte(',')
 		args := flag.Args()
 		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
@@ -339,7 +295,7 @@ func mains() error {
 			mode.Comma = byte(',')
 		}
 		var err error
-		csvlines, err = csv.ReadAll(in, mode)
+		csvlines, err = csv.ReadAll(multiFileReader(args...), mode)
 		if err != nil {
 			return err
 		}
@@ -365,7 +321,6 @@ func mains() error {
 	var lastWidth, lastHeight int
 
 	message := ""
-	codeFlag := nonBomUtf8
 	var killbuffer string
 	for {
 		screenWidth, screenHeight, err := tty1.Size()
@@ -385,14 +340,6 @@ func mains() error {
 			return err
 		}
 
-		if chCodeFlag != nil {
-			select {
-			case val := <-chCodeFlag:
-				codeFlag = val
-			default:
-			}
-		}
-
 		io.WriteString(out, _ANSI_YELLOW)
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
@@ -404,15 +351,15 @@ func mains() error {
 			} else if mode.Comma == ',' {
 				n += first(io.WriteString(out, "[CSV]"))
 			}
-			if (codeFlag & hasCR) != 0 {
+			if mode.DefaultTerm == "\r\n" {
 				n += first(io.WriteString(out, "[CRLF]"))
 			} else {
 				n += first(io.WriteString(out, "[LF]"))
 			}
-			if (codeFlag & hasBom) != 0 {
+			if mode.HasBom() {
 				n += first(io.WriteString(out, "[BOM]"))
 			}
-			if (codeFlag & isAnsi) != 0 {
+			if mode.NonUTF8 {
 				n += first(io.WriteString(out, "[ANSI]"))
 			}
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex].Cell) {
@@ -569,7 +516,7 @@ func mains() error {
 				csvlines[rowIndex].Delete(colIndex)
 			}
 		case "w":
-			if s := cmdWrite(csvlines, mode, codeFlag, tty1, out); s != "" {
+			if s := cmdWrite(csvlines, mode, tty1, out); s != "" {
 				message = s
 			}
 		}
