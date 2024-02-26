@@ -501,10 +501,11 @@ func mains() error {
 				message = s
 			}
 		}
-		if colIndex >= len(csvlines[rowIndex].Cell) {
-			colIndex = len(csvlines[rowIndex].Cell) - 1
+		if L := len(csvlines[rowIndex].Cell); L <= 0 {
+			colIndex = 0
+		} else if colIndex >= L {
+			colIndex = L - 1
 		}
-
 		if rowIndex < startRow {
 			startRow = rowIndex
 		} else if rowIndex >= startRow+screenHeight-1 {
