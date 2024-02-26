@@ -19,6 +19,8 @@ func (*WriteNopCloser) Close() error {
 	return nil
 }
 
+var overWritten = map[string]struct{}{}
+
 func cmdWrite(csvlines []csv.Row, mode *csv.Mode, tty1 *tty.TTY, out io.Writer) (message string) {
 	fname := "-"
 	var err error

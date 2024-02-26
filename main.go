@@ -30,8 +30,6 @@ var (
 	flagCsv = flag.Bool("c", false, "use Comma as field-separator")
 )
 
-var version string
-
 const (
 	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
 	CELL1_COLOR      = "\x1B[0;48;5;235;37;1m"
@@ -204,10 +202,6 @@ const (
 	_KEY_F2     = "\x1B[OQ"
 )
 
-const (
-	emptyDummyCode = "\uF8FF" // one of the Unicode Private Use Area
-)
-
 var skkInit sync.Once
 
 func getline(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
@@ -247,8 +241,6 @@ func getline(out io.Writer, prompt string, defaultStr string, c candidate) (stri
 	return editor.ReadLine(context.Background())
 }
 
-var overWritten = map[string]struct{}{}
-
 func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, ERASE_LINE)
 	ch, err := readline.GetKey(tty1)
@@ -272,16 +264,16 @@ func mains() error {
 		csvlines = []csv.Row{}
 		mode.Comma = '\t'
 	} else {
-		mode.Comma = byte(',')
+		mode.Comma = ','
 		args := flag.Args()
 		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
-			mode.Comma = byte('\t')
+			mode.Comma = '\t'
 		}
 		if *flagTsv {
-			mode.Comma = byte('\t')
+			mode.Comma = '\t'
 		}
 		if *flagCsv {
-			mode.Comma = byte(',')
+			mode.Comma = ','
 		}
 		var err error
 		csvlines, err = csv.ReadAll(multiFileReader(args...), mode)
@@ -526,6 +518,8 @@ func mains() error {
 		rewind()
 	}
 }
+
+var version string
 
 func main() {
 	fmt.Printf("csview %s-%s-%s by %s\n",
