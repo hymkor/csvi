@@ -26,7 +26,7 @@ type Mode struct {
 	hasBom      tristate
 }
 
-func (m *Mode) Bom() bool {
+func (m *Mode) HasBom() bool {
 	return m.hasBom == triTrue
 }
 
@@ -168,12 +168,6 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 		}
 	}
 	buffer.WriteString(row.Term)
-	if mode.NonUTF8 {
-		ansi, err := mbcs.Utf8ToAnsi(buffer.String(), mbcs.ACP)
-		if err == nil {
-			return ansi
-		}
-	}
 	return buffer.Bytes()
 }
 
