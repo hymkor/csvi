@@ -1,6 +1,12 @@
 - "o","O": repaint before getline is called
 - Readline: Ctrl-P: fetch the value of the cell above the same column
 - Readline: TAB: complete with the values of the cell above the same column
+- In principle, data other than cells changed by the user will remain as they are
+    - If ByteOrderMark is attached to the beginning of the file, do not delete
+    - Do not insert ByteOrderMark if there is no BOM at the beginning of the file
+    - For cells that do not contain line breaks or commas, double quotation marks are not added or deleted , and the current status is kept
+    - Even if the line break code is different from LF or CRLF for each line, maintain it as much as possible.
+
 
 v1.1.3
 ======
