@@ -23,7 +23,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
 
-	"github.com/hymkor/csview/csv"
+	"github.com/hymkor/csview/unbreakable-csv"
 )
 
 var (
@@ -560,7 +560,7 @@ func mains() error {
 			killbuffer = csvlines[rowIndex].Cell[colIndex].Text()
 			message = "yanked the current cell: " + killbuffer
 		case "p":
-			csvlines[rowIndex].Replace(colIndex,killbuffer, mode)
+			csvlines[rowIndex].Replace(colIndex, killbuffer, mode)
 			message = "pasted: " + killbuffer
 		case "d", "x":
 			if len(csvlines[rowIndex].Cell) <= 1 {

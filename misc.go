@@ -6,7 +6,7 @@ import (
 
 	"github.com/mattn/go-runewidth"
 
-	"github.com/hymkor/csview/csv"
+	"github.com/hymkor/csview/unbreakable-csv"
 )
 
 func readCsvAll(in io.ByteReader, mode *csv.Mode) ([]csv.Row, error) {

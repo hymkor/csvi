@@ -10,7 +10,7 @@ import (
 	"github.com/mattn/go-tty"
 	"github.com/nyaosorg/go-windows-mbcs"
 
-	"github.com/hymkor/csview/csv"
+	"github.com/hymkor/csview/unbreakable-csv"
 )
 
 type WriteNopCloser struct {
