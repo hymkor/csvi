@@ -35,14 +35,13 @@ func TestReadLine(t *testing.T) {
 	try(t, "\"abcdef\n12\"\"345\",44444", "abcdef\n12\"345", "44444")
 }
 
-func tryUpdate(t *testing.T, source string, n int, newcell, expect string) {
+func tryUpdate(t *testing.T, source string, n int, newText, expect string) {
 	mode := &Mode{Comma: ','}
 	row, err := ReadLine(strings.NewReader(source), mode)
 	if err != nil && err != io.EOF {
 		t.Fatalf("error=%s", err.Error())
 	}
-	c := NewCell(newcell, mode)
-	row.Cell[n] = c
+	row.Replace(n, newText, mode)
 	result := string(row.Rebuild(mode))
 	if result != expect {
 		t.Fatalf("expect %v, but %v", expect, result)

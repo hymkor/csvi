@@ -560,7 +560,7 @@ func mains() error {
 			killbuffer = csvlines[rowIndex].Cell[colIndex].Text()
 			message = "yanked the current cell: " + killbuffer
 		case "p":
-			csvlines[rowIndex].Cell[colIndex] = csv.NewCell(killbuffer, mode)
+			csvlines[rowIndex].Replace(colIndex,killbuffer, mode)
 			message = "pasted: " + killbuffer
 		case "d", "x":
 			if len(csvlines[rowIndex].Cell) <= 1 {

@@ -130,7 +130,7 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 	return buffer.Bytes()
 }
 
-func NewCell(text string, mode *Mode) Cell {
+func newCell(text string, mode *Mode) Cell {
 	quote := false
 	source := make([]byte, 0, len(text)+4)
 	for i, end := 0, len(text); i < end; i++ {
@@ -163,14 +163,14 @@ func NewRow(mode *Mode) Row {
 }
 
 func (row *Row) Insert(i int, text string, mode *Mode) {
-	row.Cell = slices.Insert(row.Cell, i, NewCell(text, mode))
+	row.Cell = slices.Insert(row.Cell, i, newCell(text, mode))
 }
 
 func (row *Row) Replace(i int, text string, mode *Mode) {
 	for i >= len(row.Cell) {
-		row.Cell = append(row.Cell, NewCell("", mode))
+		row.Cell = append(row.Cell, newCell("", mode))
 	}
-	row.Cell[i] = NewCell(text, mode)
+	row.Cell[i] = newCell(text, mode)
 }
 
 func (row *Row) Delete(i int) {
