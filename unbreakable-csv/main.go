@@ -96,12 +96,10 @@ func ReadLine(br Reader, mode *Mode) (*Row, error) {
 	for {
 		c, err := br.ReadByte()
 		if err != nil {
-			if len(source) > 0 {
-				row.Cell = append(row.Cell, Cell{
-					source: source,
-					text:   dequote(mode.decode(source)),
-				})
-			}
+			row.Cell = append(row.Cell, Cell{
+				source: source,
+				text:   dequote(mode.decode(source)),
+			})
 			row.Term = ""
 			return row, err
 		}
