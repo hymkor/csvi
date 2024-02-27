@@ -3,10 +3,15 @@ package csv
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"slices"
 	"strings"
 	"unicode/utf8"
+
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/ianaindex"
+	"golang.org/x/text/transform"
 
 	"github.com/nyaosorg/go-windows-mbcs"
 )
@@ -24,6 +29,43 @@ type Mode struct {
 	Comma       byte
 	DefaultTerm string
 	hasBom      tristate
+	decoder     *encoding.Decoder
+	encoder     *encoding.Encoder
+}
+
+func (m *Mode) _decode(s []byte) (string, error) {
+	if m.decoder != nil {
+		result, _, err := transform.Bytes(m.decoder, s)
+		if err != nil {
+			return "", err
+		}
+		return string(result), nil
+	}
+	return mbcs.AnsiToUtf8(s, mbcs.ACP)
+}
+
+func (m *Mode) _encode(s string) ([]byte, error) {
+	if m.encoder != nil {
+		result, _, err := transform.Bytes(m.encoder, []byte(s))
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+	}
+	return mbcs.Utf8ToAnsi(s, mbcs.ACP)
+}
+
+func (m *Mode) SetEncoding(name string) error {
+	e, err := ianaindex.IANA.Encoding(name)
+	if err != nil {
+		return err
+	}
+	if e == nil {
+		return fmt.Errorf("%s: not supported in golang.org/x/text/encoding/ianaindex", name)
+	}
+	m.decoder = e.NewDecoder()
+	m.encoder = e.NewEncoder()
+	return nil
 }
 
 func (m *Mode) HasBom() bool {
@@ -34,7 +76,7 @@ func (m *Mode) decode(s []byte) string {
 	if !m.NonUTF8 && utf8.Valid(s) {
 		return string(s)
 	}
-	result, err := mbcs.AnsiToUtf8(s, mbcs.ACP)
+	result, err := m._decode(s)
 	if err != nil {
 		return string(s)
 	}
@@ -201,7 +243,7 @@ func newCell(text string, mode *Mode) Cell {
 		source = slices.Insert(source, 0, '"')
 	}
 	if mode.NonUTF8 {
-		if s, err := mbcs.Utf8ToAnsi(string(source), mbcs.CP_ACP); err == nil {
+		if s, err := mode._encode(string(source)); err == nil {
 			source = s
 		}
 	}

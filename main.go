@@ -26,8 +26,9 @@ import (
 )
 
 var (
-	flagTsv = flag.Bool("t", false, "use TAB as field-separator")
-	flagCsv = flag.Bool("c", false, "use Comma as field-separator")
+	flagTsv  = flag.Bool("t", false, "use TAB as field-separator")
+	flagCsv  = flag.Bool("c", false, "use Comma as field-separator")
+	flagIana = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 )
 
 const (
@@ -282,6 +283,12 @@ func mains() error {
 
 	var csvlines []csv.Row
 	mode := &csv.Mode{}
+
+	if *flagIana != "" {
+		if err := mode.SetEncoding(*flagIana); err != nil {
+			return fmt.Errorf("-iana %w", err)
+		}
+	}
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
 		// Start with one empty line
 		csvlines = []csv.Row{csv.NewRow(mode)}
