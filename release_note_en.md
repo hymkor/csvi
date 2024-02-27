@@ -8,6 +8,7 @@
     - Even if the line break code is different from LF or CRLF for each line, maintain it as much as possible.
 - "a": works same as "r" when the current line is empty
 - "w": support filename completion
+- Enabled to specify encoding other than UTF8 with `-iana NAME` (mainly for Linux)
 
 v1.1.3
 ======
