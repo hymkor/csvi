@@ -1,4 +1,4 @@
-- "o","O": repaint before getline is called
+- "a","o","O": make new cell and repaint before getline is called
 - Readline: Ctrl-P: fetch the value of the cell above the same column
 - Readline: TAB: complete with the values of the cell above the same column
 - In principle, data other than cells changed by the user will remain as they are
