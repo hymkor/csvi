@@ -61,7 +61,8 @@ func (v LineView) Draw() {
 	i := 0
 	csvs := v.CSV
 	for len(csvs) > 0 {
-		s := csvs[0].Text()
+		cursor := csvs[0]
+		text := cursor.Text()
 		csvs = csvs[1:]
 		nextI := i + 1
 
@@ -74,8 +75,8 @@ func (v LineView) Draw() {
 		if cw > leftWidth || len(csvs) <= 0 {
 			cw = leftWidth
 		}
-		s = replaceTable.Replace(s)
-		ss, w := cutStrInWidth(s, cw)
+		text = replaceTable.Replace(text)
+		ss, w := cutStrInWidth(text, cw)
 		if i == v.CursorPos {
 			io.WriteString(v.Out, CURSOR_COLOR)
 		} else if v.Reverse {
@@ -83,7 +84,13 @@ func (v LineView) Draw() {
 		} else {
 			io.WriteString(v.Out, CELL1_COLOR)
 		}
+		if cursor.Modified() {
+			io.WriteString(v.Out, "\x1B[4m")
+		}
 		io.WriteString(v.Out, ss)
+		if cursor.Modified() {
+			io.WriteString(v.Out, "\x1B[24m")
+		}
 		leftWidth -= w
 		for j := cw - w; j > 0; j-- {
 			v.Out.Write([]byte{' '})

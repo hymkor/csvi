@@ -105,8 +105,9 @@ func dequote(raw string) string {
 }
 
 type Cell struct {
-	source []byte
-	text   string
+	source   []byte
+	text     string
+	modified bool
 }
 
 func (c Cell) Text() string {
@@ -115,6 +116,10 @@ func (c Cell) Text() string {
 
 func (c Cell) ReadableSource(m *Mode) string {
 	return m.decode(c.source)
+}
+
+func (c Cell) Modified() bool {
+	return c.modified
 }
 
 type Row struct {
@@ -251,7 +256,7 @@ func newCell(text string, mode *Mode) Cell {
 			source = s
 		}
 	}
-	return Cell{source: source, text: text}
+	return Cell{source: source, text: text, modified: true}
 }
 
 func NewRow(mode *Mode) Row {
