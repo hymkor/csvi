@@ -394,8 +394,10 @@ func mains() error {
 				buffer.WriteString(csvlines[rowIndex].Cell[colIndex].ReadableSource(mode))
 				if colIndex < len(csvlines[rowIndex].Cell)-1 {
 					buffer.WriteByte(',')
-				} else {
-					buffer.WriteString(csvlines[rowIndex].Term)
+				} else if term := csvlines[rowIndex].Term; term != "" {
+					buffer.WriteString(term)
+				} else { // EOF
+					buffer.WriteString("\u2592")
 				}
 				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(buffer.String()), screenWidth-n, "..."))
 			}
