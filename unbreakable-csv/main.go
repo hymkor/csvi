@@ -113,6 +113,10 @@ func (c Cell) Text() string {
 	return c.text
 }
 
+func (c Cell) ReadableSource(m *Mode) string {
+	return m.decode(c.source)
+}
+
 type Row struct {
 	// Cell must have one or more element at least
 	Cell []Cell
