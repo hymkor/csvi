@@ -202,20 +202,43 @@ const (
 	_KEY_F2     = "\x1B[OQ"
 )
 
-var skkInit sync.Once
-
-func getline(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
-	skkInit.Do(func() {
-		env := os.Getenv("GOREADLINESKK")
-		if env != "" {
-			_, err := skk.Config{
-				MiniBuffer: skk.MiniBufferOnCurrentLine{},
-			}.SetupWithString(env)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err.Error())
-			}
+var skkInit = sync.OnceFunc(func() {
+	env := os.Getenv("GOREADLINESKK")
+	if env != "" {
+		_, err := skk.Config{
+			MiniBuffer: skk.MiniBufferOnCurrentLine{},
+		}.SetupWithString(env)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
 		}
+	}
+})
+
+func getfilename(out io.Writer, prompt, defaultStr string) (string, error) {
+	skkInit()
+	editor := &readline.Editor{
+		Writer:  out,
+		Default: defaultStr,
+		Cursor:  65535,
+		PromptWriter: func(w io.Writer) (int, error) {
+			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
+		},
+		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
+			return 0, nil
+		},
+		Coloring: &skk.Coloring{},
+	}
+	editor.BindKey(keys.CtrlI, completion.CmdCompletionOrList{
+		Completion: completion.File{},
 	})
+
+	defer io.WriteString(out, _ANSI_CURSOR_OFF)
+	editor.BindKey(keys.Escape, readline.CmdInterrupt)
+	return editor.ReadLine(context.Background())
+}
+
+func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
+	skkInit()
 
 	editor := &readline.Editor{
 		Writer:  out,
@@ -517,6 +540,7 @@ func mains() error {
 			if s := cmdWrite(csvlines, mode, tty1, out); s != "" {
 				message = s
 			}
+			cache = map[int]string{}
 		}
 		if L := len(csvlines[rowIndex].Cell); L <= 0 {
 			colIndex = 0

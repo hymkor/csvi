@@ -30,7 +30,7 @@ func cmdWrite(csvlines []csv.Row, mode *csv.Mode, tty1 *tty.TTY, out io.Writer) 
 			return err.Error()
 		}
 	}
-	fname, err = getline(out, "write to>", fname, nil)
+	fname, err = getfilename(out, "write to>", fname)
 	if err != nil {
 		return ""
 	}
