@@ -383,7 +383,14 @@ func mains() error {
 					rowIndex+1,
 					colIndex+1))
 
-				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex].Cell[colIndex].ReadableSource(mode)), screenWidth-n, "..."))
+				var buffer strings.Builder
+				buffer.WriteString(csvlines[rowIndex].Cell[colIndex].ReadableSource(mode))
+				if colIndex < len(csvlines[rowIndex].Cell)-1 {
+					buffer.WriteByte(',')
+				} else {
+					buffer.WriteString(csvlines[rowIndex].Term)
+				}
+				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(buffer.String()), screenWidth-n, "..."))
 			}
 		}
 		io.WriteString(out, _ANSI_RESET)
