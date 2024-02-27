@@ -10,6 +10,7 @@
 - "w": support filename completion
 - Enabled to specify encoding other than UTF8 with `-iana NAME` (mainly for Linux)
 - Cell source data is now displayed on the status line.
+- Draw underline on the modified cells
 
 v1.1.3
 ======
