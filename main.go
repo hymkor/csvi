@@ -379,11 +379,11 @@ func mains() error {
 				n += first(io.WriteString(out, "[ANSI]"))
 			}
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex].Cell) {
-				n += first(fmt.Fprintf(out, "(%d,%d):",
+				n += first(fmt.Fprintf(out, "(%d,%d): ",
 					rowIndex+1,
 					colIndex+1))
 
-				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex].Cell[colIndex].Text()), screenWidth-n, "..."))
+				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(csvlines[rowIndex].Cell[colIndex].ReadableSource(mode)), screenWidth-n, "..."))
 			}
 		}
 		io.WriteString(out, _ANSI_RESET)
