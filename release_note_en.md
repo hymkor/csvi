@@ -9,6 +9,7 @@
 - "a": works same as "r" when the current line is empty
 - "w": support filename completion
 - Enabled to specify encoding other than UTF8 with `-iana NAME` (mainly for Linux)
+- Cell source data is now displayed on the status line.
 
 v1.1.3
 ======
