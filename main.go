@@ -49,9 +49,9 @@ type LineView struct {
 }
 
 var replaceTable = strings.NewReplacer(
-	"\r", "\u240A",
+	"\r", "\u240D",
 	"\x1B", "\u241B",
-	"\n", "\u2936", // arrow pointing downwards then curving leftwards
+	"\n", "\u240A",
 	"\t", "\u21E5") // rightwards arrow to bar (rightward tab)
 
 // See. en.wikipedia.org/wiki/Unicode_control_characters#Control_pictures
