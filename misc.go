@@ -43,7 +43,7 @@ func (c candidate) List(field []string) (fullnames, basenames []string) {
 }
 
 func makeCandidate(row, col int, csvlines []csv.Row) candidate {
-	if row >= len(csvlines) {
+	if row < 0 || row >= len(csvlines) {
 		return candidate([]string{})
 	}
 	result := candidate(make([]string, 0, row))
