@@ -207,7 +207,7 @@ func newCell(text string, mode *Mode) Cell {
 
 func NewRow(mode *Mode) Row {
 	return Row{
-		Cell: nil,
+		Cell: []Cell{newCell("", mode)},
 		Term: mode.DefaultTerm,
 	}
 }
@@ -217,9 +217,6 @@ func (row *Row) Insert(i int, text string, mode *Mode) {
 }
 
 func (row *Row) Replace(i int, text string, mode *Mode) {
-	for i >= len(row.Cell) {
-		row.Cell = append(row.Cell, newCell("", mode))
-	}
 	row.Cell[i] = newCell(text, mode)
 }
 

@@ -261,7 +261,7 @@ func mains() error {
 	mode := &csv.Mode{}
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
 		// Start with one empty line
-		csvlines = []csv.Row{}
+		csvlines = []csv.Row{csv.NewRow(mode)}
 		mode.Comma = '\t'
 	} else {
 		mode.Comma = ','
