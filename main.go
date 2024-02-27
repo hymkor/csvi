@@ -320,6 +320,11 @@ func mains() error {
 		if err != nil {
 			return err
 		}
+		repaint := func() error {
+			rewind()
+			rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+			return err
+		}
 
 		io.WriteString(out, _ANSI_YELLOW)
 		if message != "" {
@@ -449,9 +454,7 @@ func mains() error {
 			fallthrough
 		case "O":
 			csvlines = slices.Insert(csvlines, rowIndex, csv.NewRow(mode))
-			rewind()
-			rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
-			if err != nil {
+			if err := repaint(); err != nil {
 				return err
 			}
 			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
@@ -480,12 +483,17 @@ func mains() error {
 				}
 				csvlines[rowIndex].Replace(colIndex, text, mode)
 			} else {
+				colIndex++
+				csvlines[rowIndex].Insert(colIndex, "", mode)
+				if err := repaint(); err != nil {
+					return err
+				}
 				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, csvlines))
 				if err != nil {
+					colIndex--
 					break
 				}
-				colIndex++
-				csvlines[rowIndex].Insert(colIndex, text, mode)
+				csvlines[rowIndex].Replace(colIndex, text, mode)
 			}
 		case "r", "R", _KEY_F2:
 			text, err := getline(out, "replace cell>", csvlines[rowIndex].Cell[colIndex].Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
