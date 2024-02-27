@@ -72,10 +72,13 @@ func (c Cell) Text() string {
 }
 
 type Row struct {
+	// Cell must have one or more element at least
 	Cell []Cell
+	// Term is one of "", "\n", and "\r\n"
 	Term string
 }
 
+// Reader is assumed to be "bufio".Reader or "strings".Reader
 type Reader interface {
 	io.RuneScanner
 	io.ByteReader
