@@ -518,10 +518,14 @@ func mains() error {
 			if err != nil {
 				break
 			}
-			csvlines[rowIndex].Insert(colIndex, text, mode)
-			colIndex++
+			if cells := csvlines[rowIndex].Cell; len(cells) == 1 && cells[0].Text() == "" {
+				csvlines[rowIndex].Replace(colIndex, text, mode)
+			} else {
+				csvlines[rowIndex].Insert(colIndex, text, mode)
+				colIndex++
+			}
 		case "a":
-			if cell := csvlines[rowIndex].Cell; len(cell) == 1 && cell[0].Text() == "" {
+			if cells := csvlines[rowIndex].Cell; len(cells) == 1 && cells[0].Text() == "" {
 				// current column is the last one and it is empty
 				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, csvlines))
 				if err != nil {
