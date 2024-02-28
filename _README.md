@@ -65,6 +65,7 @@ Key-binding
     * `o` (append a new line after the current one)
     * `O` (insert a new line before the current one)
     * `D` (delete the current line)
+    * `"` (enclose or remove double quotations if possible)
 * Repaint: `Ctrl`-`L`
 * Quit: `q` or `ESC`
 
