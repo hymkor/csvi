@@ -126,7 +126,7 @@ func (c Cell) Quoted() bool {
 	return len(c.source) > 0 && c.source[0] == '"'
 }
 
-func (c *Cell) Undo(mode *Mode) {
+func (c *Cell) Restore(mode *Mode) {
 	c.source = c.original
 	c.text = dequote(mode.decode(c.original))
 }

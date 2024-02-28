@@ -555,7 +555,7 @@ func mains() error {
 			}
 			csvlines[rowIndex].Replace(colIndex, text, mode)
 		case "u":
-			csvlines[rowIndex].Cell[colIndex].Undo(mode)
+			csvlines[rowIndex].Cell[colIndex].Restore(mode)
 		case "y":
 			killbuffer = csvlines[rowIndex].Cell[colIndex].Text()
 			message = "yanked the current cell: " + killbuffer
