@@ -551,6 +551,8 @@ func mains() error {
 				break
 			}
 			csvlines[rowIndex].Replace(colIndex, text, mode)
+		case "u":
+			csvlines[rowIndex].Cell[colIndex].Undo(mode)
 		case "y":
 			killbuffer = csvlines[rowIndex].Cell[colIndex].Text()
 			message = "yanked the current cell: " + killbuffer
@@ -568,7 +570,7 @@ func mains() error {
 			if cursor.Quoted() {
 				csvlines[rowIndex].Replace(colIndex, cursor.Text(), mode)
 			} else {
-				*cursor = csv.QuoteCell(cursor.Text(), mode)
+				*cursor = cursor.Quote(mode)
 			}
 		case "w":
 			if s := cmdWrite(csvlines, mode, tty1, out); s != "" {

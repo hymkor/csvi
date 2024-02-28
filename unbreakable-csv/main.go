@@ -107,7 +107,7 @@ func dequote(raw string) string {
 type Cell struct {
 	source   []byte
 	text     string
-	modified bool
+	original []byte
 }
 
 func (c Cell) Text() string {
@@ -119,11 +119,16 @@ func (c Cell) ReadableSource(m *Mode) string {
 }
 
 func (c Cell) Modified() bool {
-	return c.modified
+	return !bytes.Equal(c.source, c.original)
 }
 
 func (c Cell) Quoted() bool {
 	return len(c.source) > 0 && c.source[0] == '"'
+}
+
+func (c *Cell) Undo(mode *Mode) {
+	c.source = c.original
+	c.text = dequote(mode.decode(c.original))
 }
 
 type Row struct {
@@ -155,8 +160,9 @@ func ReadLine(br Reader, mode *Mode) (*Row, error) {
 		c, err := br.ReadByte()
 		if err != nil {
 			row.Cell = append(row.Cell, Cell{
-				source: source,
-				text:   dequote(mode.decode(source)),
+				source:   source,
+				text:     dequote(mode.decode(source)),
+				original: source,
 			})
 			row.Term = ""
 			return row, err
@@ -168,8 +174,9 @@ func ReadLine(br Reader, mode *Mode) (*Row, error) {
 			switch c {
 			case mode.Comma:
 				row.Cell = append(row.Cell, Cell{
-					source: source,
-					text:   dequote(mode.decode(source)),
+					source:   source,
+					text:     dequote(mode.decode(source)),
+					original: source,
 				})
 				source = []byte{}
 				continue
@@ -181,8 +188,9 @@ func ReadLine(br Reader, mode *Mode) (*Row, error) {
 					row.Term = "\n"
 				}
 				row.Cell = append(row.Cell, Cell{
-					source: source,
-					text:   dequote(mode.decode(source)),
+					source:   source,
+					text:     dequote(mode.decode(source)),
+					original: source,
 				})
 				if mode.DefaultTerm == "" {
 					mode.DefaultTerm = row.Term
@@ -260,10 +268,11 @@ func newCell(text string, mode *Mode) Cell {
 			source = s
 		}
 	}
-	return Cell{source: source, text: text, modified: true}
+	return Cell{source: source, text: text, original: nil}
 }
 
-func QuoteCell(text string, mode *Mode) Cell {
+func (c Cell) Quote(mode *Mode) Cell {
+	text := c.text
 	source := make([]byte, 0, len(text))
 	source = append(source, '"')
 	for i, end := 0, len(text); i < end; i++ {
@@ -278,7 +287,7 @@ func QuoteCell(text string, mode *Mode) Cell {
 			source = s
 		}
 	}
-	return Cell{source: source, text: text, modified: true}
+	return Cell{source: source, text: text, original: c.original}
 }
 
 func NewRow(mode *Mode) Row {
@@ -293,7 +302,9 @@ func (row *Row) Insert(i int, text string, mode *Mode) {
 }
 
 func (row *Row) Replace(i int, text string, mode *Mode) {
+	original := row.Cell[i].original
 	row.Cell[i] = newCell(text, mode)
+	row.Cell[i].original = original
 }
 
 func (row *Row) Delete(i int) {
