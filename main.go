@@ -261,7 +261,7 @@ func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, err
 		},
 		Coloring: &skk.Coloring{},
 	}
-	if c != nil && len(c) > 0 {
+	if len(c) > 0 {
 		editor.BindKey(keys.CtrlI, completion.CmdCompletion{
 			Completion: c,
 		})
