@@ -576,8 +576,8 @@ func mains() error {
 				*cursor = cursor.Quote(mode)
 			}
 		case "w":
-			if s := cmdWrite(csvlines, mode, tty1, out); s != "" {
-				message = s
+			if err := cmdWrite(csvlines, mode, tty1, out); err != nil {
+				message = err.Error()
 			}
 			cache = map[int]string{}
 		}
