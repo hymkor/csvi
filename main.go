@@ -52,7 +52,7 @@ var replaceTable = strings.NewReplacer(
 	"\r", "\u240D",
 	"\x1B", "\u241B",
 	"\n", "\u240A",
-	"\t", "\u21E5") // rightwards arrow to bar (rightward tab)
+	"\t", "\u2409")
 
 // See. en.wikipedia.org/wiki/Unicode_control_characters#Control_pictures
 
@@ -393,7 +393,7 @@ func mains() error {
 				var buffer strings.Builder
 				buffer.WriteString(csvlines[rowIndex].Cell[colIndex].ReadableSource(mode))
 				if colIndex < len(csvlines[rowIndex].Cell)-1 {
-					buffer.WriteByte(',')
+					buffer.WriteByte(mode.Comma)
 				} else if term := csvlines[rowIndex].Term; term != "" {
 					buffer.WriteString(term)
 				} else { // EOF
