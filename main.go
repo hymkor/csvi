@@ -559,6 +559,13 @@ func mains() error {
 			} else {
 				csvlines[rowIndex].Delete(colIndex)
 			}
+		case "\"":
+			cursor := &csvlines[rowIndex].Cell[colIndex]
+			if cursor.Quoted() {
+				csvlines[rowIndex].Replace(colIndex, cursor.Text(), mode)
+			} else {
+				*cursor = csv.QuoteCell(cursor.Text(), mode)
+			}
 		case "w":
 			if s := cmdWrite(csvlines, mode, tty1, out); s != "" {
 				message = s

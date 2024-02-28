@@ -122,6 +122,10 @@ func (c Cell) Modified() bool {
 	return c.modified
 }
 
+func (c Cell) Quoted() bool {
+	return len(c.source) > 0 && c.source[0] == '"'
+}
+
 type Row struct {
 	// Cell must have one or more element at least
 	Cell []Cell
@@ -251,6 +255,24 @@ func newCell(text string, mode *Mode) Cell {
 		source = append(source, '"')
 		source = slices.Insert(source, 0, '"')
 	}
+	if mode.NonUTF8 {
+		if s, err := mode._encode(string(source)); err == nil {
+			source = s
+		}
+	}
+	return Cell{source: source, text: text, modified: true}
+}
+
+func QuoteCell(text string, mode *Mode) Cell {
+	source := make([]byte, 0, len(text))
+	source = append(source, '"')
+	for i, end := 0, len(text); i < end; i++ {
+		if text[i] == '"' {
+			source = append(source, '"')
+		}
+		source = append(source, text[i])
+	}
+	source = append(source, '"')
 	if mode.NonUTF8 {
 		if s, err := mode._encode(string(source)); err == nil {
 			source = s
