@@ -325,8 +325,11 @@ func mains() error {
 	if err != nil {
 		return err
 	}
-
 	defer tty1.Close()
+
+	if err := initAmbiguousWidth(tty1); err != nil {
+		return err
+	}
 
 	colIndex := 0
 	rowIndex := 0

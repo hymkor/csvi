@@ -1,12 +1,26 @@
 package main
 
 import (
+	"os"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
+	"github.com/mattn/go-tty"
+
+	"github.com/hymkor/go-cursorposition"
 
 	"github.com/hymkor/csview/unbreakable-csv"
 )
+
+func initAmbiguousWidth(tty1 *tty.TTY) error {
+	// Measure how far the cursor moves while the `▽` is printed
+	w, err := cursorposition.AmbiguousWidthGoTty(tty1, os.Stderr)
+	if err != nil {
+		return err
+	}
+	runewidth.DefaultCondition.EastAsianWidth = w >= 2
+	return nil
+}
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
 	w := 0
