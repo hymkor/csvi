@@ -66,6 +66,7 @@ Key-binding
     * `O` (insert a new line before the current one)
     * `D` (delete the current line)
     * `"` (enclose or remove double quotations if possible)
+    * `u` (restore the original value of the current cell)
 * Repaint: `Ctrl`-`L`
 * Quit: `q` or `ESC`
 
