@@ -16,7 +16,7 @@ Here are some key features:
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
-![image](./csview.png)
+![image](./csview.gif)
 
 Install
 -------
