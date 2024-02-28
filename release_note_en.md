@@ -13,6 +13,7 @@
 - Draw underline on the modified cells
 - Implement `"`: enclose or remove double quotations if possible
 - Implement `u`: restore the original value of the current cell
+- Fix: cell width was incorrect when it contained characters whose widths are ambiguous
 
 v1.1.3
 ======
