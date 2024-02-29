@@ -1,4 +1,4 @@
-CSView - Unbreakable CSV Viewer/Editor
+CSView - Unbreakable CSV Editor
 ======================================
 
 CSView is a tool for viewing and editing CSV files on the Linux and Windows terminal.  
