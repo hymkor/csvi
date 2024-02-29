@@ -322,10 +322,13 @@ func mains() error {
 			} else if mode.Comma == ',' {
 				n += first(io.WriteString(out, "[CSV]"))
 			}
-			if mode.DefaultTerm == "\r\n" {
+			switch csvlines[rowIndex].Term {
+			case "\r\n":
 				n += first(io.WriteString(out, "[CRLF]"))
-			} else {
+			case "\n":
 				n += first(io.WriteString(out, "[LF]"))
+			case "":
+				n += first(io.WriteString(out, "[EOF]"))
 			}
 			if mode.HasBom() {
 				n += first(io.WriteString(out, "[BOM]"))
