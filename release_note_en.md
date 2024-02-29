@@ -1,4 +1,4 @@
-- "a","o","O": make new cell and repaint before getline is called
+- `a`,`o`,`O`: make new cell and repaint before getline is called
 - Readline: Ctrl-P: fetch the value of the cell above the same column
 - Readline: TAB: complete with the values of the cell above the same column
 - In principle, data other than cells changed by the user will remain as they are
@@ -6,8 +6,8 @@
     - Do not insert ByteOrderMark if there is no BOM at the beginning of the file
     - For cells that do not contain line breaks or commas, double quotation marks are not added or deleted , and the current status is kept
     - Even if the line break code is different from LF or CRLF for each line, maintain it as much as possible.
-- "a": works same as "r" when the current line is empty
-- "w": support filename completion
+- `a`: works same as `r` when the current line is empty
+- `w`: support filename completion
 - Enabled to specify encoding other than UTF8 with `-iana NAME` (mainly for Linux)
 - Cell source data is now displayed on the status line.
 - Draw underline on the modified cells
