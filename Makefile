@@ -22,7 +22,7 @@ test:
 	go test -v
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && $(SET) "GOEXPERIMENT=rangefunc" go build $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(SET) "GOEXPERIMENT=rangefunc" && go build $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
