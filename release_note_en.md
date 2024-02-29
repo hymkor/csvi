@@ -1,3 +1,7 @@
+v1.2.0
+======
+Feb 29 2024
+
 - `a`,`o`,`O`: make new cell and repaint before getline is called
 - Readline: Ctrl-P: fetch the value of the cell above the same column
 - Readline: TAB: complete with the values of the cell above the same column
