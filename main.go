@@ -123,7 +123,7 @@ func view(page func(func([]csv.Cell) bool), csrpos, csrlin, w, h int, out io.Wri
 		}
 		if count > 0 {
 			lfCount++
-			fmt.Fprintln(out, "\r") // "\r" is for Linux and go-tty
+			io.WriteString(out, "\r\n") // "\r" is for Linux and go-tty
 		}
 		var buffer strings.Builder
 		v := LineView{
@@ -148,7 +148,7 @@ func view(page func(func([]csv.Cell) bool), csrpos, csrlin, w, h int, out io.Wri
 		reverse = !reverse
 		count++
 	}
-	fmt.Fprintln(out, "\r") // \r is for Linux & go-tty
+	io.WriteString(out, "\r\n") // \r is for Linux & go-tty
 	lfCount++
 	return func() {
 		if lfCount > 0 {
