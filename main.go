@@ -192,29 +192,6 @@ var skkInit = sync.OnceFunc(func() {
 	}
 })
 
-func getfilename(out io.Writer, prompt, defaultStr string) (string, error) {
-	skkInit()
-	editor := &readline.Editor{
-		Writer:  out,
-		Default: defaultStr,
-		Cursor:  65535,
-		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
-		},
-		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
-			return 0, nil
-		},
-		Coloring: &skk.Coloring{},
-	}
-	editor.BindKey(keys.CtrlI, completion.CmdCompletionOrList{
-		Completion: completion.File{},
-	})
-
-	defer io.WriteString(out, _ANSI_CURSOR_OFF)
-	editor.BindKey(keys.Escape, readline.CmdInterrupt)
-	return editor.ReadLine(context.Background())
-}
-
 func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
 	skkInit()
 
