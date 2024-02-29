@@ -373,7 +373,7 @@ func mains() error {
 				io.WriteString(out, "\n")
 				return nil
 			}
-		case "j", keys.Down, keys.CtrlN:
+		case "j", keys.Down, keys.CtrlN, keys.Enter:
 			if rowIndex < len(csvlines)-1 {
 				rowIndex++
 			}
@@ -381,11 +381,11 @@ func mains() error {
 			if rowIndex > 0 {
 				rowIndex--
 			}
-		case "h", keys.Left, keys.CtrlB:
+		case "h", keys.Left, keys.CtrlB, keys.ShiftTab:
 			if colIndex > 0 {
 				colIndex--
 			}
-		case "l", keys.Right, keys.CtrlF:
+		case "l", keys.Right, keys.CtrlF, keys.CtrlI:
 			colIndex++
 		case "0", "^", keys.CtrlA:
 			colIndex = 0
@@ -393,7 +393,7 @@ func mains() error {
 			colIndex = len(csvlines[rowIndex].Cell) - 1
 		case "<":
 			rowIndex = 0
-		case ">":
+		case ">", "G":
 			rowIndex = len(csvlines) - 1
 		case "n":
 			if lastWord == "" {
