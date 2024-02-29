@@ -194,22 +194,6 @@ const (
 	_ANSI_RESET      = "\x1B[0m"
 )
 
-const (
-	_KEY_CTRL_A = "\x01"
-	_KEY_CTRL_B = "\x02"
-	_KEY_CTRL_E = "\x05"
-	_KEY_CTRL_F = "\x06"
-	_KEY_CTRL_L = "\x0C"
-	_KEY_CTRL_N = "\x0E"
-	_KEY_CTRL_P = "\x10"
-	_KEY_DOWN   = "\x1B[B"
-	_KEY_ESC    = "\x1B"
-	_KEY_LEFT   = "\x1B[D"
-	_KEY_RIGHT  = "\x1B[C"
-	_KEY_UP     = "\x1B[A"
-	_KEY_F2     = "\x1B[OQ"
-)
-
 var skkInit = sync.OnceFunc(func() {
 	env := os.Getenv("GOREADLINESKK")
 	if env != "" {
@@ -420,31 +404,31 @@ func mains() error {
 		}
 
 		switch ch {
-		case _KEY_CTRL_L:
+		case keys.CtrlL:
 			clear(cache)
-		case "q", _KEY_ESC:
+		case "q", keys.Escape:
 			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
 			if ch, err := readline.GetKey(tty1); err == nil && ch == "y" {
 				io.WriteString(out, "\n")
 				return nil
 			}
-		case "j", _KEY_DOWN, _KEY_CTRL_N:
+		case "j", keys.Down, keys.CtrlN:
 			if rowIndex < len(csvlines)-1 {
 				rowIndex++
 			}
-		case "k", _KEY_UP, _KEY_CTRL_P:
+		case "k", keys.Up, keys.CtrlP:
 			if rowIndex > 0 {
 				rowIndex--
 			}
-		case "h", _KEY_LEFT, _KEY_CTRL_B:
+		case "h", keys.Left, keys.CtrlB:
 			if colIndex > 0 {
 				colIndex--
 			}
-		case "l", _KEY_RIGHT, _KEY_CTRL_F:
+		case "l", keys.Right, keys.CtrlF:
 			colIndex++
-		case "0", "^", _KEY_CTRL_A:
+		case "0", "^", keys.CtrlA:
 			colIndex = 0
-		case "$", _KEY_CTRL_E:
+		case "$", keys.CtrlE:
 			colIndex = len(csvlines[rowIndex].Cell) - 1
 		case "<":
 			rowIndex = 0
@@ -548,7 +532,7 @@ func mains() error {
 				}
 				csvlines[rowIndex].Replace(colIndex, text, mode)
 			}
-		case "r", "R", _KEY_F2:
+		case "r", "R", keys.F2:
 			text, err := getline(out, "replace cell>", csvlines[rowIndex].Cell[colIndex].Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
 			if err != nil {
 				break
