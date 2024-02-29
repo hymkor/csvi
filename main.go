@@ -349,7 +349,7 @@ func mains() error {
 			return err
 		}
 		if lastWidth != screenWidth || lastHeight != screenHeight {
-			cache = map[int]string{}
+			clear(cache)
 			lastWidth = screenWidth
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
@@ -415,13 +415,13 @@ func mains() error {
 
 		getline := func(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
 			text, err := getline(out, prompt, defaultStr, c)
-			cache = map[int]string{}
+			clear(cache)
 			return text, err
 		}
 
 		switch ch {
 		case _KEY_CTRL_L:
-			cache = map[int]string{}
+			clear(cache)
 		case "q", _KEY_ESC:
 			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
 			if ch, err := readline.GetKey(tty1); err == nil && ch == "y" {
@@ -579,7 +579,7 @@ func mains() error {
 			if err := cmdWrite(csvlines, mode, tty1, out); err != nil {
 				message = err.Error()
 			}
-			cache = map[int]string{}
+			clear(cache)
 		}
 		if L := len(csvlines[rowIndex].Cell); L <= 0 {
 			colIndex = 0
