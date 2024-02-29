@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/mattn/go-tty v0.0.5
-	github.com/nyaosorg/go-readline-ny v1.1.0
+	github.com/nyaosorg/go-readline-ny v1.2.1-0.20240229073637-2d5ba438f8cb
 	github.com/nyaosorg/go-readline-skk v0.3.1
 	github.com/nyaosorg/go-windows-mbcs v0.4.2
 	golang.org/x/term v0.17.0
