@@ -570,7 +570,7 @@ func mains() error {
 			}
 		case "\"":
 			cursor := &csvlines[rowIndex].Cell[colIndex]
-			if cursor.Quoted() {
+			if cursor.IsQuoted() {
 				csvlines[rowIndex].Replace(colIndex, cursor.Text(), mode)
 			} else {
 				*cursor = cursor.Quote(mode)

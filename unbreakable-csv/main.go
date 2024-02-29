@@ -122,7 +122,7 @@ func (c Cell) Modified() bool {
 	return !bytes.Equal(c.source, c.original)
 }
 
-func (c Cell) Quoted() bool {
+func (c Cell) IsQuoted() bool {
 	return len(c.source) > 0 && c.source[0] == '"'
 }
 
