@@ -25,18 +25,25 @@ import (
 	"github.com/hymkor/csview/unbreakable-csv"
 )
 
-var (
-	flagTsv  = flag.Bool("t", false, "use TAB as field-separator")
-	flagCsv  = flag.Bool("c", false, "use Comma as field-separator")
-	flagIana = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
-)
-
 const (
+	_ANSI_CURSOR_OFF = "\x1B[?25l"
+	_ANSI_CURSOR_ON  = "\x1B[?25h"
+	_ANSI_YELLOW     = "\x1B[0;33;1m"
+	_ANSI_RESET      = "\x1B[0m"
+
 	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
 	CELL1_COLOR      = "\x1B[0;48;5;235;37;1m"
 	CELL2_COLOR      = "\x1B[0;40;37;1m"
 	ERASE_LINE       = "\x1B[0m\x1B[0K"
 	ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
+
+	CELL_WIDTH = 14
+)
+
+var (
+	flagTsv  = flag.Bool("t", false, "use TAB as field-separator")
+	flagCsv  = flag.Bool("c", false, "use Comma as field-separator")
+	flagIana = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 )
 
 type LineView struct {
@@ -106,8 +113,6 @@ func (v LineView) Draw() {
 
 var cache = map[int]string{}
 
-const CELL_WIDTH = 14
-
 func view(page func(func([]csv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 	reverse := false
 	count := 0
@@ -172,13 +177,6 @@ func drawView(csvlines []csv.Row, startRow, startCol, rowIndex, colIndex, screen
 	}
 	return view(page, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 }
-
-const (
-	_ANSI_CURSOR_OFF = "\x1B[?25l"
-	_ANSI_CURSOR_ON  = "\x1B[?25h"
-	_ANSI_YELLOW     = "\x1B[0;33;1m"
-	_ANSI_RESET      = "\x1B[0m"
-)
 
 var skkInit = sync.OnceFunc(func() {
 	env := os.Getenv("GOREADLINESKK")
