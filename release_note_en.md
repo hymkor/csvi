@@ -14,6 +14,7 @@
 - Implement `"`: enclose or remove double quotations if possible
 - Implement `u`: restore the original value of the current cell
 - Fix: cell width was incorrect when it contained characters whose widths are ambiguous
+- Add key assigns: `G`:Go to EOF, `Enter`:go to next line, `TAB`:go to the rightside cell, `Shift`+`TAB`:go to the leftside cell
 
 v1.1.3
 ======
