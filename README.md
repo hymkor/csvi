@@ -1,6 +1,8 @@
 CSView - Unbreakable CSV Editor
 ======================================
 
+[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
+
 CSView is a tool for viewing and editing CSV files on the Linux and Windows terminal.  
 Here are some key features:
 
@@ -21,8 +23,20 @@ Here are some key features:
 Install
 -------
 
-Download the binary package from [Releases](https://github.com/zetamatta/csview/releases)
-and extract the executable.
+Download the binary package from [Releases](https://github.com/hymkor/csview/releases) and extract the executable.
+
+### for scoop-installer
+
+```
+scoop install https://raw.githubusercontent.com/hymkor/csview/master/csview.json
+```
+
+or
+
+```
+scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install csview
+```
 
 Usage
 -----
