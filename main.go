@@ -108,20 +108,13 @@ var cache = map[int]string{}
 
 const CELL_WIDTH = 14
 
-func view(read func() ([]csv.Cell, error), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
+func view(page func(func([]csv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 	reverse := false
 	count := 0
 	lfCount := 0
-	for {
+	for record := range page {
 		if count >= h {
 			break
-		}
-		record, err := read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return func() {}, err
 		}
 		if count > 0 {
 			lfCount++
@@ -161,30 +154,23 @@ func view(read func() ([]csv.Cell, error), csrpos, csrlin, w, h int, out io.Writ
 	}, nil
 }
 
-type MemoryCsv struct {
-	Data   []csv.Row
-	StartX int
-	StartY int
-}
-
-func (M *MemoryCsv) Read() ([]csv.Cell, error) {
-	if M.StartY >= len(M.Data) {
-		return nil, io.EOF
-	}
-	row := M.Data[M.StartY]
-	var cells []csv.Cell
-	if M.StartX <= len(row.Cell) {
-		cells = row.Cell[M.StartX:]
-	} else {
-		cells = []csv.Cell{}
-	}
-	M.StartY++
-	return cells, nil
-}
-
 func drawView(csvlines []csv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
-	window := &MemoryCsv{Data: csvlines, StartX: startCol, StartY: startRow}
-	return view(window.Read, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+	page := func(callback func([]csv.Cell) bool) {
+		for startRow < len(csvlines) {
+			row := csvlines[startRow]
+			var cells []csv.Cell
+			if startCol <= len(row.Cell) {
+				cells = row.Cell[startCol:]
+			} else {
+				cells = []csv.Cell{}
+			}
+			startRow++
+			if !callback(cells) {
+				break
+			}
+		}
+	}
+	return view(page, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 }
 
 const (
