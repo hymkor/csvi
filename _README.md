@@ -47,10 +47,14 @@ Key-binding
 -----------
 
 * Move Cursor
-    * `h`,`Ctrl`-`B`,&#x2190; (move cursor left)
-    * `j`,`Ctrl`-`N`,&#x2193; (move cursor down)
-    * `k`,`Ctrl`-`P`,&#x2191; (move cursor up)
-    * `l`,`Ctrl`-`F`,&#x2192; (move cursor right)
+    * `h`,`Ctrl`-`B`,`←`,`Shift`-`TAB` (move cursor left)
+    * `j`,`Ctrl`-`N`,`↓`,`Enter` (move cursor down)
+    * `k`,`Ctrl`-`P`,`↑` (move cursor up)
+    * `l`,`Ctrl`-`F`,`←`,`TAB` (move cursor right)
+    * `<` (move the beginning of file)
+    * `>`,`G` (move the end of file)
+    * `0`,`^`,`Ctrl`-`A` (move the beginning of the current line)
+    * `$`,`Ctrl`-`E` (move the end of the current line)
 * Search
     * `/` (search forward)
     * `?` (search backward)
@@ -61,12 +65,14 @@ Key-binding
     * `a` (append a new cell after the current one)
     * `r` (replace the current cell)
     * `d`,`x` (delete the current cell)
-    * `w` (write to the **new** file or STDOUT(`'-'`).)
+    * `w` (write to a file or STDOUT(`'-'`))
     * `o` (append a new line after the current one)
     * `O` (insert a new line before the current one)
     * `D` (delete the current line)
     * `"` (enclose or remove double quotations if possible)
     * `u` (restore the original value of the current cell)
+    * `y` (copy the value of the current cell to kill-buffer)
+    * `p` (paste the value of kill-buffer to the current cell)
 * Repaint: `Ctrl`-`L`
 * Quit: `q` or `ESC`
 
