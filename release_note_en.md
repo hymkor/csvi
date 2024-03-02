@@ -1,3 +1,5 @@
+- `[CRLF]` or `[LF]` in the status line now indicates the line feed code of the current line instead of the representative line feed code of the entire file.
+
 v1.2.0
 ======
 Feb 29 2024
