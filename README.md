@@ -1,5 +1,5 @@
-CSView - Unbreakable CSV Editor
-======================================
+The unbreakable CSV editor "CSView"
+===================================
 
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
 
@@ -42,20 +42,22 @@ Usage
 -----
 
 ```
-$ csview [-iana ENCODING] FILENAME(...)
+$ csview {options} FILENAME(...)
 ```
 
 or
 
 ```
-$ cat FILENAME | csview [-iana ENCODING]
+$ cat FILENAME | csview {options}
 ```
 
 Options
 
 * `-c` ... use Comma as field-separator (default when suffix is `.csv`)
 * `-t` ... use TAB as field-separator (default when suffix is not `.csv`)
-* `-iana NAME` ... IANA-registered-name to decode/encode NonUTF8 text
+* `-iana NAME` ... [IANA-registered-name] to decode/encode NonUTF8 text
+
+[IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
 Key-binding
 -----------
