@@ -15,7 +15,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
 
-	"github.com/hymkor/csview/unbreakable-csv"
+	"github.com/hymkor/csview/uncsv"
 )
 
 var overWritten = map[string]struct{}{}

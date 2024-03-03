@@ -9,7 +9,7 @@ import (
 
 	"github.com/hymkor/go-cursorposition"
 
-	"github.com/hymkor/csview/unbreakable-csv"
+	"github.com/hymkor/csview/uncsv"
 )
 
 func initAmbiguousWidth(tty1 *tty.TTY) error {
