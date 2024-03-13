@@ -30,7 +30,7 @@ Download the binary package from [Releases](https://github.com/hymkor/csview/rel
 ### Use "go install"
 
 ```
-go install github.com/hymkor/csview@latest
+env GOEXPERIMENT=rangefunc go install github.com/hymkor/csview@latest
 ```
 
 ### Use scoop-installer
