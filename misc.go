@@ -56,7 +56,7 @@ func (c candidate) List(field []string) (fullnames, basenames []string) {
 	return c, c
 }
 
-func makeCandidate(row, col int, csvlines []csv.Row) candidate {
+func makeCandidate(row, col int, csvlines []uncsv.Row) candidate {
 	if row < 0 || row >= len(csvlines) {
 		return candidate([]string{})
 	}
@@ -78,7 +78,7 @@ func makeCandidate(row, col int, csvlines []csv.Row) candidate {
 	return result
 }
 
-func searchForward(csvlines []csv.Row, r, c int, target string) (bool, int, int) {
+func searchForward(csvlines []uncsv.Row, r, c int, target string) (bool, int, int) {
 	c++
 	for r < len(csvlines) {
 		for c < len(csvlines[r].Cell) {
@@ -93,7 +93,7 @@ func searchForward(csvlines []csv.Row, r, c int, target string) (bool, int, int)
 	return false, r, c
 }
 
-func searchBackward(csvlines []csv.Row, r, c int, target string) (bool, int, int) {
+func searchBackward(csvlines []uncsv.Row, r, c int, target string) (bool, int, int) {
 	c--
 	for {
 		for c >= 0 {

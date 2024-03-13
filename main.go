@@ -47,7 +47,7 @@ var (
 )
 
 type LineView struct {
-	CSV       []csv.Cell
+	CSV       []uncsv.Cell
 	CellWidth int
 	MaxInLine int
 	CursorPos int
@@ -113,7 +113,7 @@ func (v LineView) Draw() {
 
 var cache = map[int]string{}
 
-func view(page func(func([]csv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
+func view(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -159,15 +159,15 @@ func view(page func(func([]csv.Cell) bool), csrpos, csrlin, w, h int, out io.Wri
 	}, nil
 }
 
-func drawView(csvlines []csv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
-	page := func(callback func([]csv.Cell) bool) {
+func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
+	page := func(callback func([]uncsv.Cell) bool) {
 		for startRow < len(csvlines) {
 			row := csvlines[startRow]
-			var cells []csv.Cell
+			var cells []uncsv.Cell
 			if startCol <= len(row.Cell) {
 				cells = row.Cell[startCol:]
 			} else {
-				cells = []csv.Cell{}
+				cells = []uncsv.Cell{}
 			}
 			startRow++
 			if !callback(cells) {
@@ -233,8 +233,8 @@ func mains() error {
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	var csvlines []csv.Row
-	mode := &csv.Mode{}
+	var csvlines []uncsv.Row
+	mode := &uncsv.Mode{}
 
 	if *flagIana != "" {
 		if err := mode.SetEncoding(*flagIana); err != nil {
@@ -243,7 +243,7 @@ func mains() error {
 	}
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
 		// Start with one empty line
-		csvlines = []csv.Row{csv.NewRow(mode)}
+		csvlines = []uncsv.Row{uncsv.NewRow(mode)}
 		mode.Comma = '\t'
 	} else {
 		mode.Comma = ','
@@ -258,7 +258,7 @@ func mains() error {
 			mode.Comma = ','
 		}
 		var err error
-		csvlines, err = csv.ReadAll(multiFileReader(args...), mode)
+		csvlines, err = uncsv.ReadAll(multiFileReader(args...), mode)
 		if err != nil {
 			return err
 		}
@@ -450,7 +450,7 @@ func mains() error {
 			rowIndex++
 			fallthrough
 		case "O":
-			csvlines = slices.Insert(csvlines, rowIndex, csv.NewRow(mode))
+			csvlines = slices.Insert(csvlines, rowIndex, uncsv.NewRow(mode))
 			if err := repaint(); err != nil {
 				return err
 			}

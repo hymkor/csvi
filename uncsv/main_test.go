@@ -1,4 +1,4 @@
-package csv
+package uncsv
 
 import (
 	"io"

@@ -20,7 +20,7 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func cmdWrite(csvlines []csv.Row, mode *csv.Mode, tty1 *tty.TTY, out io.Writer) error {
+func cmdWrite(csvlines []uncsv.Row, mode *uncsv.Mode, tty1 *tty.TTY, out io.Writer) error {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {
