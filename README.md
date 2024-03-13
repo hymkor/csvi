@@ -23,9 +23,17 @@ Here are some key features:
 Install
 -------
 
+### Manual Installation
+
 Download the binary package from [Releases](https://github.com/hymkor/csview/releases) and extract the executable.
 
-### for scoop-installer
+### Use "go install"
+
+```
+go install github.com/hymkor/csview@latest
+```
+
+### Use scoop-installer
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csview/master/csview.json
