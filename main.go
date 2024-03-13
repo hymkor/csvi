@@ -46,15 +46,6 @@ var (
 	flagIana = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 )
 
-type LineView struct {
-	CSV       []uncsv.Cell
-	CellWidth int
-	MaxInLine int
-	CursorPos int
-	Reverse   bool
-	Out       io.Writer
-}
-
 var replaceTable = strings.NewReplacer(
 	"\r", "\u240D",
 	"\x1B", "\u241B",
@@ -63,57 +54,72 @@ var replaceTable = strings.NewReplacer(
 
 // See. en.wikipedia.org/wiki/Unicode_control_characters#Control_pictures
 
-func (v LineView) Draw() {
-	leftWidth := v.MaxInLine
+func drawLine(
+	csvs []uncsv.Cell,
+	cellWidth int,
+	screenWidth int,
+	cursorPos int,
+	reverse bool,
+	out io.Writer) {
+
 	i := 0
-	csvs := v.CSV
 	for len(csvs) > 0 {
 		cursor := csvs[0]
 		text := cursor.Text()
 		csvs = csvs[1:]
 		nextI := i + 1
 
-		cw := v.CellWidth
-		for len(csvs) > 0 && csvs[0].Text() == "" && nextI != v.CursorPos {
-			cw += v.CellWidth
+		cw := cellWidth
+		for len(csvs) > 0 && csvs[0].Text() == "" && nextI != cursorPos {
+			cw += cellWidth
 			csvs = csvs[1:]
 			nextI++
 		}
-		if cw > leftWidth || len(csvs) <= 0 {
-			cw = leftWidth
+		if cw > screenWidth || len(csvs) <= 0 {
+			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
 		ss, w := cutStrInWidth(text, cw)
-		if i == v.CursorPos {
-			io.WriteString(v.Out, CURSOR_COLOR)
-		} else if v.Reverse {
-			io.WriteString(v.Out, CELL2_COLOR)
+		if i == cursorPos {
+			io.WriteString(out, CURSOR_COLOR)
+		} else if reverse {
+			io.WriteString(out, CELL2_COLOR)
 		} else {
-			io.WriteString(v.Out, CELL1_COLOR)
+			io.WriteString(out, CELL1_COLOR)
 		}
 		if cursor.Modified() {
-			io.WriteString(v.Out, "\x1B[4m")
+			io.WriteString(out, "\x1B[4m")
 		}
-		io.WriteString(v.Out, ss)
+		io.WriteString(out, ss)
 		if cursor.Modified() {
-			io.WriteString(v.Out, "\x1B[24m")
+			io.WriteString(out, "\x1B[24m")
 		}
-		leftWidth -= w
+		screenWidth -= w
 		for j := cw - w; j > 0; j-- {
-			v.Out.Write([]byte{' '})
-			leftWidth--
+			out.Write([]byte{' '})
+			screenWidth--
 		}
-		if leftWidth <= 0 {
+		if screenWidth <= 0 {
 			break
 		}
 		i = nextI
 	}
-	io.WriteString(v.Out, ERASE_LINE)
+	io.WriteString(out, ERASE_LINE)
 }
 
 var cache = map[int]string{}
 
-func view(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) (func(), error) {
+func up(n int, out io.Writer) {
+	if n == 0 {
+		out.Write([]byte{'\r'})
+	} else if n == 1 {
+		io.WriteString(out, "\r\x1B[A")
+	} else {
+		fmt.Fprintf(out, "\r\x1B[%dA", n)
+	}
+}
+
+func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -125,21 +131,12 @@ func view(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out io.W
 			lfCount++
 			io.WriteString(out, "\r\n") // "\r" is for Linux and go-tty
 		}
-		var buffer strings.Builder
-		v := LineView{
-			CSV:       record,
-			CellWidth: CELL_WIDTH,
-			MaxInLine: w,
-			Reverse:   reverse,
-			Out:       &buffer,
-		}
+		cursorPos := -1
 		if count == csrlin {
-			v.CursorPos = csrpos
-		} else {
-			v.CursorPos = -1
+			cursorPos = csrpos
 		}
-
-		v.Draw()
+		var buffer strings.Builder
+		drawLine(record, CELL_WIDTH, w, cursorPos, reverse, &buffer)
 		line := buffer.String()
 		if f := cache[count]; f != line {
 			io.WriteString(out, line)
@@ -150,32 +147,27 @@ func view(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out io.W
 	}
 	io.WriteString(out, "\r\n") // \r is for Linux & go-tty
 	lfCount++
-	return func() {
-		if lfCount > 0 {
-			fmt.Fprintf(out, "\r\x1B[%dA", lfCount)
-		} else {
-			fmt.Fprint(out, "\r")
-		}
-	}, nil
+	return lfCount
 }
 
-func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) (func(), error) {
-	page := func(callback func([]uncsv.Cell) bool) {
+func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
+	if n <= len(cells) {
+		return cells[n:]
+	} else {
+		return []uncsv.Cell{}
+	}
+}
+
+func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) int {
+	enum := func(callback func([]uncsv.Cell) bool) {
 		for startRow < len(csvlines) {
-			row := csvlines[startRow]
-			var cells []uncsv.Cell
-			if startCol <= len(row.Cell) {
-				cells = row.Cell[startCol:]
-			} else {
-				cells = []uncsv.Cell{}
+			if !callback(cellsAfter(csvlines[startRow].Cell, startCol)) {
+				return
 			}
 			startRow++
-			if !callback(cells) {
-				break
-			}
 		}
 	}
-	return view(page, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+	return drawPage(enum, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
 }
 
 var skkInit = sync.OnceFunc(func() {
@@ -301,14 +293,10 @@ func mains() error {
 		}
 		cols := (screenWidth - 1) / CELL_WIDTH
 
-		rewind, err := drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
-		if err != nil {
-			return err
-		}
-		repaint := func() error {
-			rewind()
-			rewind, err = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
-			return err
+		lfCount := drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+		repaint := func() {
+			up(lfCount, out)
+			lfCount = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
@@ -451,9 +439,7 @@ func mains() error {
 			fallthrough
 		case "O":
 			csvlines = slices.Insert(csvlines, rowIndex, uncsv.NewRow(mode))
-			if err := repaint(); err != nil {
-				return err
-			}
+			repaint()
 			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
 			csvlines[rowIndex].Replace(0, text, mode)
 		case "D":
@@ -486,9 +472,7 @@ func mains() error {
 			} else {
 				colIndex++
 				csvlines[rowIndex].Insert(colIndex, "", mode)
-				if err := repaint(); err != nil {
-					return err
-				}
+				repaint()
 				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, csvlines))
 				if err != nil {
 					colIndex--
@@ -544,7 +528,7 @@ func mains() error {
 		} else if colIndex >= startCol+cols {
 			startCol = colIndex - cols + 1
 		}
-		rewind()
+		up(lfCount, out)
 	}
 }
 
