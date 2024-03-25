@@ -180,7 +180,7 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 	}
 }
 
-func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) int {
+func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
 	if *flagHeader > 0 {
@@ -191,7 +191,7 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, scre
 				}
 			}
 		}
-		lfCount = drawPage(enum, -1, -1, screenWidth-1, *flagHeader, &headColorStyle, out)
+		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, *flagHeader, &headColorStyle, out)
 	}
 	// print body
 	enum := func(callback func([]uncsv.Cell) bool) {
@@ -202,7 +202,7 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, scre
 			startRow++
 		}
 	}
-	return lfCount + drawPage(enum, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, &bodyColorStyle, out)
+	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, &bodyColorStyle, out)
 }
 
 var skkInit = sync.OnceFunc(func() {
