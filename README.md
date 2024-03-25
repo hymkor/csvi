@@ -1,16 +1,17 @@
 The unbreakable CSV editor "CSView"
 ===================================
-
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
+English / [Japanese](./README_ja.md)
 
-CSView is a tool for viewing and editing CSV files on the Linux and Windows terminal.  
+CSView is a CSV editor on the Linux and Windows terminal.  
 Here are some key features:
 
+- Keybinding: vi-like on moving cursor and Emacs-like on editing cell
+- It reads the data from both file and standard-input
 - Non-user-modified cells retain their original values
-    - For cells that do not contain line breaks or commas, double quotation marks are not added or deleted , and the current status is kept
-    - Line breaks are preserved as much as possible, even if the code differs between LF and CRLF for each line
-    - If the file begins with a Byte Order Mark (BOM), it is preserved and not removed.
-    - Byte Order Mark is only added if there is a BOM at the start of the file.
+    - Enclosing double quotations
+    - LF or CRLF for line breaks
+    - BOM of the beginning of files
 - CSView supports the following encodings:
     - UTF8 (default)
     - Current codepage on Windows (automatically detected)
