@@ -1,3 +1,5 @@
+- Fix the problem the cache buffer for drawing did not work on v1.3.0
+
 v1.3.0
 ======
 Mar 25 2024
