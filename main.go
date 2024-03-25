@@ -315,8 +315,8 @@ func mains() error {
 	}
 
 	colIndex := 0
-	rowIndex := *flagHeader
-	startRow := *flagHeader
+	rowIndex := 0
+	startRow := 0
 	startCol := 0
 
 	lastSearch := searchForward
