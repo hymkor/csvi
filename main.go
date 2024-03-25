@@ -193,6 +193,9 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, sc
 		}
 		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, *flagHeader, &headColorStyle, out)
 	}
+	if startRow < *flagHeader {
+		startRow = *flagHeader
+	}
 	// print body
 	enum := func(callback func([]uncsv.Cell) bool) {
 		for startRow < len(csvlines) {
