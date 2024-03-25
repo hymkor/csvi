@@ -41,9 +41,10 @@ const (
 )
 
 var (
-	flagTsv  = flag.Bool("t", false, "use TAB as field-separator")
-	flagCsv  = flag.Bool("c", false, "use Comma as field-separator")
-	flagIana = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
+	flagHeader = flag.Int("h", 0, "the number of row-header")
+	flagTsv    = flag.Bool("t", false, "use TAB as field-separator")
+	flagCsv    = flag.Bool("c", false, "use Comma as field-separator")
+	flagIana   = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 )
 
 var replaceTable = strings.NewReplacer(
@@ -160,6 +161,11 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 
 func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) int {
 	enum := func(callback func([]uncsv.Cell) bool) {
+		for i := 0; i < *flagHeader; i++ {
+			if !callback(cellsAfter(csvlines[i].Cell, startCol)) {
+				return
+			}
+		}
 		for startRow < len(csvlines) {
 			if !callback(cellsAfter(csvlines[startRow].Cell, startCol)) {
 				return
@@ -167,7 +173,7 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, scre
 			startRow++
 		}
 	}
-	return drawPage(enum, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, out)
+	return drawPage(enum, colIndex-startCol, rowIndex-startRow+*flagHeader, screenWidth-1, screenHeight-1+*flagHeader, out)
 }
 
 var skkInit = sync.OnceFunc(func() {
@@ -285,6 +291,7 @@ func mains() error {
 		if err != nil {
 			return err
 		}
+		screenHeight -= *flagHeader
 		if lastWidth != screenWidth || lastHeight != screenHeight {
 			clear(cache)
 			lastWidth = screenWidth
