@@ -1,5 +1,6 @@
 - `[CRLF]` or `[LF]` in the status line now indicates the line feed code of the current line instead of the representative line feed code of the entire file.
 - Rename sub-package: `csv`(`unbreakable-csv`) to `uncsv`(`uncsv`)
+- The first few lines can now be fixed as header lines.(`-h int`)
 
 v1.2.0
 ======
