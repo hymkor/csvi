@@ -419,7 +419,10 @@ func mains() error {
 		case "$", keys.CtrlE:
 			colIndex = len(csvlines[rowIndex].Cell) - 1
 		case "<":
-			rowIndex = 0
+			rowIndex = *flagHeader
+			startRow = *flagHeader
+			colIndex = 0
+			startCol = 0
 		case ">", "G":
 			rowIndex = len(csvlines) - 1
 		case "n":
