@@ -129,8 +129,6 @@ func drawLine(
 	io.WriteString(out, ERASE_LINE)
 }
 
-var cache = map[int]string{}
-
 func up(n int, out io.Writer) {
 	if n == 0 {
 		out.Write([]byte{'\r'})
@@ -141,7 +139,7 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, style *_ColorStyle, out io.Writer) int {
+func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -180,6 +178,16 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 	}
 }
 
+var (
+	headCache = map[int]string{}
+	bodyCache = map[int]string{}
+)
+
+func clearCache() {
+	clear(headCache)
+	clear(bodyCache)
+}
+
 func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
@@ -191,7 +199,7 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, sc
 				}
 			}
 		}
-		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, *flagHeader, &headColorStyle, out)
+		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, *flagHeader, &headColorStyle, headCache, out)
 	}
 	if startRow < *flagHeader {
 		startRow = *flagHeader
@@ -213,7 +221,7 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, sc
 			Odd:    bodyColorStyle.Even,
 		}
 	}
-	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, style, out)
+	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, style, bodyCache, out)
 }
 
 var skkInit = sync.OnceFunc(func() {
@@ -333,7 +341,7 @@ func mains() error {
 		}
 		screenHeight -= *flagHeader
 		if lastWidth != screenWidth || lastHeight != screenHeight {
-			clear(cache)
+			clearCache()
 			lastWidth = screenWidth
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
@@ -398,13 +406,13 @@ func mains() error {
 
 		getline := func(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
 			text, err := getline(out, prompt, defaultStr, c)
-			clear(cache)
+			clearCache()
 			return text, err
 		}
 
 		switch ch {
 		case keys.CtrlL:
-			clear(cache)
+			clearCache()
 		case "q", keys.Escape:
 			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
 			if ch, err := readline.GetKey(tty1); err == nil && ch == "y" {
@@ -561,7 +569,7 @@ func mains() error {
 			if err := cmdWrite(csvlines, mode, tty1, out); err != nil {
 				message = err.Error()
 			}
-			clear(cache)
+			clearCache()
 		}
 		if L := len(csvlines[rowIndex].Cell); L <= 0 {
 			colIndex = 0
