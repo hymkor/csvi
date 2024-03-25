@@ -31,14 +31,29 @@ const (
 	_ANSI_YELLOW     = "\x1B[0;33;1m"
 	_ANSI_RESET      = "\x1B[0m"
 
-	CURSOR_COLOR     = "\x1B[0;40;37;1;7m"
-	CELL1_COLOR      = "\x1B[0;48;5;235;37;1m"
-	CELL2_COLOR      = "\x1B[0;40;37;1m"
 	ERASE_LINE       = "\x1B[0m\x1B[0K"
 	ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
 
 	CELL_WIDTH = 14
 )
+
+type _ColorStyle struct {
+	Cursor [2]string
+	Even   [2]string
+	Odd    [2]string
+}
+
+var bodyColorStyle = _ColorStyle{
+	Cursor: [...]string{"\x1B[40;37;1;7m", "\x1B[27;22m"},
+	Even:   [...]string{"\x1B[48;5;235;37;1m", "\x1B[22;40m"},
+	Odd:    [...]string{"\x1B[40;37;1m", "\x1B[22m"},
+}
+
+var headColorStyle = _ColorStyle{
+	Cursor: [...]string{"\x1B[40;36;1;7m", "\x1B[27;22m"},
+	Even:   [...]string{"\x1B[48;5;235;36;1m", "\x1B[22;40m"},
+	Odd:    [...]string{"\x1B[40;36;1m", "\x1B[22m"},
+}
 
 var (
 	flagHeader = flag.Int("h", 0, "the number of row-header")
@@ -61,6 +76,7 @@ func drawLine(
 	screenWidth int,
 	cursorPos int,
 	reverse bool,
+	style *_ColorStyle,
 	out io.Writer) {
 
 	i := 0
@@ -81,12 +97,16 @@ func drawLine(
 		}
 		text = replaceTable.Replace(text)
 		ss, w := cutStrInWidth(text, cw)
+		var off string
 		if i == cursorPos {
-			io.WriteString(out, CURSOR_COLOR)
+			io.WriteString(out, style.Cursor[0])
+			off = style.Cursor[1]
 		} else if reverse {
-			io.WriteString(out, CELL2_COLOR)
+			io.WriteString(out, style.Odd[0])
+			off = style.Odd[1]
 		} else {
-			io.WriteString(out, CELL1_COLOR)
+			io.WriteString(out, style.Even[0])
+			off = style.Even[1]
 		}
 		if cursor.Modified() {
 			io.WriteString(out, "\x1B[4m")
@@ -100,6 +120,7 @@ func drawLine(
 			out.Write([]byte{' '})
 			screenWidth--
 		}
+		io.WriteString(out, off)
 		if screenWidth <= 0 {
 			break
 		}
@@ -120,7 +141,7 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out io.Writer) int {
+func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, style *_ColorStyle, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -137,7 +158,7 @@ func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, out 
 			cursorPos = csrpos
 		}
 		var buffer strings.Builder
-		drawLine(record, CELL_WIDTH, w, cursorPos, reverse, &buffer)
+		drawLine(record, CELL_WIDTH, w, cursorPos, reverse, style, &buffer)
 		line := buffer.String()
 		if f := cache[count]; f != line {
 			io.WriteString(out, line)
@@ -160,12 +181,20 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 }
 
 func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth int, out io.Writer) int {
-	enum := func(callback func([]uncsv.Cell) bool) {
-		for i := 0; i < *flagHeader; i++ {
-			if !callback(cellsAfter(csvlines[i].Cell, startCol)) {
-				return
+	// print header
+	lfCount := 0
+	if *flagHeader > 0 {
+		enum := func(callback func([]uncsv.Cell) bool) {
+			for i := 0; i < *flagHeader; i++ {
+				if !callback(cellsAfter(csvlines[i].Cell, startCol)) {
+					return
+				}
 			}
 		}
+		lfCount = drawPage(enum, -1, -1, screenWidth-1, *flagHeader, &headColorStyle, out)
+	}
+	// print body
+	enum := func(callback func([]uncsv.Cell) bool) {
 		for startRow < len(csvlines) {
 			if !callback(cellsAfter(csvlines[startRow].Cell, startCol)) {
 				return
@@ -173,7 +202,7 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, rowIndex, colIndex, scre
 			startRow++
 		}
 	}
-	return drawPage(enum, colIndex-startCol, rowIndex-startRow+*flagHeader, screenWidth-1, screenHeight-1+*flagHeader, out)
+	return lfCount + drawPage(enum, colIndex-startCol, rowIndex-startRow, screenWidth-1, screenHeight-1, &bodyColorStyle, out)
 }
 
 var skkInit = sync.OnceFunc(func() {
@@ -275,8 +304,8 @@ func mains() error {
 	}
 
 	colIndex := 0
-	rowIndex := 0
-	startRow := 0
+	rowIndex := *flagHeader
+	startRow := *flagHeader
 	startCol := 0
 
 	lastSearch := searchForward
