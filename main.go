@@ -205,7 +205,15 @@ func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, sc
 			startRow++
 		}
 	}
-	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, &bodyColorStyle, out)
+	style := &bodyColorStyle
+	if *flagHeader%2 == 1 {
+		style = &_ColorStyle{
+			Cursor: bodyColorStyle.Cursor,
+			Even:   bodyColorStyle.Odd,
+			Odd:    bodyColorStyle.Even,
+		}
+	}
+	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, style, out)
 }
 
 var skkInit = sync.OnceFunc(func() {
