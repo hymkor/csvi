@@ -1,6 +1,7 @@
 - Fix the problem the cache buffer for drawing did not work on v1.3.0
 - Set 1 as the default value of `-h` option and the first line is fixed header on default
     - To disable, use `-h 0`
+    - Change the type `uint` (unsigned integer)
 
 v1.3.0
 ======
