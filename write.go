@@ -67,7 +67,7 @@ func getfilename(out io.Writer, prompt, defaultStr string) (string, error) {
 	editor := &readline.Editor{
 		Writer:  out,
 		Default: defaultStr,
-		Cursor:  65535,
+		Cursor:  len(defaultStr) - len(filepath.Ext(defaultStr)),
 		PromptWriter: func(w io.Writer) (int, error) {
 			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, _ANSI_ERASE_LINE)
 		},
