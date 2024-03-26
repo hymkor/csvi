@@ -8,10 +8,13 @@ Here are some key features:
 
 - Keybinding: vi-like on moving cursor and Emacs-like on editing cell
 - It reads the data from both file and standard-input
+- Modified cells are displayed with underline
+    - With one key `u`, original value before modifying can be restored
 - Non-user-modified cells retain their original values
-    - Enclosing double quotations
+    - Enclosing double quotations or not of the cell value that contains neither commas nor line breaks
     - LF or CRLF for line breaks
     - BOM of the beginning of files
+    - The representation before decoding double quotations, encoding, field and record sperators and so on are displayed on the bottom line
 - CSView supports the following encodings:
     - UTF8 (default)
     - Current codepage on Windows (automatically detected)
