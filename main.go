@@ -238,7 +238,7 @@ var skkInit = sync.OnceFunc(func() {
 
 func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
 	skkInit()
-
+	clearCache()
 	editor := &readline.Editor{
 		Writer:  out,
 		Default: defaultStr,
@@ -402,12 +402,6 @@ func mains() error {
 		ch, err := readline.GetKey(tty1)
 		if err != nil {
 			return err
-		}
-
-		getline := func(out io.Writer, prompt string, defaultStr string, c candidate) (string, error) {
-			text, err := getline(out, prompt, defaultStr, c)
-			clearCache()
-			return text, err
 		}
 
 		switch ch {
