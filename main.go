@@ -31,10 +31,10 @@ const (
 	_ANSI_YELLOW     = "\x1B[0;33;1m"
 	_ANSI_RESET      = "\x1B[0m"
 
-	ERASE_LINE       = "\x1B[0m\x1B[0K"
-	ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
 
 	CELL_WIDTH = 14
+	_ANSI_ERASE_LINE       = "\x1B[0m\x1B[0K"
+	_ANSI_ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
 )
 
 type _ColorStyle struct {
@@ -126,7 +126,7 @@ func drawLine(
 		}
 		i = nextI
 	}
-	io.WriteString(out, ERASE_LINE)
+	io.WriteString(out, _ANSI_ERASE_LINE)
 }
 
 func up(n int, out io.Writer) {
@@ -245,7 +245,7 @@ func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, err
 		History: c,
 		Cursor:  65535,
 		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
+			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, _ANSI_ERASE_LINE)
 		},
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
@@ -264,7 +264,7 @@ func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, err
 }
 
 func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
-	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, ERASE_LINE)
+	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
 	ch, err := readline.GetKey(tty1)
 	return err == nil && ch == "y"
 }
@@ -397,7 +397,7 @@ func mains() error {
 			}
 		}
 		io.WriteString(out, _ANSI_RESET)
-		io.WriteString(out, ERASE_SCRN_AFTER)
+		io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
 
 		ch, err := readline.GetKey(tty1)
 		if err != nil {
@@ -408,7 +408,7 @@ func mains() error {
 		case keys.CtrlL:
 			clearCache()
 		case "q", keys.Escape:
-			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+ERASE_LINE)
+			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+_ANSI_ERASE_LINE)
 			if ch, err := readline.GetKey(tty1); err == nil && ch == "y" {
 				io.WriteString(out, "\n")
 				return nil

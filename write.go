@@ -69,7 +69,7 @@ func getfilename(out io.Writer, prompt, defaultStr string) (string, error) {
 		Default: defaultStr,
 		Cursor:  65535,
 		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ERASE_LINE)
+			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, _ANSI_ERASE_LINE)
 		},
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
