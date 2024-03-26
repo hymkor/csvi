@@ -1,3 +1,7 @@
+v1.4.0
+======
+Mar 27 2024
+
 - Fix the problem the cache buffer for drawing did not work on v1.3.0
 - Set 1 as the default value of `-h` option and the first line is fixed header on default
     - To disable, use `-h 0`
