@@ -56,10 +56,10 @@ var headColorStyle = _ColorStyle{
 }
 
 var (
-	flagHeader = flag.Int("h", 1, "the number of row-header")
-	flagTsv    = flag.Bool("t", false, "use TAB as field-separator")
-	flagCsv    = flag.Bool("c", false, "use Comma as field-separator")
-	flagIana   = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
+	flagHeader    = flag.Uint("h", 1, "the number of row-header")
+	flagTsv       = flag.Bool("t", false, "use TAB as field-separator")
+	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
+	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 )
 
 var replaceTable = strings.NewReplacer(
@@ -191,18 +191,18 @@ func clearCache() {
 func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
-	if *flagHeader > 0 {
+	if h := int(*flagHeader); h > 0 {
 		enum := func(callback func([]uncsv.Cell) bool) {
-			for i := 0; i < *flagHeader; i++ {
+			for i := 0; i < h; i++ {
 				if !callback(cellsAfter(csvlines[i].Cell, startCol)) {
 					return
 				}
 			}
 		}
-		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, *flagHeader, &headColorStyle, headCache, out)
+		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, h, &headColorStyle, headCache, out)
 	}
-	if startRow < *flagHeader {
-		startRow = *flagHeader
+	if h := int(*flagHeader); startRow < h {
+		startRow = h
 	}
 	// print body
 	enum := func(callback func([]uncsv.Cell) bool) {
@@ -339,7 +339,7 @@ func mains() error {
 		if err != nil {
 			return err
 		}
-		screenHeight -= *flagHeader
+		screenHeight -= int(*flagHeader)
 		if lastWidth != screenWidth || lastHeight != screenHeight {
 			clearCache()
 			lastWidth = screenWidth
