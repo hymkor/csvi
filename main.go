@@ -384,7 +384,7 @@ func mains() error {
 					colIndex+1))
 
 				var buffer strings.Builder
-				buffer.WriteString(csvlines[rowIndex].Cell[colIndex].ReadableSource(mode))
+				buffer.WriteString(csvlines[rowIndex].Cell[colIndex].SourceText(mode))
 				if colIndex < len(csvlines[rowIndex].Cell)-1 {
 					buffer.WriteByte(mode.Comma)
 				} else if term := csvlines[rowIndex].Term; term != "" {

@@ -114,7 +114,7 @@ func (c Cell) Text() string {
 	return c.text
 }
 
-func (c Cell) ReadableSource(m *Mode) string {
+func (c Cell) SourceText(m *Mode) string {
 	return m.decode(c.source)
 }
 
