@@ -2,6 +2,7 @@
 - Set 1 as the default value of `-h` option and the first line is fixed header on default
     - To disable, use `-h 0`
     - Change the type `uint` (unsigned integer)
+- The width of the cells can be changed with `-w uint`
 
 v1.3.0
 ======
