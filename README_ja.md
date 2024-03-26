@@ -1,7 +1,8 @@
 The unbreakable CSV editor "CSView"
 ===================================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
-[English](./README.md) / Japanese
+
+[&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
 
 CSView はLinux やWindows のターミナル用の CSV エディタです。
 次のような特徴があります。

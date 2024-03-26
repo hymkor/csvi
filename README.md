@@ -1,9 +1,10 @@
 The unbreakable CSV editor "CSView"
 ===================================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
-English / [Japanese](./README_ja.md)
 
-CSView is a CSV editor on the Linux and Windows terminal.  
+**&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
+
+CSView is the CSV editor that runs on the terminal of Linux and Windows.
 Here are some key features:
 
 - Keybinding: vi-like on moving cursor and Emacs-like on editing cell
