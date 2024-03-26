@@ -31,8 +31,6 @@ const (
 	_ANSI_YELLOW     = "\x1B[0;33;1m"
 	_ANSI_RESET      = "\x1B[0m"
 
-
-	CELL_WIDTH = 14
 	_ANSI_ERASE_LINE       = "\x1B[0m\x1B[0K"
 	_ANSI_ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
 )
@@ -56,6 +54,7 @@ var headColorStyle = _ColorStyle{
 }
 
 var (
+	flagCellWidth = flag.Uint("w", 14, "set the width of cell")
 	flagHeader    = flag.Uint("h", 1, "the number of row-header")
 	flagTsv       = flag.Bool("t", false, "use TAB as field-separator")
 	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
@@ -156,7 +155,7 @@ func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, styl
 			cursorPos = csrpos
 		}
 		var buffer strings.Builder
-		drawLine(record, CELL_WIDTH, w, cursorPos, reverse, style, &buffer)
+		drawLine(record, int(*flagCellWidth), w, cursorPos, reverse, style, &buffer)
 		line := buffer.String()
 		if f := cache[count]; f != line {
 			io.WriteString(out, line)
@@ -346,7 +345,7 @@ func mains() error {
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
 		}
-		cols := (screenWidth - 1) / CELL_WIDTH
+		cols := (screenWidth - 1) / int(*flagCellWidth)
 
 		lfCount := drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 		repaint := func() {
