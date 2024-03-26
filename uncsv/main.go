@@ -114,6 +114,10 @@ func (c Cell) Text() string {
 	return c.text
 }
 
+func (c Cell) Source() []byte {
+	return c.source
+}
+
 func (c Cell) SourceText(m *Mode) string {
 	return m.decode(c.source)
 }
