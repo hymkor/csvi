@@ -56,7 +56,7 @@ var headColorStyle = _ColorStyle{
 }
 
 var (
-	flagHeader = flag.Int("h", 0, "the number of row-header")
+	flagHeader = flag.Int("h", 1, "the number of row-header")
 	flagTsv    = flag.Bool("t", false, "use TAB as field-separator")
 	flagCsv    = flag.Bool("c", false, "use Comma as field-separator")
 	flagIana   = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
