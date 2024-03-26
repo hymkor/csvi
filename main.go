@@ -532,11 +532,17 @@ func mains() error {
 				csvlines[rowIndex].Replace(colIndex, text, mode)
 			}
 		case "r", "R", keys.F2:
-			text, err := getline(out, "replace cell>", csvlines[rowIndex].Cell[colIndex].Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
+			row := &csvlines[rowIndex]
+			cursor := &row.Cell[colIndex]
+			q := cursor.IsQuoted()
+			text, err := getline(out, "replace cell>", cursor.Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
 			if err != nil {
 				break
 			}
-			csvlines[rowIndex].Replace(colIndex, text, mode)
+			row.Replace(colIndex, text, mode)
+			if q {
+				*cursor = cursor.Quote(mode)
+			}
 		case "u":
 			csvlines[rowIndex].Cell[colIndex].Restore(mode)
 		case "y":
