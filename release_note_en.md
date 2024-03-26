@@ -3,6 +3,11 @@
     - To disable, use `-h 0`
     - Change the type `uint` (unsigned integer)
 - The width of the cells can be changed with `-w uint`
+- Even when the double quotations get redundant as the result to edit, they are not removed now
+- When inputting the save filename, the initial position of the cursor is now before the extension
+- Modifying the package `uncsv`
+    - Rename: `(Cell) ReadableSource` → `(Cell) SourceText()`
+    - Implment: `(Cell) Source` that returns the binary value before decoding
 
 v1.3.0
 ======
