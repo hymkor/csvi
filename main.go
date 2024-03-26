@@ -432,8 +432,8 @@ func mains() error {
 		case "$", keys.CtrlE:
 			colIndex = len(csvlines[rowIndex].Cell) - 1
 		case "<":
-			rowIndex = *flagHeader
-			startRow = *flagHeader
+			rowIndex = 0
+			startRow = 0
 			colIndex = 0
 			startCol = 0
 		case ">", "G":
