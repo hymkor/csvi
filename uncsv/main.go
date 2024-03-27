@@ -43,6 +43,14 @@ type Mode struct {
 	encoder     *encoding.Encoder
 }
 
+func (m *Mode) IsUTF16LE() bool {
+	return m.endian == utf16le
+}
+
+func (m *Mode) IsUTF16BE() bool {
+	return m.endian == utf16be
+}
+
 func (m *Mode) _decode(s []byte) (string, error) {
 	if m.decoder != nil {
 		result, _, err := transform.Bytes(m.decoder, s)

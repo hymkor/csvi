@@ -376,7 +376,13 @@ func mains() error {
 				n += first(io.WriteString(out, "[BOM]"))
 			}
 			if mode.NonUTF8 {
-				n += first(io.WriteString(out, "[ANSI]"))
+				if mode.IsUTF16LE() {
+					n += first(io.WriteString(out, "[16LE]"))
+				} else if mode.IsUTF16BE() {
+					n += first(io.WriteString(out, "[16BE]"))
+				} else {
+					n += first(io.WriteString(out, "[ANSI]"))
+				}
 			}
 			if 0 <= colIndex && colIndex < len(csvlines[rowIndex].Cell) {
 				n += first(fmt.Fprintf(out, "(%d,%d): ",
