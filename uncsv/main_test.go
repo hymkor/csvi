@@ -1,6 +1,7 @@
 package uncsv
 
 import (
+	"bufio"
 	"io"
 	"strings"
 	"testing"
@@ -8,7 +9,7 @@ import (
 
 func try(t *testing.T, source string, expect ...string) {
 	t.Helper()
-	r := strings.NewReader(source)
+	r := bufio.NewReader(strings.NewReader(source))
 	mode := &Mode{Comma: ','}
 	row, err := ReadLine(r, mode)
 	if err != nil {

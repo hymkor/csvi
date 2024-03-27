@@ -158,15 +158,7 @@ type Row struct {
 	Term string
 }
 
-// Reader is assumed to be "bufio".Reader or "strings".Reader
-type Reader interface {
-	io.ByteReader
-	io.Reader
-	Peek(int) ([]byte, error)
-	Discard(int) (int, error)
-}
-
-func ReadLine(br Reader, mode *Mode) (*Row, error) {
+func ReadLine(br *bufio.Reader, mode *Mode) (*Row, error) {
 	row := &Row{}
 	quoted := false
 	source := []byte{}
@@ -303,7 +295,7 @@ func ReadLine(br Reader, mode *Mode) (*Row, error) {
 }
 
 func ReadAll(r io.Reader, mode *Mode) ([]Row, error) {
-	reader, ok := r.(Reader)
+	reader, ok := r.(*bufio.Reader)
 	if !ok {
 		reader = bufio.NewReader(r)
 	}
