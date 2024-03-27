@@ -1,4 +1,5 @@
 - Support UTF16
+    - Judge the file encoding UTF16 when the first two bytes are `\xFE\xFF` or `\xFF\xFE`, or `\0` is one of the two bytes
 
 v1.4.0
 ======
