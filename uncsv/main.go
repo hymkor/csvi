@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
+	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 
 	"github.com/nyaosorg/go-windows-mbcs"
@@ -24,11 +25,20 @@ const (
 	triTrue
 )
 
+type endian int
+
+const (
+	octet endian = iota
+	utf16le
+	utf16be
+)
+
 type Mode struct {
 	NonUTF8     bool
 	Comma       byte
 	DefaultTerm string
 	hasBom      tristate
+	endian      endian
 	decoder     *encoding.Decoder
 	encoder     *encoding.Encoder
 }
@@ -55,6 +65,11 @@ func (m *Mode) _encode(s string) ([]byte, error) {
 	return mbcs.Utf8ToAnsi(s, mbcs.ACP)
 }
 
+func (m *Mode) setEncoding(e encoding.Encoding) {
+	m.decoder = e.NewDecoder()
+	m.encoder = e.NewEncoder()
+}
+
 func (m *Mode) SetEncoding(name string) error {
 	e, err := ianaindex.IANA.Encoding(name)
 	if err != nil {
@@ -63,8 +78,7 @@ func (m *Mode) SetEncoding(name string) error {
 	if e == nil {
 		return fmt.Errorf("%s: not supported in golang.org/x/text/encoding/ianaindex", name)
 	}
-	m.decoder = e.NewDecoder()
-	m.encoder = e.NewEncoder()
+	m.setEncoding(e)
 	return nil
 }
 
@@ -127,7 +141,9 @@ func (c Cell) Modified() bool {
 }
 
 func (c Cell) IsQuoted() bool {
-	return len(c.source) > 0 && c.source[0] == '"'
+	s := c.source
+	return (len(s) > 1 && s[0] == 0 && s[1] == '"') ||
+		(len(s) > 0 && s[0] == '"')
 }
 
 func (c *Cell) Restore(mode *Mode) {
@@ -144,8 +160,10 @@ type Row struct {
 
 // Reader is assumed to be "bufio".Reader or "strings".Reader
 type Reader interface {
-	io.RuneScanner
 	io.ByteReader
+	io.Reader
+	Peek(int) ([]byte, error)
+	Discard(int) (int, error)
 }
 
 func ReadLine(br Reader, mode *Mode) (*Row, error) {
@@ -153,56 +171,134 @@ func ReadLine(br Reader, mode *Mode) (*Row, error) {
 	quoted := false
 	source := []byte{}
 	if mode.hasBom == triNotSet {
-		if ch, n, err := br.ReadRune(); err == nil && n == 3 && ch == '\uFEFF' {
-			mode.hasBom = triTrue
-		} else {
-			mode.hasBom = triFalse
-			br.UnreadRune()
-		}
-	}
-	for {
-		c, err := br.ReadByte()
-		if err != nil {
-			row.Cell = append(row.Cell, Cell{
-				source:   source,
-				text:     dequote(mode.decode(source)),
-				original: source,
-			})
-			row.Term = ""
-			return row, err
-		}
-		if c == '"' {
-			quoted = !quoted
-		}
-		if !quoted {
-			switch c {
-			case mode.Comma:
-				row.Cell = append(row.Cell, Cell{
-					source:   source,
-					text:     dequote(mode.decode(source)),
-					original: source,
-				})
-				source = []byte{}
-				continue
-			case '\n':
-				if len(source) > 0 && source[len(source)-1] == '\r' {
-					source = source[:len(source)-1]
-					row.Term = "\r\n"
-				} else {
-					row.Term = "\n"
-				}
-				row.Cell = append(row.Cell, Cell{
-					source:   source,
-					text:     dequote(mode.decode(source)),
-					original: source,
-				})
-				if mode.DefaultTerm == "" {
-					mode.DefaultTerm = row.Term
-				}
-				return row, nil
+		prefix, err := br.Peek(3)
+		if err == nil {
+			if bytes.HasPrefix(prefix, []byte{0xEF, 0xBB, 0xBF}) {
+				// UTF8
+				mode.hasBom = triTrue
+				br.Discard(3)
+			} else if bytes.HasPrefix(prefix, []byte{0xFF, 0xFE}) {
+				mode.hasBom = triTrue
+				mode.endian = utf16le
+				mode.setEncoding(unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM))
+				mode.NonUTF8 = true
+				br.Discard(2)
+			} else if bytes.HasPrefix(prefix, []byte{0xFE, 0xFF}) {
+				mode.hasBom = triTrue
+				mode.endian = utf16be
+				mode.setEncoding(unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM))
+				mode.NonUTF8 = true
+				br.Discard(2)
+			} else if len(prefix) >= 2 && prefix[1] == 0 {
+				mode.hasBom = triFalse
+				mode.endian = utf16le
+				mode.setEncoding(unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM))
+				mode.NonUTF8 = true
+			} else if len(prefix) >= 1 && prefix[0] == 0 {
+				mode.hasBom = triFalse
+				mode.endian = utf16be
+				mode.setEncoding(unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM))
+				mode.NonUTF8 = true
 			}
 		}
-		source = append(source, c)
+	}
+	if mode.endian == octet {
+		for {
+			c, err := br.ReadByte()
+			if err != nil {
+				row.Cell = append(row.Cell, Cell{
+					source:   source,
+					text:     dequote(mode.decode(source)),
+					original: source,
+				})
+				row.Term = ""
+				return row, err
+			}
+			if c == '"' {
+				quoted = !quoted
+			}
+			if !quoted {
+				switch c {
+				case mode.Comma:
+					row.Cell = append(row.Cell, Cell{
+						source:   source,
+						text:     dequote(mode.decode(source)),
+						original: source,
+					})
+					source = []byte{}
+					continue
+				case '\n':
+					if len(source) > 0 && source[len(source)-1] == '\r' {
+						source = source[:len(source)-1]
+						row.Term = "\r\n"
+					} else {
+						row.Term = "\n"
+					}
+					row.Cell = append(row.Cell, Cell{
+						source:   source,
+						text:     dequote(mode.decode(source)),
+						original: source,
+					})
+					if mode.DefaultTerm == "" {
+						mode.DefaultTerm = row.Term
+					}
+					return row, nil
+				}
+			}
+			source = append(source, c)
+		}
+	} else {
+		for {
+			var buf [2]byte
+			n, err := io.ReadFull(br, buf[:])
+			if err != nil {
+				row.Cell = append(row.Cell, Cell{
+					source:   source,
+					text:     dequote(mode.decode(source)),
+					original: source,
+				})
+				row.Term = ""
+				return row, err
+			}
+			var c rune
+			if mode.endian == utf16le {
+				c = rune(buf[0]) | (rune(buf[1]) << 8)
+			} else {
+				c = rune(buf[1]) | (rune(buf[0]) << 8)
+			}
+			if c == '"' {
+				quoted = !quoted
+			}
+			if !quoted {
+				switch c {
+				case rune(mode.Comma):
+					row.Cell = append(row.Cell, Cell{
+						source:   source,
+						text:     dequote(mode.decode(source)),
+						original: source,
+					})
+					source = []byte{}
+					continue
+				case '\n':
+					if len(source) > 0 && source[len(source)-1] == '\r' {
+						source = source[:len(source)-1]
+						row.Term = "\r\n"
+					} else {
+						row.Term = "\n"
+					}
+					row.Cell = append(row.Cell, Cell{
+						source:   source,
+						text:     dequote(mode.decode(source)),
+						original: source,
+					})
+					if mode.DefaultTerm == "" {
+						mode.DefaultTerm = row.Term
+					}
+					return row, nil
+				}
+			}
+			source = append(source, buf[:n]...)
+		}
 	}
 }
 
@@ -224,6 +320,17 @@ func ReadAll(r io.Reader, mode *Mode) ([]Row, error) {
 	}
 }
 
+func writeEndian(w io.Writer, c byte, e endian) {
+	switch e {
+	case utf16le:
+		w.Write([]byte{c, 0})
+	case utf16be:
+		w.Write([]byte{0, c})
+	default:
+		w.Write([]byte{c})
+	}
+}
+
 func (row *Row) Rebuild(mode *Mode) []byte {
 	var buffer bytes.Buffer
 	if len(row.Cell) > 0 {
@@ -232,17 +339,26 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 			if i++; i >= end {
 				break
 			}
-			buffer.WriteByte(mode.Comma)
+			writeEndian(&buffer, mode.Comma, mode.endian)
 		}
 	}
-	buffer.WriteString(row.Term)
+	for i := 0; i < len(row.Term); i++ {
+		writeEndian(&buffer, row.Term[i], mode.endian)
+	}
 	return buffer.Bytes()
 }
 
 func (mode *Mode) Dump(rows []Row, w io.Writer) {
 	bw := bufio.NewWriter(w)
 	if mode.hasBom == triTrue {
-		bw.WriteString("\uFEFF")
+		switch mode.endian {
+		case utf16le:
+			bw.Write([]byte{0xFF, 0xFE})
+		case utf16be:
+			bw.Write([]byte{0xFE, 0xFF})
+		default:
+			bw.WriteString("\uFEFF")
+		}
 	}
 	for _, row := range rows {
 		bw.Write(row.Rebuild(mode))
