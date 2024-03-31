@@ -1,16 +1,16 @@
 {
-    "version": "1.4.0",
+    "version": "1.5.0",
     "description": "The unbreakabe CSV editor - \"CSView\"",
     "homepage": "https://github.com/hymkor/csview",
     "license": "MIT License",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/hymkor/csview/releases/download/v1.4.0/csview-v1.4.0-windows-386.zip",
-            "hash": "d18a6ada4c9ca87a59d254487d686dc82ee4ca5c0895d45da4e62101e5607d27"
+            "url": "https://github.com/hymkor/csview/releases/download/v1.5.0/csview-v1.5.0-windows-386.zip",
+            "hash": "79d028840c64b9d540a1e1092b0f09db9810e6b731cd982aeaadec650e053dbc"
         },
         "64bit": {
-            "url": "https://github.com/hymkor/csview/releases/download/v1.4.0/csview-v1.4.0-windows-amd64.zip",
-            "hash": "b9c00b77c4553a2a5007b30c051fbccb64be3c1a87d97952443af22bd7cf76ca"
+            "url": "https://github.com/hymkor/csview/releases/download/v1.5.0/csview-v1.5.0-windows-amd64.zip",
+            "hash": "31443fa1d717451103a5f652b4acee8aba86095e6f900091c63db3b2b02306a2"
         }
     },
     "bin": "csview.exe",
