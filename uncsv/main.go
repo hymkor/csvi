@@ -280,8 +280,9 @@ func ReadLine(br *bufio.Reader, mode *Mode) (*Row, error) {
 					source = []byte{}
 					continue
 				case '\n':
-					if len(source) > 0 && source[len(source)-1] == '\r' {
-						source = source[:len(source)-1]
+					if bytes.HasSuffix(source, []byte{'\r', 0}) ||
+						bytes.HasSuffix(source, []byte{0, '\r'}) {
+						source = source[:len(source)-2]
 						row.Term = "\r\n"
 					} else {
 						row.Term = "\n"
