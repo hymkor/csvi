@@ -1,4 +1,4 @@
-module github.com/hymkor/csview
+module github.com/hymkor/csvi
 
 go 1.21.6
 
