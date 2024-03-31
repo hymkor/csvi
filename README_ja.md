@@ -18,6 +18,7 @@ CSView はLinux やWindows のターミナル用の CSV エディタです。
     - 二重引用符などをデコードする前の表現、文字コード、改行コード、区切り文字などを最下行に表示
 - 様々な文字コードをサポート
     - UTF8 (default)
+    - UTF16
     - Windows のコードページ (自動判別)
     - [IANA registry] (-iana NAME) で指定されるエンコーディング
 

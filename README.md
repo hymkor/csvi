@@ -18,6 +18,7 @@ Here are some key features:
     - The representation before decoding double quotations, encoding, field and record sperators and so on are displayed on the bottom line
 - CSView supports the following encodings:
     - UTF8 (default)
+    - UTF16
     - Current codepage on Windows (automatically detected)
     - Encodings specified by the [IANA registry] (-iana NAME)
 
