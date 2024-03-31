@@ -1,3 +1,7 @@
+v1.5.0
+======
+Mar 31 2024
+
 - Support UTF16
     - Judge the file encoding UTF16 when the first two bytes are `\xFE\xFF` or `\xFF\xFE`, or `\0` is one of the two bytes
 
