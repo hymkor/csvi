@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bufio"
+	"container/list"
 	"context"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"runtime"
-	"slices"
 	"strings"
 	"sync"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
 
+	"github.com/hymkor/csvi/internal/nonblock"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -33,6 +35,9 @@ const (
 
 	_ANSI_ERASE_LINE       = "\x1B[0m\x1B[0K"
 	_ANSI_ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
+
+	_ANSI_BLINK_ON  = "\x1B[6m"
+	_ANSI_BLINK_OFF = "\x1B[25m"
 )
 
 type _ColorStyle struct {
@@ -187,28 +192,35 @@ func clearCache() {
 	clear(bodyCache)
 }
 
-func drawView(csvlines []uncsv.Row, startRow, startCol, cursorRow, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func drawView(header, pointor *list.Element, startRow, startCol, cursorRow, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
 	if h := int(*flagHeader); h > 0 {
 		enum := func(callback func([]uncsv.Cell) bool) {
-			for i := 0; i < h; i++ {
-				if !callback(cellsAfter(csvlines[i].Cell, startCol)) {
+			for i := 0; i < h && header != nil; i++ {
+				row := header.Value.(*uncsv.Row)
+				if !callback(cellsAfter(row.Cell, startCol)) {
 					return
 				}
+				header = header.Next()
 			}
 		}
 		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, h, &headColorStyle, headCache, out)
 	}
 	if h := int(*flagHeader); startRow < h {
 		startRow = h
+		for i := 0; i < h; i++ {
+			pointor = pointor.Next()
+		}
 	}
 	// print body
 	enum := func(callback func([]uncsv.Cell) bool) {
-		for startRow < len(csvlines) {
-			if !callback(cellsAfter(csvlines[startRow].Cell, startCol)) {
+		for pointor != nil {
+			row := pointor.Value.(*uncsv.Row)
+			if !callback(cellsAfter(row.Cell, startCol)) {
 				return
 			}
+			pointor = pointor.Next()
 			startRow++
 		}
 	}
@@ -278,7 +290,7 @@ func mains() error {
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	var csvlines []uncsv.Row
+	csvlines := list.New()
 	mode := &uncsv.Mode{}
 
 	if *flagIana != "" {
@@ -286,9 +298,11 @@ func mains() error {
 			return fmt.Errorf("-iana %w", err)
 		}
 	}
+	var reader *bufio.Reader
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
 		// Start with one empty line
-		csvlines = []uncsv.Row{uncsv.NewRow(mode)}
+		newRow := uncsv.NewRow(mode)
+		csvlines.PushBack(&newRow)
 		mode.Comma = '\t'
 	} else {
 		mode.Comma = ','
@@ -302,12 +316,19 @@ func mains() error {
 		if *flagCsv {
 			mode.Comma = ','
 		}
-		var err error
-		csvlines, err = uncsv.ReadAll(multiFileReader(args...), mode)
-		if err != nil {
-			return err
+		reader = bufio.NewReader(multiFileReader(args...))
+		for i := 0; i < 100; i++ {
+			row, err := uncsv.ReadLine(reader, mode)
+			if err != nil && err != io.EOF {
+				return err
+			}
+			csvlines.PushBack(row)
+			if err == io.EOF {
+				reader = nil
+				break
+			}
 		}
-		if len(csvlines) <= 0 {
+		if csvlines.Len() <= 0 {
 			return io.EOF
 		}
 	}
@@ -325,11 +346,16 @@ func mains() error {
 	rowIndex := 0
 	startRow := 0
 	startCol := 0
+	startP := csvlines.Front()
+	cursorP := startP
 
 	lastSearch := searchForward
 	lastSearchRev := searchBackward
 	lastWord := ""
 	var lastWidth, lastHeight int
+
+	keyWorker := nonblock.New(func() (string, error) { return readline.GetKey(tty1) })
+	defer keyWorker.Close()
 
 	message := ""
 	var killbuffer string
@@ -347,24 +373,25 @@ func mains() error {
 		}
 		cols := (screenWidth - 1) / int(*flagCellWidth)
 
-		lfCount := drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+		lfCount := drawView(csvlines.Front(), startP, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = drawView(csvlines, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+			lfCount = drawView(csvlines.Front(), startP, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
+		cursorRow := cursorP.Value.(*uncsv.Row)
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 			message = ""
-		} else if 0 <= rowIndex && rowIndex < len(csvlines) {
+		} else if 0 <= rowIndex && rowIndex < csvlines.Len() {
 			n := 0
 			if mode.Comma == '\t' {
 				n += first(io.WriteString(out, "[TSV]"))
 			} else if mode.Comma == ',' {
 				n += first(io.WriteString(out, "[CSV]"))
 			}
-			switch csvlines[rowIndex].Term {
+			switch cursorRow.Term {
 			case "\r\n":
 				n += first(io.WriteString(out, "[CRLF]"))
 			case "\n":
@@ -384,16 +411,21 @@ func mains() error {
 					n += first(io.WriteString(out, "[ANSI]"))
 				}
 			}
-			if 0 <= colIndex && colIndex < len(csvlines[rowIndex].Cell) {
-				n += first(fmt.Fprintf(out, "(%d,%d): ",
+			if 0 <= colIndex && colIndex < len(cursorRow.Cell) {
+				n += first(fmt.Fprintf(out, "(%d,%d)",
 					rowIndex+1,
 					colIndex+1))
-
+				if reader != nil {
+					n += first(fmt.Fprintf(out, "%s*%s ",
+						_ANSI_BLINK_ON, _ANSI_BLINK_OFF))
+				} else {
+					n += first(io.WriteString(out, ": "))
+				}
 				var buffer strings.Builder
-				buffer.WriteString(csvlines[rowIndex].Cell[colIndex].SourceText(mode))
-				if colIndex < len(csvlines[rowIndex].Cell)-1 {
+				buffer.WriteString(cursorRow.Cell[colIndex].SourceText(mode))
+				if colIndex < len(cursorRow.Cell)-1 {
 					buffer.WriteByte(mode.Comma)
-				} else if term := csvlines[rowIndex].Term; term != "" {
+				} else if term := cursorRow.Term; term != "" {
 					buffer.WriteString(term)
 				} else { // EOF
 					buffer.WriteString("\u2592")
@@ -404,7 +436,20 @@ func mains() error {
 		io.WriteString(out, _ANSI_RESET)
 		io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
 
-		ch, err := readline.GetKey(tty1)
+		ch, err := keyWorker.GetOr(func() bool {
+			if reader == nil {
+				return false
+			}
+			row, err := uncsv.ReadLine(reader, mode)
+			if err != nil {
+				reader = nil
+				if err != io.EOF {
+					return false
+				}
+			}
+			csvlines.PushBack(row)
+			return err != io.EOF
+		})
 		if err != nil {
 			return err
 		}
@@ -419,12 +464,14 @@ func mains() error {
 				return nil
 			}
 		case "j", keys.Down, keys.CtrlN, keys.Enter:
-			if rowIndex < len(csvlines)-1 {
+			if rowIndex < csvlines.Len()-1 {
 				rowIndex++
+				cursorP = cursorP.Next()
 			}
 		case "k", keys.Up, keys.CtrlP:
 			if rowIndex > 0 {
 				rowIndex--
+				cursorP = cursorP.Prev()
 			}
 		case "h", keys.Left, keys.CtrlB, keys.ShiftTab:
 			if colIndex > 0 {
@@ -435,36 +482,41 @@ func mains() error {
 		case "0", "^", keys.CtrlA:
 			colIndex = 0
 		case "$", keys.CtrlE:
-			colIndex = len(csvlines[rowIndex].Cell) - 1
+			colIndex = len(cursorRow.Cell) - 1
 		case "<":
 			rowIndex = 0
 			startRow = 0
 			colIndex = 0
 			startCol = 0
+			startP = csvlines.Front()
+			cursorP = startP
 		case ">", "G":
-			rowIndex = len(csvlines) - 1
+			rowIndex = csvlines.Len() - 1
+			cursorP = csvlines.Back()
 		case "n":
 			if lastWord == "" {
 				break
 			}
-			found, r, c := lastSearch(csvlines, rowIndex, colIndex, lastWord)
-			if !found {
+			foundP, r, c := lastSearch(cursorP, rowIndex, colIndex, lastWord)
+			if foundP == nil {
 				message = fmt.Sprintf("%s: not found", lastWord)
 				break
 			}
 			rowIndex = r
 			colIndex = c
+			cursorP = foundP
 		case "N":
 			if lastWord == "" {
 				break
 			}
-			found, r, c := lastSearchRev(csvlines, rowIndex, colIndex, lastWord)
-			if !found {
+			foundP, r, c := lastSearchRev(cursorP, rowIndex, colIndex, lastWord)
+			if foundP == nil {
 				message = fmt.Sprintf("%s: not found", lastWord)
 				break
 			}
 			rowIndex = r
 			colIndex = c
+			cursorP = foundP
 		case "/", "?":
 			var err error
 			lastWord, err = getline(out, ch, "", nil)
@@ -481,110 +533,157 @@ func mains() error {
 				lastSearch = searchBackward
 				lastSearchRev = searchForward
 			}
-			found, r, c := lastSearch(csvlines, rowIndex, colIndex, lastWord)
-			if !found {
+			foundP, r, c := lastSearch(cursorP, rowIndex, colIndex, lastWord)
+			if foundP == nil {
 				message = fmt.Sprintf("%s: not found", lastWord)
 				break
 			}
 			rowIndex = r
 			colIndex = c
+			cursorP = foundP
 		case "o":
-			if rowIndex > len(csvlines)-1 {
-				break
+			newRow := uncsv.NewRow(mode)
+			newRow.Term = cursorRow.Term
+			if cursorRow.Term == "" {
+				cursorRow.Term = mode.DefaultTerm
 			}
+			cursorP = csvlines.InsertAfter(&newRow, cursorP)
 			rowIndex++
-			fallthrough
-		case "O":
-			csvlines = slices.Insert(csvlines, rowIndex, uncsv.NewRow(mode))
+			cursorRow = cursorP.Value.(*uncsv.Row)
 			repaint()
-			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, csvlines))
-			csvlines[rowIndex].Replace(0, text, mode)
+			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
+			cursorRow.Replace(0, text, mode)
+
+		case "O":
+			startPrevP := startP.Prev()
+			newRow := uncsv.NewRow(mode)
+			cursorP = csvlines.InsertBefore(&newRow, cursorP)
+			if startPrevP != nil {
+				startP = startPrevP.Next()
+			} else {
+				startP = csvlines.Front()
+			}
+			cursorRow = cursorP.Value.(*uncsv.Row)
+			repaint()
+			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
+			cursorRow.Replace(0, text, mode)
 		case "D":
-			if len(csvlines) <= 1 {
+			if csvlines.Len() <= 1 {
 				break
 			}
-			csvlines = slices.Delete(csvlines, rowIndex, rowIndex+1)
-			if rowIndex >= len(csvlines) {
+			startPrevP := startP.Prev()
+			prevP := cursorP.Prev()
+			removedRow := csvlines.Remove(cursorP).(*uncsv.Row)
+			if prevP == nil {
+				cursorP = csvlines.Front()
+				rowIndex = 0
+			} else if next := prevP.Next(); next != nil {
+				cursorP = next
+			} else {
+				cursorP = prevP
+				cursorP.Value.(*uncsv.Row).Term = removedRow.Term
 				rowIndex--
 			}
+			if startPrevP == nil {
+				startP = csvlines.Front()
+			} else {
+				startP = startPrevP.Next()
+			}
 		case "i":
-			text, err := getline(out, "insert cell>", "", makeCandidate(rowIndex, colIndex, csvlines))
+			text, err := getline(out, "insert cell>", "", makeCandidate(rowIndex, colIndex, cursorP))
 			if err != nil {
 				break
 			}
-			if cells := csvlines[rowIndex].Cell; len(cells) == 1 && cells[0].Text() == "" {
-				csvlines[rowIndex].Replace(colIndex, text, mode)
+			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
+				cursorRow.Replace(colIndex, text, mode)
 			} else {
-				csvlines[rowIndex].Insert(colIndex, text, mode)
+				cursorRow.Insert(colIndex, text, mode)
 				colIndex++
 			}
 		case "a":
-			if cells := csvlines[rowIndex].Cell; len(cells) == 1 && cells[0].Text() == "" {
+			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 				// current column is the last one and it is empty
-				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, csvlines))
+				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, cursorP))
 				if err != nil {
 					break
 				}
-				csvlines[rowIndex].Replace(colIndex, text, mode)
+				cursorRow.Replace(colIndex, text, mode)
 			} else {
 				colIndex++
-				csvlines[rowIndex].Insert(colIndex, "", mode)
+				cursorRow.Insert(colIndex, "", mode)
 				repaint()
-				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, csvlines))
+				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, cursorP))
 				if err != nil {
 					colIndex--
 					break
 				}
-				csvlines[rowIndex].Replace(colIndex, text, mode)
+				cursorRow.Replace(colIndex, text, mode)
 			}
 		case "r", "R", keys.F2:
-			row := &csvlines[rowIndex]
-			cursor := &row.Cell[colIndex]
+			cursor := &cursorRow.Cell[colIndex]
 			q := cursor.IsQuoted()
-			text, err := getline(out, "replace cell>", cursor.Text(), makeCandidate(rowIndex-1, colIndex, csvlines))
+			text, err := getline(out, "replace cell>", cursor.Text(), makeCandidate(rowIndex-1, colIndex, cursorP))
 			if err != nil {
 				break
 			}
-			row.Replace(colIndex, text, mode)
+			cursorRow.Replace(colIndex, text, mode)
 			if q {
 				*cursor = cursor.Quote(mode)
 			}
 		case "u":
-			csvlines[rowIndex].Cell[colIndex].Restore(mode)
+			cursorRow.Cell[colIndex].Restore(mode)
 		case "y":
-			killbuffer = csvlines[rowIndex].Cell[colIndex].Text()
+			killbuffer = cursorRow.Cell[colIndex].Text()
 			message = "yanked the current cell: " + killbuffer
 		case "p":
-			csvlines[rowIndex].Replace(colIndex, killbuffer, mode)
+			cursorRow.Replace(colIndex, killbuffer, mode)
 			message = "pasted: " + killbuffer
 		case "d", "x":
-			if len(csvlines[rowIndex].Cell) <= 1 {
-				csvlines[rowIndex].Replace(0, "", mode)
+			if len(cursorRow.Cell) <= 1 {
+				cursorRow.Replace(0, "", mode)
 			} else {
-				csvlines[rowIndex].Delete(colIndex)
+				cursorRow.Delete(colIndex)
 			}
 		case "\"":
-			cursor := &csvlines[rowIndex].Cell[colIndex]
+			cursor := &cursorRow.Cell[colIndex]
 			if cursor.IsQuoted() {
-				csvlines[rowIndex].Replace(colIndex, cursor.Text(), mode)
+				cursorRow.Replace(colIndex, cursor.Text(), mode)
 			} else {
 				*cursor = cursor.Quote(mode)
 			}
 		case "w":
+			if reader != nil {
+				io.WriteString(out, _ANSI_YELLOW+"\rw: Wait a moment for reading all data..."+_ANSI_ERASE_LINE)
+				for {
+					row, err := uncsv.ReadLine(reader, mode)
+					if err != nil && err != io.EOF {
+						return err
+					}
+					csvlines.PushBack(row)
+					if err == io.EOF {
+						break
+					}
+				}
+			}
 			if err := cmdWrite(csvlines, mode, tty1, out); err != nil {
 				message = err.Error()
 			}
 			clearCache()
 		}
-		if L := len(csvlines[rowIndex].Cell); L <= 0 {
+		if L := len(cursorRow.Cell); L <= 0 {
 			colIndex = 0
 		} else if colIndex >= L {
 			colIndex = L - 1
 		}
 		if rowIndex < startRow {
 			startRow = rowIndex
+			startP = cursorP
 		} else if rowIndex >= startRow+screenHeight-1 {
 			startRow = rowIndex - (screenHeight - 1) + 1
+			var i int
+			for startP, i = cursorP, rowIndex; i > startRow; i-- {
+				startP = startP.Prev()
+			}
 		}
 		if colIndex < startCol {
 			startCol = colIndex
@@ -598,8 +697,8 @@ func mains() error {
 var version string
 
 func main() {
-	fmt.Printf("csview %s-%s-%s by %s\n",
-		version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+	fmt.Printf("%s %s-%s-%s by %s\n",
+		os.Args[0], version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
 	disable := colorable.EnableColorsStdout(nil)
 	if disable != nil {

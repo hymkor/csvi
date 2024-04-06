@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"os"
 	"strings"
 
@@ -56,56 +57,64 @@ func (c candidate) List(field []string) (fullnames, basenames []string) {
 	return c, c
 }
 
-func makeCandidate(row, col int, csvlines []uncsv.Row) candidate {
-	if row < 0 || row >= len(csvlines) {
-		return candidate([]string{})
-	}
-	result := candidate(make([]string, 0, row))
+func makeCandidate(row, col int, cursor *list.Element) candidate {
+	result := candidate(make([]string, 0, 100))
 	set := make(map[string]struct{})
-	for ; row >= 0; row-- {
-		if col >= len(csvlines[row].Cell) {
+	for ; cursor != nil; cursor = cursor.Prev() {
+		row := cursor.Value.(*uncsv.Row)
+		if col >= len(row.Cell) {
 			break
 		}
-		value := csvlines[row].Cell[col].Text()
+		value := row.Cell[col].Text()
 		if value == "" {
 			break
 		}
 		if _, ok := set[value]; !ok {
 			result = append(result, value)
 			set[value] = struct{}{}
+			if len(set) > 100 {
+				break
+			}
 		}
+	}
+	if len(result) <= 0 {
+		result = append(result, "")
 	}
 	return result
 }
 
-func searchForward(csvlines []uncsv.Row, r, c int, target string) (bool, int, int) {
+func searchForward(cursor *list.Element, r, c int, target string) (*list.Element, int, int) {
 	c++
-	for r < len(csvlines) {
-		for c < len(csvlines[r].Cell) {
-			if strings.Contains(csvlines[r].Cell[c].Text(), target) {
-				return true, r, c
+	for cursor != nil {
+		row := cursor.Value.(*uncsv.Row)
+		for c < len(row.Cell) {
+			if strings.Contains(row.Cell[c].Text(), target) {
+				return cursor, r, c
 			}
 			c++
 		}
 		r++
+		cursor = cursor.Next()
 		c = 0
 	}
-	return false, r, c
+	return nil, r, c
 }
 
-func searchBackward(csvlines []uncsv.Row, r, c int, target string) (bool, int, int) {
+func searchBackward(cursor *list.Element, r, c int, target string) (*list.Element, int, int) {
 	c--
 	for {
+		row := cursor.Value.(*uncsv.Row)
 		for c >= 0 {
-			if strings.Contains(csvlines[r].Cell[c].Text(), target) {
-				return true, r, c
+			if strings.Contains(row.Cell[c].Text(), target) {
+				return cursor, r, c
 			}
 			c--
 		}
 		r--
-		if r < 0 {
-			return false, r, c
+		cursor = cursor.Prev()
+		if r < 0 || cursor == nil {
+			return nil, r, c
 		}
-		c = len(csvlines[r].Cell) - 1
+		c = len(cursor.Value.(*uncsv.Row).Cell) - 1
 	}
 }

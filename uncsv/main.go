@@ -350,6 +350,17 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 }
 
 func (mode *Mode) Dump(rows []Row, w io.Writer) {
+	mode.DumpBy(func() *Row {
+		if len(rows) <= 0 {
+			return nil
+		}
+		r := &rows[0]
+		rows = rows[1:]
+		return r
+	}, w)
+}
+
+func (mode *Mode) DumpBy(fetch func() *Row, w io.Writer) {
 	bw := bufio.NewWriter(w)
 	if mode.hasBom == triTrue {
 		switch mode.endian {
@@ -361,7 +372,11 @@ func (mode *Mode) Dump(rows []Row, w io.Writer) {
 			bw.WriteString("\uFEFF")
 		}
 	}
-	for _, row := range rows {
+	for {
+		row := fetch()
+		if row == nil {
+			break
+		}
 		bw.Write(row.Rebuild(mode))
 	}
 	bw.Flush()

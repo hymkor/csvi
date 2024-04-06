@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"context"
 	"flag"
 	"fmt"
@@ -20,7 +21,20 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func cmdWrite(csvlines []uncsv.Row, mode *uncsv.Mode, tty1 *tty.TTY, out io.Writer) error {
+func dump(csvlines *list.List, mode *uncsv.Mode, w io.Writer) {
+	cursor := csvlines.Front()
+	mode.DumpBy(
+		func() *uncsv.Row {
+			if cursor == nil {
+				return nil
+			}
+			row := cursor.Value.(*uncsv.Row)
+			cursor = cursor.Next()
+			return row
+		}, w)
+}
+
+func cmdWrite(csvlines *list.List, mode *uncsv.Mode, tty1 *tty.TTY, out io.Writer) error {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {
@@ -34,7 +48,7 @@ func cmdWrite(csvlines []uncsv.Row, mode *uncsv.Mode, tty1 *tty.TTY, out io.Writ
 		return nil
 	}
 	if fname == "-" {
-		mode.Dump(csvlines, os.Stdout)
+		dump(csvlines, mode, os.Stdout)
 		return nil
 	}
 	fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
@@ -55,7 +69,7 @@ func cmdWrite(csvlines []uncsv.Row, mode *uncsv.Mode, tty1 *tty.TTY, out io.Writ
 	if err != nil {
 		return err
 	}
-	mode.Dump(csvlines, fd)
+	dump(csvlines, mode, fd)
 	if err := fd.Close(); err != nil {
 		return err
 	}
