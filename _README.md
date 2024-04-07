@@ -38,7 +38,7 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 ### Use "go install"
 
 ```
-env GOEXPERIMENT=rangefunc go install github.com/hymkor/csvi@latest
+go install github.com/hymkor/csvi@latest
 ```
 
 ### Use scoop-installer

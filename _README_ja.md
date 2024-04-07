@@ -38,7 +38,7 @@ Install
 ### "go install" を使う場合
 
 ```
-env GOEXPERIMENT=rangefunc go install github.com/hymkor/csvi@latest
+go install github.com/hymkor/csvi@latest
 ```
 
 ### scoop インストーラーを使う場合
