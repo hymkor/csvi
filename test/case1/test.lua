@@ -3,7 +3,7 @@
 --   go install github.com/hymkor/expect@latest
 --   expect test.lua
 
-local csvi = "./csvi.exe"
+local csvi = "../../csvi.exe"
 if #arg >= 1 then
     csvi = arg[1]
 end
