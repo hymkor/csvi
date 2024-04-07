@@ -344,8 +344,10 @@ func mains() error {
 	}
 	defer tty1.Close()
 
-	if err := initAmbiguousWidth(tty1); err != nil {
-		return err
+	if _, ok := out.(*os.File); ok {
+		if err := initAmbiguousWidth(tty1); err != nil {
+			return err
+		}
 	}
 
 	colIndex := 0
