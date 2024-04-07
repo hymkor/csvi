@@ -421,15 +421,10 @@ func mains() error {
 				}
 			}
 			if 0 <= colIndex && colIndex < len(cursorRow.Cell) {
-				n += first(fmt.Fprintf(out, "(%d,%d)",
+				n += first(fmt.Fprintf(out, "(%d,%d/%d): ",
+					colIndex+1,
 					rowIndex+1,
-					colIndex+1))
-				if reader != nil {
-					n += first(fmt.Fprintf(out, "%s*%s ",
-						_ANSI_BLINK_ON, _ANSI_BLINK_OFF))
-				} else {
-					n += first(io.WriteString(out, ": "))
-				}
+					csvlines.Len()))
 				var buffer strings.Builder
 				buffer.WriteString(cursorRow.Cell[colIndex].SourceText(mode))
 				if colIndex < len(cursorRow.Cell)-1 {
