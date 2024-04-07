@@ -5,6 +5,7 @@
 - Prevent the displayed position from being incorrect even when it contains the character whose width is difficult to judge
 - Fix: the problem abortion at starting on Windows 8.1
 - Enable to build without `env GOEXPERIMENT=rangefunc`
+- Show (CURRENT-COLUMN-POSITION,CURRENT-ROW-POSITION/ALL-READ-ROWS-NUMBER) on the status line.
 
 v1.5.0
 ======
