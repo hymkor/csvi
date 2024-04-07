@@ -38,6 +38,9 @@ const (
 
 	_ANSI_BLINK_ON  = "\x1B[6m"
 	_ANSI_BLINK_OFF = "\x1B[25m"
+
+	_ANSI_UNDERLINE_ON  = "\x1B[4m"
+	_ANSI_UNDERLINE_OFF = "\x1B[24m"
 )
 
 type _ColorStyle struct {
@@ -47,13 +50,13 @@ type _ColorStyle struct {
 }
 
 var bodyColorStyle = _ColorStyle{
-	Cursor: [...]string{"\x1B[40;37;1;7m", "\x1B[27;22m"},
+	Cursor: [...]string{"\x1B[107;30m", "\x1B[40;37m"},
 	Even:   [...]string{"\x1B[48;5;235;37;1m", "\x1B[22;40m"},
 	Odd:    [...]string{"\x1B[40;37;1m", "\x1B[22m"},
 }
 
 var headColorStyle = _ColorStyle{
-	Cursor: [...]string{"\x1B[40;36;1;7m", "\x1B[27;22m"},
+	Cursor: [...]string{"\x1B[107;30m", "\x1B[40;36m"},
 	Even:   [...]string{"\x1B[48;5;235;36;1m", "\x1B[22;40m"},
 	Odd:    [...]string{"\x1B[40;36;1m", "\x1B[22m"},
 }
@@ -83,6 +86,12 @@ func drawLine(
 	style *_ColorStyle,
 	out io.Writer) {
 
+	if len(csvs) <= 0 && cursorPos >= 0 {
+		io.WriteString(out, style.Cursor[0])
+		io.WriteString(out, "\x1B[K")
+		io.WriteString(out, style.Cursor[1])
+		return
+	}
 	i := 0
 	for len(csvs) > 0 {
 		cursor := csvs[0]
@@ -100,7 +109,7 @@ func drawLine(
 			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
-		ss, w := cutStrInWidth(text, cw)
+		ss, _ := cutStrInWidth(text, cw)
 		var off string
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor[0])
@@ -113,24 +122,21 @@ func drawLine(
 			off = style.Even[1]
 		}
 		if cursor.Modified() {
-			io.WriteString(out, "\x1B[4m")
+			io.WriteString(out, _ANSI_UNDERLINE_ON)
 		}
 		io.WriteString(out, ss)
 		if cursor.Modified() {
-			io.WriteString(out, "\x1B[24m")
+			io.WriteString(out, _ANSI_UNDERLINE_OFF)
 		}
-		screenWidth -= w
-		for j := cw - w; j > 0; j-- {
-			out.Write([]byte{' '})
-			screenWidth--
-		}
+		screenWidth -= cw
+		io.WriteString(out, "\x1B[K")
 		io.WriteString(out, off)
 		if screenWidth <= 0 {
 			break
 		}
+		fmt.Fprintf(out, "\x1B[%dG", nextI*cellWidth+1)
 		i = nextI
 	}
-	io.WriteString(out, _ANSI_ERASE_LINE)
 }
 
 func up(n int, out io.Writer) {
