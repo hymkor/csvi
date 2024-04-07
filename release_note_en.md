@@ -1,3 +1,8 @@
+- Rename from CSView to CSVI because not a few products that have the same name exist in the same category.
+- Previously, users must have waited until all the lines were read, but now users can operate when the first 100 lines are read. The rest lines are read while waiting for key input.
+- Improve memory efficiency by holding row data with "container/list" now, those were held with slice.
+- Fix: `o` after `>`: the last line was joined with the previous line in the saved file.
+
 v1.5.0
 ======
 Mar 31 2024
