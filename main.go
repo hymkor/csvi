@@ -153,9 +153,9 @@ func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, styl
 	reverse := false
 	count := 0
 	lfCount := 0
-	for record := range page {
+	page(func(record []uncsv.Cell) bool {
 		if count >= h {
-			break
+			return false
 		}
 		if count > 0 {
 			lfCount++
@@ -174,7 +174,8 @@ func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, styl
 		}
 		reverse = !reverse
 		count++
-	}
+		return true
+	})
 	io.WriteString(out, "\r\n") // \r is for Linux & go-tty
 	lfCount++
 	return lfCount
