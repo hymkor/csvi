@@ -1,14 +1,17 @@
-The unbreakable CSV editor "CSView"
-===================================
-[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
+The CSV editor "CSVI"
+=====================
+[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
 **&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
 
-CSView is the CSV editor that runs on the terminal of Linux and Windows.
+- Since the version 1.6.0, CSView is renamed to CSVI because not a few products that have the same name exist in the same category.
+
+CSVI is the CSV editor that runs on the terminal of Linux and Windows.
 Here are some key features:
 
 - Keybinding: vi-like on moving cursor and Emacs-like on editing cell
 - It reads the data from both file and standard-input
+- Start quickly and load data in the background
 - Modified cells are displayed with underline
     - With one key `u`, original value before modifying can be restored
 - Non-user-modified cells retain their original values
@@ -16,7 +19,7 @@ Here are some key features:
     - LF or CRLF for line breaks
     - BOM of the beginning of files
     - The representation before decoding double quotations, encoding, field and record sperators and so on are displayed on the bottom line
-- CSView supports the following encodings:
+- CSVI supports the following encodings:
     - UTF8 (default)
     - UTF16
     - Current codepage on Windows (automatically detected)
@@ -31,38 +34,38 @@ Install
 
 ### Manual Installation
 
-Download the binary package from [Releases](https://github.com/hymkor/csview/releases) and extract the executable.
+Download the binary package from [Releases](https://github.com/hymkor/csvi/releases) and extract the executable.
 
 ### Use "go install"
 
 ```
-env GOEXPERIMENT=rangefunc go install github.com/hymkor/csview@latest
+go install github.com/hymkor/csvi@latest
 ```
 
 ### Use scoop-installer
 
 ```
-scoop install https://raw.githubusercontent.com/hymkor/csview/master/csview.json
+scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 ```
 
 or
 
 ```
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
-scoop install csview
+scoop install csvi
 ```
 
 Usage
 -----
 
 ```
-$ csview {options} FILENAME(...)
+$ csvi {options} FILENAME(...)
 ```
 
 or
 
 ```
-$ cat FILENAME | csview {options}
+$ cat FILENAME | csvi {options}
 ```
 
 Options

@@ -1,14 +1,17 @@
-The unbreakable CSV editor "CSView"
+The CSV editor "CSVI"
 ===================================
-[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csview)](https://pkg.go.dev/github.com/hymkor/csview)
+[![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
 [&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
 
-CSView はLinux やWindows のターミナル用の CSV エディタです。
+- 同分野に同名の製品が比較的多いため、1.6.0 より CSView は CSVI に改名しました。
+
+CSVI はLinux やWindows のターミナル用の CSV エディタです。
 次のような特徴があります。
 
 - セル選択は vi 風、セル編集は Emacs 風のキー操作
 - ファイル / 標準入力両方からの読み取りに対応
+- すばやく起動し、データをバックグランドで読み込み
 - 修正されたセルには下線を表示
     - １キー(`u`) でセルを加筆前の状態に戻すことが可能
 - ユーザが修正していないセルは極力元々の表現を維持するようにする
@@ -31,38 +34,38 @@ Install
 
 ### Manual Installation
 
-[Releases](https://github.com/hymkor/csview/releases) よりバイナリパッケージをダウンロードして、実行ファイルを展開してください
+[Releases](https://github.com/hymkor/csvi/releases) よりバイナリパッケージをダウンロードして、実行ファイルを展開してください
 
 ### "go install" を使う場合
 
 ```
-env GOEXPERIMENT=rangefunc go install github.com/hymkor/csview@latest
+go install github.com/hymkor/csvi@latest
 ```
 
 ### scoop インストーラーを使う場合
 
 ```
-scoop install https://raw.githubusercontent.com/hymkor/csview/master/csview.json
+scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 ```
 
 もしくは
 
 ```
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
-scoop install csview
+scoop install csvi
 ```
 
 Usage
 -----
 
 ```
-$ csview {options} FILENAME(...)
+$ csvi {options} FILENAME(...)
 ```
 
 or
 
 ```
-$ cat FILENAME | csview {options}
+$ cat FILENAME | csvi {options}
 ```
 
 Options
