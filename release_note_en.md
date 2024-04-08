@@ -1,3 +1,7 @@
+v1.6.0
+======
+Apr 8 2024
+
 - Rename from CSView to CSVI because not a few products that have the same name exist in the same category.
 - Previously, users must have waited until all the lines were read, but now users can operate when the first 100 lines are read. The rest lines are read while waiting for key input.
 - Improve memory efficiency by holding row data with "container/list" now, those were held with slice.
