@@ -67,6 +67,7 @@ var (
 	flagTsv       = flag.Bool("t", false, "use TAB as field-separator")
 	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
 	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
+	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
 )
 
 var replaceTable = strings.NewReplacer(
@@ -304,6 +305,9 @@ func mains() error {
 		if err := mode.SetEncoding(*flagIana); err != nil {
 			return fmt.Errorf("-iana %w", err)
 		}
+	}
+	if *flagNonUTF8 {
+		mode.NonUTF8 = true
 	}
 	var reader *bufio.Reader
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
