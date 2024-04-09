@@ -68,6 +68,7 @@ var (
 	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
 	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
+	flagHelp      = flag.Bool("help", false, "this help")
 )
 
 var replaceTable = strings.NewReplacer(
@@ -293,6 +294,10 @@ func first[T any](value T, _ error) T {
 }
 
 func mains() error {
+	if *flagHelp {
+		flag.Usage()
+		return nil
+	}
 	out := colorable.NewColorableStdout()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
