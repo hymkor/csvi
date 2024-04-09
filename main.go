@@ -3,25 +3,20 @@ package main
 import (
 	"bufio"
 	"container/list"
-	"context"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"runtime"
 	"strings"
-	"sync"
 
 	"golang.org/x/term"
 
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-runewidth"
-	"github.com/mattn/go-tty"
 
 	"github.com/nyaosorg/go-readline-ny"
-	"github.com/nyaosorg/go-readline-ny/completion"
 	"github.com/nyaosorg/go-readline-ny/keys"
-	"github.com/nyaosorg/go-readline-skk"
 
 	"github.com/hymkor/csvi/internal/nonblock"
 	"github.com/hymkor/csvi/uncsv"
@@ -70,6 +65,7 @@ var (
 	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
 	flagHelp      = flag.Bool("help", false, "this help")
+	flagAuto      = flag.String("auto", "", "autopilot")
 )
 
 var replaceTable = strings.NewReplacer(
@@ -245,48 +241,9 @@ func drawView(header, pointor *list.Element, startRow, startCol, cursorRow, curs
 	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, style, bodyCache, out)
 }
 
-var skkInit = sync.OnceFunc(func() {
-	env := os.Getenv("GOREADLINESKK")
-	if env != "" {
-		_, err := skk.Config{
-			MiniBuffer: skk.MiniBufferOnCurrentLine{},
-		}.SetupWithString(env)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-		}
-	}
-})
-
-func getline(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
-	skkInit()
-	clearCache()
-	editor := &readline.Editor{
-		Writer:  out,
-		Default: defaultStr,
-		History: c,
-		Cursor:  65535,
-		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, _ANSI_ERASE_LINE)
-		},
-		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
-			return 0, nil
-		},
-		Coloring: &skk.Coloring{},
-	}
-	if len(c) > 0 {
-		editor.BindKey(keys.CtrlI, completion.CmdCompletion{
-			Completion: c,
-		})
-	}
-
-	defer io.WriteString(out, _ANSI_CURSOR_OFF)
-	editor.BindKey(keys.Escape, readline.CmdInterrupt)
-	return editor.ReadLine(context.Background())
-}
-
-func yesNo(tty1 *tty.TTY, out io.Writer, message string) bool {
+func yesNo(pilot Pilot, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
-	ch, err := readline.GetKey(tty1)
+	ch, err := pilot.GetKey()
 	return err == nil && ch == "y"
 }
 
@@ -294,7 +251,16 @@ func first[T any](value T, _ error) T {
 	return value
 }
 
-func mains() error {
+type Pilot interface {
+	Size() (int, int, error)
+	Calibrate() error
+	GetKey() (string, error)
+	ReadLine(io.Writer, string, string, candidate) (string, error)
+	GetFilename(io.Writer, string, string) (string, error)
+	Close() error
+}
+
+func mains(pilot Pilot) error {
 	if *flagHelp {
 		flag.Usage()
 		return nil
@@ -352,14 +318,8 @@ func mains() error {
 			return io.EOF
 		}
 	}
-	tty1, err := tty.Open()
-	if err != nil {
-		return err
-	}
-	defer tty1.Close()
-
 	if _, ok := out.(*os.File); ok {
-		if err := initAmbiguousWidth(tty1); err != nil {
+		if err := pilot.Calibrate(); err != nil {
 			return err
 		}
 	}
@@ -376,13 +336,15 @@ func mains() error {
 	lastWord := ""
 	var lastWidth, lastHeight int
 
-	keyWorker := nonblock.New(func() (string, error) { return readline.GetKey(tty1) })
+	keyWorker := nonblock.New(func() (string, error) {
+		return pilot.GetKey()
+	})
 	defer keyWorker.Close()
 
 	message := ""
 	var killbuffer string
 	for {
-		screenWidth, screenHeight, err := tty1.Size()
+		screenWidth, screenHeight, err := pilot.Size()
 		if err != nil {
 			return err
 		}
@@ -476,7 +438,7 @@ func mains() error {
 			clearCache()
 		case "q", keys.Escape:
 			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+_ANSI_ERASE_LINE)
-			if ch, err := readline.GetKey(tty1); err == nil && ch == "y" {
+			if ch, err := pilot.GetKey(); err == nil && ch == "y" {
 				io.WriteString(out, "\n")
 				return nil
 			}
@@ -536,7 +498,7 @@ func mains() error {
 			cursorP = foundP
 		case "/", "?":
 			var err error
-			lastWord, err = getline(out, ch, "", nil)
+			lastWord, err = pilot.ReadLine(out, ch, "", nil)
 			if err != nil {
 				if err != readline.CtrlC {
 					message = err.Error()
@@ -568,7 +530,7 @@ func mains() error {
 			rowIndex++
 			cursorRow = cursorP.Value.(*uncsv.Row)
 			repaint()
-			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
+			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
 			cursorRow.Replace(0, text, mode)
 
 		case "O":
@@ -582,7 +544,7 @@ func mains() error {
 			}
 			cursorRow = cursorP.Value.(*uncsv.Row)
 			repaint()
-			text, _ := getline(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
+			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
 			cursorRow.Replace(0, text, mode)
 		case "D":
 			if csvlines.Len() <= 1 {
@@ -607,7 +569,7 @@ func mains() error {
 				startP = startPrevP.Next()
 			}
 		case "i":
-			text, err := getline(out, "insert cell>", "", makeCandidate(rowIndex, colIndex, cursorP))
+			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(rowIndex, colIndex, cursorP))
 			if err != nil {
 				break
 			}
@@ -620,7 +582,7 @@ func mains() error {
 		case "a":
 			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 				// current column is the last one and it is empty
-				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, cursorP))
+				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, cursorP))
 				if err != nil {
 					break
 				}
@@ -629,7 +591,7 @@ func mains() error {
 				colIndex++
 				cursorRow.Insert(colIndex, "", mode)
 				repaint()
-				text, err := getline(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, cursorP))
+				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, cursorP))
 				if err != nil {
 					colIndex--
 					break
@@ -639,7 +601,7 @@ func mains() error {
 		case "r", "R", keys.F2:
 			cursor := &cursorRow.Cell[colIndex]
 			q := cursor.IsQuoted()
-			text, err := getline(out, "replace cell>", cursor.Text(), makeCandidate(rowIndex-1, colIndex, cursorP))
+			text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(rowIndex-1, colIndex, cursorP))
 			if err != nil {
 				break
 			}
@@ -682,7 +644,7 @@ func mains() error {
 					}
 				}
 			}
-			if err := cmdWrite(csvlines, mode, tty1, out); err != nil {
+			if err := cmdWrite(pilot, csvlines, mode, out); err != nil {
 				message = err.Error()
 			}
 			clearCache()
@@ -723,7 +685,21 @@ func main() {
 	}
 
 	flag.Parse()
-	if err := mains(); err != nil {
+
+	var pilot Pilot
+	if *flagAuto != "" {
+		pilot = &AutoPilot{script: *flagAuto}
+	} else {
+		var err error
+		pilot, err = NewManualCtl()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+	}
+	defer pilot.Close()
+
+	if err := mains(pilot); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
