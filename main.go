@@ -66,6 +66,7 @@ var (
 	flagHeader    = flag.Uint("h", 1, "the number of row-header")
 	flagTsv       = flag.Bool("t", false, "use TAB as field-separator")
 	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
+	flagSemicolon = flag.Bool("semicolon", false, "use Semicolon as field-separator")
 	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
 	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
 	flagHelp      = flag.Bool("help", false, "this help")
@@ -331,6 +332,9 @@ func mains() error {
 		}
 		if *flagCsv {
 			mode.Comma = ','
+		}
+		if *flagSemicolon {
+			mode.Comma = ';'
 		}
 		reader = bufio.NewReader(multiFileReader(args...))
 		for i := 0; i < 100; i++ {
