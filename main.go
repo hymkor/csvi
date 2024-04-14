@@ -66,6 +66,8 @@ var (
 	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
 	flagHelp      = flag.Bool("help", false, "this help")
 	flagAuto      = flag.String("auto", "", "autopilot")
+	flag16le      = flag.Bool("16le", false, "Force read/write as UTF-16LE")
+	flag16be      = flag.Bool("16be", false, "Force read/write ad UTF-16BE")
 )
 
 var replaceTable = strings.NewReplacer(
@@ -280,6 +282,12 @@ func mains(pilot Pilot) error {
 	}
 	if *flagNonUTF8 {
 		mode.NonUTF8 = true
+	}
+	if *flag16le {
+		mode.SetUTF16LE()
+	}
+	if *flag16be {
+		mode.SetUTF16BE()
 	}
 	var reader *bufio.Reader
 	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {

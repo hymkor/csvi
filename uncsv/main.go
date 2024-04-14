@@ -17,6 +17,8 @@ import (
 	"github.com/nyaosorg/go-windows-mbcs"
 )
 
+const peekSize = 10
+
 type tristate int
 
 const (
@@ -47,8 +49,20 @@ func (m *Mode) IsUTF16LE() bool {
 	return m.endian == utf16le
 }
 
+func (m *Mode) SetUTF16LE() {
+	m.endian = utf16le
+	m.setEncoding(unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM))
+	m.NonUTF8 = true
+}
+
 func (m *Mode) IsUTF16BE() bool {
 	return m.endian == utf16be
+}
+
+func (m *Mode) SetUTF16BE() {
+	m.endian = utf16be
+	m.setEncoding(unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM))
+	m.NonUTF8 = true
 }
 
 func (m *Mode) _decode(s []byte) (string, error) {
@@ -171,7 +185,7 @@ func ReadLine(br *bufio.Reader, mode *Mode) (*Row, error) {
 	quoted := false
 	source := []byte{}
 	if mode.hasBom == triNotSet {
-		prefix, err := br.Peek(3)
+		prefix, err := br.Peek(peekSize)
 		if err == nil {
 			if bytes.HasPrefix(prefix, []byte{0xEF, 0xBB, 0xBF}) {
 				// UTF8
@@ -179,26 +193,23 @@ func ReadLine(br *bufio.Reader, mode *Mode) (*Row, error) {
 				br.Discard(3)
 			} else if bytes.HasPrefix(prefix, []byte{0xFF, 0xFE}) {
 				mode.hasBom = triTrue
-				mode.endian = utf16le
-				mode.setEncoding(unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM))
-				mode.NonUTF8 = true
+				mode.SetUTF16LE()
 				br.Discard(2)
 			} else if bytes.HasPrefix(prefix, []byte{0xFE, 0xFF}) {
 				mode.hasBom = triTrue
-				mode.endian = utf16be
-				mode.setEncoding(unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM))
-				mode.NonUTF8 = true
+				mode.SetUTF16BE()
 				br.Discard(2)
-			} else if len(prefix) >= 2 && prefix[1] == 0 {
+			} else {
 				mode.hasBom = triFalse
-				mode.endian = utf16le
-				mode.setEncoding(unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM))
-				mode.NonUTF8 = true
-			} else if len(prefix) >= 1 && prefix[0] == 0 {
-				mode.hasBom = triFalse
-				mode.endian = utf16be
-				mode.setEncoding(unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM))
-				mode.NonUTF8 = true
+				if mode.endian != utf16le && mode.endian != utf16be {
+					if idx := bytes.IndexByte(prefix, 0); idx >= 0 {
+						if idx%2 == 1 {
+							mode.SetUTF16LE()
+						} else {
+							mode.SetUTF16BE()
+						}
+					}
+				}
 			}
 		}
 	}
