@@ -1,10 +1,10 @@
-The CSV editor "CSVI"
-===================================
+"CSVI" - Terminal CSV Editor
+============================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
 [&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
 
-- 同分野に同名の製品が比較的多いため、1.6.0 より CSView は CSVI に改名しました。
+- *同分野に同名の製品が比較的多いため、1.6.0 より CSView は CSVI に改名しました。*
 
 CSVI はLinux やWindows のターミナル用の CSV エディタです。
 次のような特徴があります。
@@ -70,10 +70,17 @@ $ cat FILENAME | csvi {options}
 
 Options
 
-* `-h int` -  ヘッダ行の行数
-* `-c` - 列区切りにカンマを使う(拡張子が `.csv` の時のデフォルト動作)
-* `-t` - 列区切りにタブを使う(拡張子が `.csv` でない時のデフォルト動作)
-* `-iana string` - 非UTF8テキストを読み書きする時の [IANA名] to decode/encode NonUTF8 text
+* `-help` 本ヘルプを表示
+* `-h int` ヘッダ行の行数
+* `-c` 列区切りにカンマを使う(拡張子が `.csv` の時のデフォルト動作)
+* `-t` 列区切りにタブを使う(拡張子が `.csv` でない時のデフォルト動作)
+* `-semicolon` 区切りにセミコロンを使う
+* `-iana string` 非UTF8テキストを読み書きする時の [IANA名] を指定する
+* `-16be` UTF-16BE と判断する
+* `-16le` UTF-16LE と判断する
+* `-auto string` 自動処理 (テストコード用)
+* `-nonutf8` UTF-8 と判断しない
+* `-w uint` セルを幅を設定 (default 14)
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 

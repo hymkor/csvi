@@ -1,10 +1,10 @@
-The CSV editor "CSVI"
-=====================
+"CSVI" - Terminal CSV Editor
+============================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
 **&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
 
-- Since the version 1.6.0, CSView is renamed to CSVI because not a few products that have the same name exist in the same category.
+- *Since the version 1.6.0, CSView is renamed to CSVI because not a few products that have the same name exist in the same category.*
 
 CSVI is the CSV editor that runs on the terminal of Linux and Windows.
 Here are some key features:
@@ -70,10 +70,17 @@ $ cat FILENAME | csvi {options}
 
 Options
 
-* `-h int` -  the number of fixed header lines
-* `-c` - use Comma as field-separator (default when suffix is `.csv`)
-* `-t` - use TAB as field-separator (default when suffix is not `.csv`)
-* `-iana string` - [IANA-registered-name] to decode/encode NonUTF8 text
+* `-help` this help
+* `-h int` the number of fixed header lines
+* `-c` use Comma as field-separator (default when suffix is `.csv`)
+* `-t` use TAB as field-separator (default when suffix is not `.csv`)
+* `-semicolon` use Semicolon as field-separator
+* `-iana string` [IANA-registered-name] to decode/encode NonUTF8 text
+* `-16be` Force read/write as UTF-16BE
+* `-16le` Force read/write as UTF-16LE
+* `-auto string` auto pilot (for testcode)
+* `-nonutf8` do not judge as UTF-8
+* `-w uint` set the width of cell (default 14)
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
