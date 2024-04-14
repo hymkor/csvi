@@ -67,7 +67,7 @@ var (
 	flagHelp      = flag.Bool("help", false, "this help")
 	flagAuto      = flag.String("auto", "", "autopilot")
 	flag16le      = flag.Bool("16le", false, "Force read/write as UTF-16LE")
-	flag16be      = flag.Bool("16be", false, "Force read/write ad UTF-16BE")
+	flag16be      = flag.Bool("16be", false, "Force read/write as UTF-16BE")
 )
 
 var replaceTable = strings.NewReplacer(
