@@ -1,6 +1,9 @@
-- Implement the option `-nonutf8` that forbid to judge the code utf8
-- Implement the option `-help` that shows the list of options
-- Implement the option `-semicolon` that use semicolon as the field seperator
+- Implement the option `-nonutf8` to forbid to judge the code utf8
+- Implement the option `-help` to show the list of options
+- Implement the option `-semicolon` to use semicolon as the field seperator
+- Implement the option `-auto string` to specify a series of key operations by connecting them with `|`
+- Implement the option `-16le`,`-16be` to force to judge the encoding UTF16LE or UTF16BE
+- Change size: 3 bytes to 10 bytes to read to judge UTF16
 
 v1.6.0
 ======
