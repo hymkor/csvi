@@ -2,12 +2,12 @@ v1.7.0
 ======
 Apr 15 2024
 
-- Implement the option `-nonutf8` to forbid to judge the code utf8
-- Implement the option `-help` to show the list of options
-- Implement the option `-semicolon` to use semicolon as the field seperator
-- Implement the option `-auto string` to specify a series of key operations by connecting them with `|`
-- Implement the option `-16le`,`-16be` to force to judge the encoding UTF16LE or UTF16BE
-- Change size: 3 bytes to 10 bytes to read to judge UTF16
+* Added the `-auto` option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.
+* Added the `-16le` and `-16be` options to force interpretation as UTF-16 little-endian or big-endian encoding, respectively.
+* `-semicolon`: Enabled using semicolons as field delimiters (for some European locales that use commas as decimal separators). Considered allowing arbitrary delimiter strings, but decided against it to avoid potential issues.
+* `-nonutf8`: Added an option to handle cases where data is incorrectly interpreted as UTF-8 when it is not actually encoded that way.
+* Added the `-help` option to display a list of available options.
+* Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.
 
 v1.6.0
 ======
