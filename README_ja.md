@@ -27,7 +27,7 @@ CSVI はLinux やWindows のターミナル用の CSV エディタです。
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
-![image](./csview.gif)
+![image](./csvi.gif)
 
 Install
 -------
