@@ -676,6 +676,7 @@ func mains() error {
 			}
 			clearCache()
 		}
+		cursorRow = cursorP.Value.(*uncsv.Row)
 		if L := len(cursorRow.Cell); L <= 0 {
 			colIndex = 0
 		} else if colIndex >= L {
