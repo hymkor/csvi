@@ -1,3 +1,7 @@
+v1.7.0
+======
+Apr 15 2024
+
 - Implement the option `-nonutf8` to forbid to judge the code utf8
 - Implement the option `-help` to show the list of options
 - Implement the option `-semicolon` to use semicolon as the field seperator
