@@ -1,5 +1,9 @@
+v1.7.1
+======
+Apr 16 2024
+
 * Set cursor on or off when yes or no is asked.
-* Fix the problem that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.
+* Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.
 
 v1.7.0
 ======
