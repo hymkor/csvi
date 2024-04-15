@@ -245,7 +245,9 @@ func drawView(header, pointor *list.Element, startRow, startCol, cursorRow, curs
 
 func yesNo(pilot Pilot, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
+	io.WriteString(out, _ANSI_CURSOR_ON)
 	ch, err := pilot.GetKey()
+	io.WriteString(out, _ANSI_CURSOR_OFF)
 	return err == nil && ch == "y"
 }
 
@@ -463,8 +465,7 @@ func mains() error {
 		case keys.CtrlL:
 			clearCache()
 		case "q", keys.Escape:
-			io.WriteString(out, _ANSI_YELLOW+"\rQuit Sure ? [y/n]"+_ANSI_ERASE_LINE)
-			if ch, err := pilot.GetKey(); err == nil && ch == "y" {
+			if yesNo(pilot, out, "Quit Sure ? [y/n]") {
 				io.WriteString(out, "\n")
 				return nil
 			}
