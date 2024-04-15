@@ -1,16 +1,16 @@
 {
-    "version": "1.6.0",
-    "description": "The unbreakabe CSV editor - \"CSView\"",
+    "version": "1.7.0",
+    "description": "Terminal CSV Editor",
     "homepage": "https://github.com/hymkor/csvi",
     "license": "MIT License",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/hymkor/csvi/releases/download/v1.6.0/csvi-v1.6.0-windows-386.zip",
-            "hash": "b57d70837bd370164035e799db7045dfb28d9d08620fd8e126821b9b2d09f3ec"
+            "url": "https://github.com/hymkor/csvi/releases/download/v1.7.0/csvi-v1.7.0-windows-386.zip",
+            "hash": "94ca855ac57129b58db8e12a4f7626496c8d11f80d6180d922d80e2fec2fd03d"
         },
         "64bit": {
-            "url": "https://github.com/hymkor/csvi/releases/download/v1.6.0/csvi-v1.6.0-windows-amd64.zip",
-            "hash": "f65f81ecc78f86fad046b41b98814b5a10efb76fefcae0c519b183be9a7def49"
+            "url": "https://github.com/hymkor/csvi/releases/download/v1.7.0/csvi-v1.7.0-windows-amd64.zip",
+            "hash": "9be7d8490ae357d2d1b8734558181d0407fe88d964c6ccb229094d303d3498cb"
         }
     },
     "bin": "csvi.exe",
