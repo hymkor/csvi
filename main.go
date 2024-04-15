@@ -262,11 +262,29 @@ type Pilot interface {
 	Close() error
 }
 
-func mains(pilot Pilot) error {
+func mains() error {
 	if *flagHelp {
 		flag.Usage()
 		return nil
 	}
+
+	disable := colorable.EnableColorsStdout(nil)
+	if disable != nil {
+		defer disable()
+	}
+
+	var pilot Pilot
+	if *flagAuto != "" {
+		pilot = &AutoPilot{script: *flagAuto}
+	} else {
+		var err error
+		pilot, err = NewManualCtl()
+		if err != nil {
+			return err
+		}
+	}
+	defer pilot.Close()
+
 	out := colorable.NewColorableStdout()
 
 	io.WriteString(out, _ANSI_CURSOR_OFF)
@@ -687,27 +705,8 @@ func main() {
 	fmt.Printf("%s %s-%s-%s by %s\n",
 		os.Args[0], version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
-	disable := colorable.EnableColorsStdout(nil)
-	if disable != nil {
-		defer disable()
-	}
-
 	flag.Parse()
-
-	var pilot Pilot
-	if *flagAuto != "" {
-		pilot = &AutoPilot{script: *flagAuto}
-	} else {
-		var err error
-		pilot, err = NewManualCtl()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
-	}
-	defer pilot.Close()
-
-	if err := mains(pilot); err != nil {
+	if err := mains(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
