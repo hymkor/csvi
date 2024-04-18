@@ -200,36 +200,32 @@ func clearCache() {
 	clear(bodyCache)
 }
 
-func drawView(header, pointor *list.Element, startRow, startCol, cursorRow, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func drawView(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
 	if h := int(*flagHeader); h > 0 {
 		enum := func(callback func([]uncsv.Cell) bool) {
 			for i := 0; i < h && header != nil; i++ {
-				row := header.Value.(*uncsv.Row)
-				if !callback(cellsAfter(row.Cell, startCol)) {
+				if !callback(cellsAfter(header.Cell, startCol)) {
 					return
 				}
 				header = header.Next()
 			}
 		}
-		lfCount = drawPage(enum, cursorCol-startCol, cursorRow, screenWidth-1, h, &headColorStyle, headCache, out)
+		lfCount = drawPage(enum, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, headCache, out)
 	}
-	if h := int(*flagHeader); startRow < h {
-		startRow = h
+	if h := int(*flagHeader); startRow.lnum < h {
 		for i := 0; i < h; i++ {
-			pointor = pointor.Next()
+			startRow = startRow.Next()
 		}
 	}
 	// print body
 	enum := func(callback func([]uncsv.Cell) bool) {
-		for pointor != nil {
-			row := pointor.Value.(*uncsv.Row)
-			if !callback(cellsAfter(row.Cell, startCol)) {
+		for startRow != nil {
+			if !callback(cellsAfter(startRow.Cell, startCol)) {
 				return
 			}
-			pointor = pointor.Next()
-			startRow++
+			startRow = startRow.Next()
 		}
 	}
 	style := &bodyColorStyle
@@ -240,7 +236,7 @@ func drawView(header, pointor *list.Element, startRow, startCol, cursorRow, curs
 			Odd:    bodyColorStyle.Even,
 		}
 	}
-	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow-startRow, screenWidth-1, screenHeight-1, style, bodyCache, out)
+	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, bodyCache, out)
 }
 
 func yesNo(pilot Pilot, out io.Writer, message string) bool {
@@ -352,12 +348,10 @@ func mains() error {
 		}
 	}
 
-	colIndex := 0
-	rowIndex := 0
-	startRow := 0
+	cursorCol := 0
+	cursorRow := frontPtr(csvlines)
+	startRow := frontPtr(csvlines)
 	startCol := 0
-	startP := csvlines.Front()
-	cursorP := startP
 
 	lastSearch := searchForward
 	lastSearchRev := searchBackward
@@ -385,18 +379,17 @@ func mains() error {
 		}
 		cols := (screenWidth - 1) / int(*flagCellWidth)
 
-		lfCount := drawView(csvlines.Front(), startP, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+		lfCount := drawView(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = drawView(csvlines.Front(), startP, startRow, startCol, rowIndex, colIndex, screenHeight, screenWidth, out)
+			lfCount = drawView(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
-		cursorRow := cursorP.Value.(*uncsv.Row)
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 			message = ""
-		} else if 0 <= rowIndex && rowIndex < csvlines.Len() {
+		} else if 0 <= cursorRow.lnum && cursorRow.lnum < csvlines.Len() {
 			n := 0
 			if mode.Comma == '\t' {
 				n += first(io.WriteString(out, "[TSV]"))
@@ -423,14 +416,14 @@ func mains() error {
 					n += first(io.WriteString(out, "[ANSI]"))
 				}
 			}
-			if 0 <= colIndex && colIndex < len(cursorRow.Cell) {
+			if 0 <= cursorCol && cursorCol < len(cursorRow.Cell) {
 				n += first(fmt.Fprintf(out, "(%d,%d/%d): ",
-					colIndex+1,
-					rowIndex+1,
+					cursorCol+1,
+					cursorRow.lnum+1,
 					csvlines.Len()))
 				var buffer strings.Builder
-				buffer.WriteString(cursorRow.Cell[colIndex].SourceText(mode))
-				if colIndex < len(cursorRow.Cell)-1 {
+				buffer.WriteString(cursorRow.Cell[cursorCol].SourceText(mode))
+				if cursorCol < len(cursorRow.Cell)-1 {
 					buffer.WriteByte(mode.Comma)
 				} else if term := cursorRow.Term; term != "" {
 					buffer.WriteString(term)
@@ -470,59 +463,52 @@ func mains() error {
 				return nil
 			}
 		case "j", keys.Down, keys.CtrlN, keys.Enter:
-			if rowIndex < csvlines.Len()-1 {
-				rowIndex++
-				cursorP = cursorP.Next()
+			if next := cursorRow.Next(); next != nil {
+				cursorRow = next
 			}
 		case "k", keys.Up, keys.CtrlP:
-			if rowIndex > 0 {
-				rowIndex--
-				cursorP = cursorP.Prev()
+			if prev := cursorRow.Prev(); prev != nil {
+				cursorRow = prev
 			}
 		case "h", keys.Left, keys.CtrlB, keys.ShiftTab:
-			if colIndex > 0 {
-				colIndex--
+			if cursorCol > 0 {
+				cursorCol--
 			}
 		case "l", keys.Right, keys.CtrlF, keys.CtrlI:
-			colIndex++
+			cursorCol++
 		case "0", "^", keys.CtrlA:
-			colIndex = 0
+			cursorCol = 0
 		case "$", keys.CtrlE:
-			colIndex = len(cursorRow.Cell) - 1
+			cursorCol = len(cursorRow.Cell) - 1
 		case "<":
-			rowIndex = 0
-			startRow = 0
-			colIndex = 0
+			cursorRow = frontPtr(csvlines)
+			startRow = frontPtr(csvlines)
+			cursorCol = 0
 			startCol = 0
-			startP = csvlines.Front()
-			cursorP = startP
 		case ">", "G":
-			rowIndex = csvlines.Len() - 1
-			cursorP = csvlines.Back()
+			cursorRow = backPtr(csvlines)
 		case "n":
 			if lastWord == "" {
 				break
 			}
-			foundP, r, c := lastSearch(cursorP, rowIndex, colIndex, lastWord)
-			if foundP == nil {
+			r, c := lastSearch(cursorRow, cursorCol, lastWord)
+			if r == nil {
 				message = fmt.Sprintf("%s: not found", lastWord)
 				break
 			}
-			rowIndex = r
-			colIndex = c
-			cursorP = foundP
+			cursorRow = r
+			cursorCol = c
 		case "N":
 			if lastWord == "" {
 				break
 			}
-			foundP, r, c := lastSearchRev(cursorP, rowIndex, colIndex, lastWord)
-			if foundP == nil {
+			r, c := lastSearchRev(cursorRow, cursorCol, lastWord)
+			if r == nil {
 				message = fmt.Sprintf("%s: not found", lastWord)
 				break
 			}
-			rowIndex = r
-			colIndex = c
-			cursorP = foundP
+			cursorRow = r
+			cursorCol = c
 		case "/", "?":
 			var err error
 			lastWord, err = pilot.ReadLine(out, ch, "", nil)
@@ -539,121 +525,115 @@ func mains() error {
 				lastSearch = searchBackward
 				lastSearchRev = searchForward
 			}
-			foundP, r, c := lastSearch(cursorP, rowIndex, colIndex, lastWord)
-			if foundP == nil {
+			r, c := lastSearch(cursorRow, cursorCol, lastWord)
+			if r == nil {
 				message = fmt.Sprintf("%s: not found", lastWord)
 				break
 			}
-			rowIndex = r
-			colIndex = c
-			cursorP = foundP
+			cursorRow = r
+			cursorCol = c
 		case "o":
 			newRow := uncsv.NewRow(mode)
 			newRow.Term = cursorRow.Term
 			if cursorRow.Term == "" {
 				cursorRow.Term = mode.DefaultTerm
 			}
-			cursorP = csvlines.InsertAfter(&newRow, cursorP)
-			rowIndex++
-			cursorRow = cursorP.Value.(*uncsv.Row)
+			cursorRow = cursorRow.InsertAfter(&newRow)
 			repaint()
-			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
+			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 			cursorRow.Replace(0, text, mode)
 
 		case "O":
-			startPrevP := startP.Prev()
+			startPrevP := startRow.Prev()
 			newRow := uncsv.NewRow(mode)
-			cursorP = csvlines.InsertBefore(&newRow, cursorP)
+			cursorRow = cursorRow.InsertBefore(&newRow)
 			if startPrevP != nil {
-				startP = startPrevP.Next()
+				startRow = startPrevP.Next()
 			} else {
-				startP = csvlines.Front()
+				startRow = frontPtr(csvlines)
 			}
-			cursorRow = cursorP.Value.(*uncsv.Row)
 			repaint()
-			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(rowIndex-1, colIndex, cursorP))
+			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 			cursorRow.Replace(0, text, mode)
 		case "D":
 			if csvlines.Len() <= 1 {
 				break
 			}
-			startPrevP := startP.Prev()
-			prevP := cursorP.Prev()
-			removedRow := csvlines.Remove(cursorP).(*uncsv.Row)
+			startPrevP := startRow.Prev()
+			prevP := cursorRow.Prev()
+			removedRow := cursorRow.Remove()
 			if prevP == nil {
-				cursorP = csvlines.Front()
-				rowIndex = 0
+				cursorRow = frontPtr(csvlines)
 			} else if next := prevP.Next(); next != nil {
-				cursorP = next
+				cursorRow = next
 			} else {
-				cursorP = prevP
-				cursorP.Value.(*uncsv.Row).Term = removedRow.Term
-				rowIndex--
+				cursorRow = prevP
+				cursorRow.Term = removedRow.Term
 			}
 			if startPrevP == nil {
-				startP = csvlines.Front()
+				startRow = frontPtr(csvlines)
 			} else {
-				startP = startPrevP.Next()
+				startRow = startPrevP.Next()
 			}
 		case "i":
-			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(rowIndex, colIndex, cursorP))
+			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
 			if err != nil {
 				break
 			}
 			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
-				cursorRow.Replace(colIndex, text, mode)
+				cursorRow.Replace(cursorCol, text, mode)
 			} else {
-				cursorRow.Insert(colIndex, text, mode)
-				colIndex++
+				cursorRow.Insert(cursorCol, text, mode)
+				cursorCol++
 			}
 		case "a":
 			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 				// current column is the last one and it is empty
-				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(rowIndex, colIndex+1, cursorP))
+				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum, cursorCol+1, cursorRow))
 				if err != nil {
 					break
 				}
-				cursorRow.Replace(colIndex, text, mode)
+				cursorRow.Replace(cursorCol, text, mode)
 			} else {
-				colIndex++
-				cursorRow.Insert(colIndex, "", mode)
+				cursorCol++
+				cursorRow.Insert(cursorCol, "", mode)
 				repaint()
-				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(rowIndex+1, colIndex+1, cursorP))
+				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum+1, cursorCol+1, cursorRow))
 				if err != nil {
-					colIndex--
+					cursorCol--
 					break
 				}
-				cursorRow.Replace(colIndex, text, mode)
+				cursorRow.Replace(cursorCol, text, mode)
 			}
 		case "r", "R", keys.F2:
-			cursor := &cursorRow.Cell[colIndex]
+			cursor := &cursorRow.Cell[cursorCol]
 			q := cursor.IsQuoted()
-			text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(rowIndex-1, colIndex, cursorP))
+			text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 			if err != nil {
 				break
 			}
-			cursorRow.Replace(colIndex, text, mode)
+			cursorRow.Replace(cursorCol, text, mode)
 			if q {
 				*cursor = cursor.Quote(mode)
 			}
 		case "u":
-			cursorRow.Cell[colIndex].Restore(mode)
+			cursorRow.Cell[cursorCol].Restore(mode)
 		case "y":
-			killbuffer = cursorRow.Cell[colIndex].Text()
+			killbuffer = cursorRow.Cell[cursorCol].Text()
 			message = "yanked the current cell: " + killbuffer
 		case "p":
-			cursorRow.Replace(colIndex, killbuffer, mode)
+			cursorRow.Replace(cursorCol, killbuffer, mode)
 			message = "pasted: " + killbuffer
 		case "d", "x":
 			if len(cursorRow.Cell) <= 1 {
 				cursorRow.Replace(0, "", mode)
 			} else {
-				cursorRow.Delete(colIndex)
+				cursorRow.Delete(cursorCol)
 			}
 		case "\"":
-			cursor := &cursorRow.Cell[colIndex]
+			cursor := &cursorRow.Cell[cursorCol]
 			if cursor.IsQuoted() {
-				cursorRow.Replace(colIndex, cursor.Text(), mode)
+				cursorRow.Replace(cursorCol, cursor.Text(), mode)
 			} else {
 				*cursor = cursor.Quote(mode)
 			}
@@ -676,26 +656,23 @@ func mains() error {
 			}
 			clearCache()
 		}
-		cursorRow = cursorP.Value.(*uncsv.Row)
 		if L := len(cursorRow.Cell); L <= 0 {
-			colIndex = 0
-		} else if colIndex >= L {
-			colIndex = L - 1
+			cursorCol = 0
+		} else if cursorCol >= L {
+			cursorCol = L - 1
 		}
-		if rowIndex < startRow {
-			startRow = rowIndex
-			startP = cursorP
-		} else if rowIndex >= startRow+screenHeight-1 {
-			startRow = rowIndex - (screenHeight - 1) + 1
-			var i int
-			for startP, i = cursorP, rowIndex; i > startRow; i-- {
-				startP = startP.Prev()
+		if cursorRow.lnum < startRow.lnum {
+			startRow = cursorRow.Clone()
+		} else if cursorRow.lnum >= startRow.lnum+screenHeight-1 {
+			goal := cursorRow.lnum - (screenHeight - 1) + 1
+			for startRow = cursorRow.Clone(); startRow.lnum > goal; {
+				startRow = startRow.Prev()
 			}
 		}
-		if colIndex < startCol {
-			startCol = colIndex
-		} else if colIndex >= startCol+cols {
-			startCol = colIndex - cols + 1
+		if cursorCol < startCol {
+			startCol = cursorCol
+		} else if cursorCol >= startCol+cols {
+			startCol = cursorCol - cols + 1
 		}
 		up(lfCount, out)
 	}

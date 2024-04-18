@@ -1,12 +1,9 @@
 package main
 
 import (
-	"container/list"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
-
-	"github.com/hymkor/csvi/uncsv"
 )
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
@@ -43,15 +40,14 @@ func (c candidate) List(field []string) (fullnames, basenames []string) {
 	return c, c
 }
 
-func makeCandidate(row, col int, cursor *list.Element) candidate {
+func makeCandidate(row, col int, cursor *_RowPtr) candidate {
 	result := candidate(make([]string, 0, 100))
 	set := make(map[string]struct{})
 	for ; cursor != nil; cursor = cursor.Prev() {
-		row := cursor.Value.(*uncsv.Row)
-		if col >= len(row.Cell) {
+		if col >= len(cursor.Cell) {
 			break
 		}
-		value := row.Cell[col].Text()
+		value := cursor.Cell[col].Text()
 		if value == "" {
 			break
 		}
@@ -69,38 +65,34 @@ func makeCandidate(row, col int, cursor *list.Element) candidate {
 	return result
 }
 
-func searchForward(cursor *list.Element, r, c int, target string) (*list.Element, int, int) {
+func searchForward(cursor *_RowPtr, c int, target string) (*_RowPtr, int) {
 	c++
 	for cursor != nil {
-		row := cursor.Value.(*uncsv.Row)
-		for c < len(row.Cell) {
-			if strings.Contains(row.Cell[c].Text(), target) {
-				return cursor, r, c
+		for c < len(cursor.Cell) {
+			if strings.Contains(cursor.Cell[c].Text(), target) {
+				return cursor, c
 			}
 			c++
 		}
-		r++
 		cursor = cursor.Next()
 		c = 0
 	}
-	return nil, r, c
+	return nil, c
 }
 
-func searchBackward(cursor *list.Element, r, c int, target string) (*list.Element, int, int) {
+func searchBackward(cursor *_RowPtr, c int, target string) (*_RowPtr, int) {
 	c--
 	for {
-		row := cursor.Value.(*uncsv.Row)
 		for c >= 0 {
-			if strings.Contains(row.Cell[c].Text(), target) {
-				return cursor, r, c
+			if strings.Contains(cursor.Cell[c].Text(), target) {
+				return cursor, c
 			}
 			c--
 		}
-		r--
 		cursor = cursor.Prev()
-		if r < 0 || cursor == nil {
-			return nil, r, c
+		if cursor == nil {
+			return nil, c
 		}
-		c = len(cursor.Value.(*uncsv.Row).Cell) - 1
+		c = len(cursor.Cell) - 1
 	}
 }

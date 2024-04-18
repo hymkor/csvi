@@ -13,13 +13,13 @@ import (
 var overWritten = map[string]struct{}{}
 
 func dump(csvlines *list.List, mode *uncsv.Mode, w io.Writer) {
-	cursor := csvlines.Front()
+	cursor := frontPtr(csvlines)
 	mode.DumpBy(
 		func() *uncsv.Row {
 			if cursor == nil {
 				return nil
 			}
-			row := cursor.Value.(*uncsv.Row)
+			row := cursor.Row
 			cursor = cursor.Next()
 			return row
 		}, w)
