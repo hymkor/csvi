@@ -251,6 +251,51 @@ func first[T any](value T, _ error) T {
 	return value
 }
 
+func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *_RowPtr, cursorCol int, screenWidth int) {
+	n := 0
+	if mode.Comma == '\t' {
+		n += first(io.WriteString(out, "[TSV]"))
+	} else if mode.Comma == ',' {
+		n += first(io.WriteString(out, "[CSV]"))
+	}
+	switch cursorRow.Term {
+	case "\r\n":
+		n += first(io.WriteString(out, "[CRLF]"))
+	case "\n":
+		n += first(io.WriteString(out, "[LF]"))
+	case "":
+		n += first(io.WriteString(out, "[EOF]"))
+	}
+	if mode.HasBom() {
+		n += first(io.WriteString(out, "[BOM]"))
+	}
+	if mode.NonUTF8 {
+		if mode.IsUTF16LE() {
+			n += first(io.WriteString(out, "[16LE]"))
+		} else if mode.IsUTF16BE() {
+			n += first(io.WriteString(out, "[16BE]"))
+		} else {
+			n += first(io.WriteString(out, "[ANSI]"))
+		}
+	}
+	if 0 <= cursorCol && cursorCol < len(cursorRow.Cell) {
+		n += first(fmt.Fprintf(out, "(%d,%d/%d): ",
+			cursorCol+1,
+			cursorRow.lnum+1,
+			cursorRow.list.Len()))
+		var buffer strings.Builder
+		buffer.WriteString(cursorRow.Cell[cursorCol].SourceText(mode))
+		if cursorCol < len(cursorRow.Cell)-1 {
+			buffer.WriteByte(mode.Comma)
+		} else if term := cursorRow.Term; term != "" {
+			buffer.WriteString(term)
+		} else { // EOF
+			buffer.WriteString("\u2592")
+		}
+		io.WriteString(out, runewidth.Truncate(replaceTable.Replace(buffer.String()), screenWidth-n, "..."))
+	}
+}
+
 type Pilot interface {
 	Size() (int, int, error)
 	Calibrate() error
@@ -390,48 +435,7 @@ func mains() error {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 			message = ""
 		} else if 0 <= cursorRow.lnum && cursorRow.lnum < csvlines.Len() {
-			n := 0
-			if mode.Comma == '\t' {
-				n += first(io.WriteString(out, "[TSV]"))
-			} else if mode.Comma == ',' {
-				n += first(io.WriteString(out, "[CSV]"))
-			}
-			switch cursorRow.Term {
-			case "\r\n":
-				n += first(io.WriteString(out, "[CRLF]"))
-			case "\n":
-				n += first(io.WriteString(out, "[LF]"))
-			case "":
-				n += first(io.WriteString(out, "[EOF]"))
-			}
-			if mode.HasBom() {
-				n += first(io.WriteString(out, "[BOM]"))
-			}
-			if mode.NonUTF8 {
-				if mode.IsUTF16LE() {
-					n += first(io.WriteString(out, "[16LE]"))
-				} else if mode.IsUTF16BE() {
-					n += first(io.WriteString(out, "[16BE]"))
-				} else {
-					n += first(io.WriteString(out, "[ANSI]"))
-				}
-			}
-			if 0 <= cursorCol && cursorCol < len(cursorRow.Cell) {
-				n += first(fmt.Fprintf(out, "(%d,%d/%d): ",
-					cursorCol+1,
-					cursorRow.lnum+1,
-					csvlines.Len()))
-				var buffer strings.Builder
-				buffer.WriteString(cursorRow.Cell[cursorCol].SourceText(mode))
-				if cursorCol < len(cursorRow.Cell)-1 {
-					buffer.WriteByte(mode.Comma)
-				} else if term := cursorRow.Term; term != "" {
-					buffer.WriteString(term)
-				} else { // EOF
-					buffer.WriteString("\u2592")
-				}
-				io.WriteString(out, runewidth.Truncate(replaceTable.Replace(buffer.String()), screenWidth-n, "..."))
-			}
+			printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
 		}
 		io.WriteString(out, _ANSI_RESET)
 		io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
