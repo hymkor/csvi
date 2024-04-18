@@ -18,9 +18,6 @@ all:
 	go fmt ./...
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 
-test:
-	go test -v
-
 _dist:
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
@@ -39,5 +36,8 @@ release:
 
 manifest:
 	make-scoop-manifest *-windows-*.zip > $(NAME).json
+
+test:
+	cd test && pwsh case1.ps1 && pwsh case2.ps1
 
 .PHONY: all test dist _dist clean release manifest
