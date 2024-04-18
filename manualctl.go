@@ -67,7 +67,6 @@ var skkInit = sync.OnceFunc(func() {
 
 func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
 	skkInit()
-	clearCache()
 	editor := &readline.Editor{
 		Writer:  out,
 		Default: defaultStr,

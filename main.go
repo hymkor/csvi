@@ -190,17 +190,24 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 	}
 }
 
-var (
-	headCache = map[int]string{}
-	bodyCache = map[int]string{}
-)
-
-func clearCache() {
-	clear(headCache)
-	clear(bodyCache)
+type _View struct {
+	headCache map[int]string
+	bodyCache map[int]string
 }
 
-func drawView(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func newView() *_View {
+	return &_View{
+		headCache: map[int]string{},
+		bodyCache: map[int]string{},
+	}
+}
+
+func (v *_View) clearCache() {
+	clear(v.headCache)
+	clear(v.bodyCache)
+}
+
+func (v *_View) Draw(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
 	if h := int(*flagHeader); h > 0 {
@@ -212,7 +219,7 @@ func drawView(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, screenH
 				header = header.Next()
 			}
 		}
-		lfCount = drawPage(enum, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, headCache, out)
+		lfCount = drawPage(enum, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, v.headCache, out)
 	}
 	if h := int(*flagHeader); startRow.lnum < h {
 		for i := 0; i < h; i++ {
@@ -236,7 +243,7 @@ func drawView(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, screenH
 			Odd:    bodyColorStyle.Even,
 		}
 	}
-	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, bodyCache, out)
+	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
 }
 
 func yesNo(pilot Pilot, out io.Writer, message string) bool {
@@ -408,6 +415,8 @@ func mains() error {
 	})
 	defer keyWorker.Close()
 
+	view := newView()
+
 	message := ""
 	var killbuffer string
 	for {
@@ -417,17 +426,17 @@ func mains() error {
 		}
 		screenHeight -= int(*flagHeader)
 		if lastWidth != screenWidth || lastHeight != screenHeight {
-			clearCache()
+			view.clearCache()
 			lastWidth = screenWidth
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
 		}
 		cols := (screenWidth - 1) / int(*flagCellWidth)
 
-		lfCount := drawView(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
+		lfCount := view.Draw(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = drawView(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
+			lfCount = view.Draw(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
@@ -460,7 +469,7 @@ func mains() error {
 
 		switch ch {
 		case keys.CtrlL:
-			clearCache()
+			view.clearCache()
 		case "q", keys.Escape:
 			if yesNo(pilot, out, "Quit Sure ? [y/n]") {
 				io.WriteString(out, "\n")
@@ -515,6 +524,7 @@ func mains() error {
 			cursorCol = c
 		case "/", "?":
 			var err error
+			view.clearCache()
 			lastWord, err = pilot.ReadLine(out, ch, "", nil)
 			if err != nil {
 				if err != readline.CtrlC {
@@ -544,6 +554,7 @@ func mains() error {
 			}
 			cursorRow = cursorRow.InsertAfter(&newRow)
 			repaint()
+			view.clearCache()
 			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 			cursorRow.Replace(0, text, mode)
 
@@ -557,6 +568,7 @@ func mains() error {
 				startRow = frontPtr(csvlines)
 			}
 			repaint()
+			view.clearCache()
 			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 			cursorRow.Replace(0, text, mode)
 		case "D":
@@ -580,6 +592,7 @@ func mains() error {
 				startRow = startPrevP.Next()
 			}
 		case "i":
+			view.clearCache()
 			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
 			if err != nil {
 				break
@@ -593,6 +606,7 @@ func mains() error {
 		case "a":
 			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 				// current column is the last one and it is empty
+				view.clearCache()
 				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum, cursorCol+1, cursorRow))
 				if err != nil {
 					break
@@ -602,6 +616,7 @@ func mains() error {
 				cursorCol++
 				cursorRow.Insert(cursorCol, "", mode)
 				repaint()
+				view.clearCache()
 				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum+1, cursorCol+1, cursorRow))
 				if err != nil {
 					cursorCol--
@@ -612,6 +627,7 @@ func mains() error {
 		case "r", "R", keys.F2:
 			cursor := &cursorRow.Cell[cursorCol]
 			q := cursor.IsQuoted()
+			view.clearCache()
 			text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 			if err != nil {
 				break
@@ -658,7 +674,7 @@ func mains() error {
 			if err := cmdWrite(pilot, csvlines, mode, out); err != nil {
 				message = err.Error()
 			}
-			clearCache()
+			view.clearCache()
 		}
 		if L := len(cursorRow.Cell); L <= 0 {
 			cursorCol = 0
