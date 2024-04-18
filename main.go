@@ -10,9 +10,8 @@ import (
 	"runtime"
 	"strings"
 
-	"golang.org/x/term"
-
 	"github.com/mattn/go-colorable"
+	"github.com/mattn/go-isatty"
 	"github.com/mattn/go-runewidth"
 
 	"github.com/nyaosorg/go-readline-ny"
@@ -358,7 +357,7 @@ func mains() error {
 		mode.SetUTF16BE()
 	}
 	var reader *bufio.Reader
-	if len(flag.Args()) <= 0 && term.IsTerminal(int(os.Stdin.Fd())) {
+	if len(flag.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
 		// Start with one empty line
 		newRow := uncsv.NewRow(mode)
 		csvlines.PushBack(&newRow)
