@@ -25,7 +25,7 @@ func dump(csvlines *list.List, mode *uncsv.Mode, w io.Writer) {
 		}, w)
 }
 
-func cmdWrite(pilot Pilot, csvlines *list.List, mode *uncsv.Mode, out io.Writer) error {
+func cmdWrite(pilot _Pilot, csvlines *list.List, mode *uncsv.Mode, out io.Writer) error {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {

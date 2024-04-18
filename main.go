@@ -246,7 +246,7 @@ func (v *_View) Draw(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, 
 	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
 }
 
-func yesNo(pilot Pilot, out io.Writer, message string) bool {
+func yesNo(pilot _Pilot, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
 	io.WriteString(out, _ANSI_CURSOR_ON)
 	ch, err := pilot.GetKey()
@@ -303,7 +303,7 @@ func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *_RowPtr, cursor
 	}
 }
 
-type Pilot interface {
+type _Pilot interface {
 	Size() (int, int, error)
 	Calibrate() error
 	GetKey() (string, error)
@@ -323,12 +323,12 @@ func mains() error {
 		defer disable()
 	}
 
-	var pilot Pilot
+	var pilot _Pilot
 	if *flagAuto != "" {
-		pilot = &AutoPilot{script: *flagAuto}
+		pilot = &_AutoPilot{script: *flagAuto}
 	} else {
 		var err error
-		pilot, err = NewManualCtl()
+		pilot, err = newManualCtl()
 		if err != nil {
 			return err
 		}

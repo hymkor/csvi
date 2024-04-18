@@ -19,19 +19,19 @@ import (
 	"github.com/hymkor/go-cursorposition"
 )
 
-type ManualCtl struct {
+type _ManualCtl struct {
 	*tty.TTY
 }
 
-func NewManualCtl() (ManualCtl, error) {
-	var rc ManualCtl
+func newManualCtl() (_ManualCtl, error) {
+	var rc _ManualCtl
 	var err error
 
 	rc.TTY, err = tty.Open()
 	return rc, err
 }
 
-func (m ManualCtl) Calibrate() error {
+func (m _ManualCtl) Calibrate() error {
 	// Measure how far the cursor moves while the `▽` is printed
 	w, err := cursorposition.AmbiguousWidthGoTty(m.TTY, os.Stderr)
 	if err != nil {
@@ -41,15 +41,15 @@ func (m ManualCtl) Calibrate() error {
 	return nil
 }
 
-func (m ManualCtl) Close() error {
+func (m _ManualCtl) Close() error {
 	return m.TTY.Close()
 }
 
-func (m ManualCtl) Size() (int, int, error) {
+func (m _ManualCtl) Size() (int, int, error) {
 	return m.TTY.Size()
 }
 
-func (m ManualCtl) GetKey() (string, error) {
+func (m _ManualCtl) GetKey() (string, error) {
 	return readline.GetKey(m.TTY)
 }
 
@@ -65,7 +65,7 @@ var skkInit = sync.OnceFunc(func() {
 	}
 })
 
-func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
+func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,
@@ -91,7 +91,7 @@ func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidat
 	return editor.ReadLine(context.Background())
 }
 
-func (m ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string, error) {
+func (m _ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,

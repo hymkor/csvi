@@ -7,19 +7,19 @@ import (
 	"unicode/utf8"
 )
 
-type AutoPilot struct {
+type _AutoPilot struct {
 	script string
 }
 
-func (ap *AutoPilot) Size() (int, int, error) {
+func (ap *_AutoPilot) Size() (int, int, error) {
 	return 80, 25, nil
 }
 
-func (ap *AutoPilot) Calibrate() error {
+func (ap *_AutoPilot) Calibrate() error {
 	return nil
 }
 
-func (ap *AutoPilot) next() (string, error) {
+func (ap *_AutoPilot) next() (string, error) {
 	if ap.script == "" {
 		return "", io.EOF
 	}
@@ -28,11 +28,11 @@ func (ap *AutoPilot) next() (string, error) {
 	return command, nil
 }
 
-func (ap *AutoPilot) ReadLine(io.Writer, string, string, candidate) (string, error) {
+func (ap *_AutoPilot) ReadLine(io.Writer, string, string, candidate) (string, error) {
 	return ap.next()
 }
 
-func (ap *AutoPilot) GetKey() (string, error) {
+func (ap *_AutoPilot) GetKey() (string, error) {
 	key, err := ap.next()
 	if err != nil || len(key) <= 1 || key[0] == '\x1B' {
 		return key, err
@@ -43,10 +43,10 @@ func (ap *AutoPilot) GetKey() (string, error) {
 	return key, nil
 }
 
-func (ap *AutoPilot) GetFilename(out io.Writer, prompt string, defaultName string) (string, error) {
+func (ap *_AutoPilot) GetFilename(out io.Writer, prompt string, defaultName string) (string, error) {
 	return ap.next()
 }
 
-func (ap *AutoPilot) Close() error {
+func (ap *_AutoPilot) Close() error {
 	return nil
 }
