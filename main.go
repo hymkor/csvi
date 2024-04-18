@@ -9,6 +9,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
@@ -441,12 +442,14 @@ func mains() error {
 		io.WriteString(out, _ANSI_YELLOW)
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
-			message = ""
 		} else if 0 <= cursorRow.lnum && cursorRow.lnum < csvlines.Len() {
 			printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
 		}
 		io.WriteString(out, _ANSI_RESET)
 		io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
+
+		const interval = 4
+		displayUpdateTime := time.Now().Add(time.Second / interval)
 
 		ch, err := keyWorker.GetOr(func() bool {
 			if reader == nil {
@@ -460,11 +463,19 @@ func mains() error {
 				}
 			}
 			csvlines.PushBack(row)
+			if message == "" && (err == io.EOF || time.Now().After(displayUpdateTime)) {
+				io.WriteString(out, "\r"+_ANSI_YELLOW)
+				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
+				io.WriteString(out, _ANSI_RESET)
+				io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
+				displayUpdateTime = time.Now().Add(time.Second / interval)
+			}
 			return err != io.EOF
 		})
 		if err != nil {
 			return err
 		}
+		message = ""
 
 		switch ch {
 		case keys.CtrlL:
