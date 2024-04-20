@@ -1,3 +1,5 @@
+* Update the read bytes of the status line 4 times per second.
+
 v1.7.1
 ======
 Apr 16 2024
