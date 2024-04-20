@@ -94,6 +94,16 @@ func drawLine(
 		return
 	}
 	i := 0
+
+	if reverse {
+		io.WriteString(out, style.Odd[0])
+		defer io.WriteString(out, style.Odd[1])
+	} else {
+		io.WriteString(out, style.Even[0])
+		defer io.WriteString(out, style.Even[1])
+	}
+	io.WriteString(out, "\x1B[K")
+
 	for len(csvs) > 0 {
 		cursor := csvs[0]
 		text := cursor.Text()
@@ -111,16 +121,8 @@ func drawLine(
 		}
 		text = replaceTable.Replace(text)
 		ss, _ := cutStrInWidth(text, cw)
-		var off string
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor[0])
-			off = style.Cursor[1]
-		} else if reverse {
-			io.WriteString(out, style.Odd[0])
-			off = style.Odd[1]
-		} else {
-			io.WriteString(out, style.Even[0])
-			off = style.Even[1]
 		}
 		if cursor.Modified() {
 			io.WriteString(out, _ANSI_UNDERLINE_ON)
@@ -130,10 +132,15 @@ func drawLine(
 			io.WriteString(out, _ANSI_UNDERLINE_OFF)
 		}
 		screenWidth -= cw
-		io.WriteString(out, "\x1B[K")
-		io.WriteString(out, off)
 		if screenWidth <= 0 {
 			break
+		}
+		if i == cursorPos {
+			if reverse {
+				io.WriteString(out, style.Odd[0])
+			} else {
+				io.WriteString(out, style.Even[0])
+			}
 		}
 		fmt.Fprintf(out, "\x1B[%dG", nextI*cellWidth+1)
 		i = nextI
