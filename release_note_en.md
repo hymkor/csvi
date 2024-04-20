@@ -1,4 +1,5 @@
 * Update the read bytes of the status line 4 times per second.
+* Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.
 
 v1.7.1
 ======
