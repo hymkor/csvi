@@ -229,17 +229,21 @@ func (v *_View) Draw(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, 
 		lfCount = drawPage(enum, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, v.headCache, out)
 	}
 	if h := int(*flagHeader); startRow.lnum < h {
-		for i := 0; i < h; i++ {
+		for i := 0; i < h && startRow != nil; i++ {
 			startRow = startRow.Next()
 		}
 	}
+	if startRow == nil {
+		return lfCount
+	}
+	p := startRow.Clone()
 	// print body
 	enum := func(callback func([]uncsv.Cell) bool) {
-		for startRow != nil {
-			if !callback(cellsAfter(startRow.Cell, startCol)) {
+		for p != nil {
+			if !callback(cellsAfter(p.Cell, startCol)) {
 				return
 			}
-			startRow = startRow.Next()
+			p = p.Next()
 		}
 	}
 	style := &bodyColorStyle
