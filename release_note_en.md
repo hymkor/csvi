@@ -1,3 +1,8 @@
+* Fix: crashed on starting `csvi` with no arguments
+* Fix: a cell were not flipped when the cursor was in a cell with no text.
+* Fix: the foreground color was not black, but gray.
+* Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes `foo\r\n` when executing `echo "foo" | csvi -auto "w|-|q|y" > foo.txt`
+
 v1.8.0
 ======
 Apr.24, 2024
