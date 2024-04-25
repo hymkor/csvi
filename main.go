@@ -350,11 +350,6 @@ func mains() error {
 	}
 	defer pilot.Close()
 
-	out := colorable.NewColorableStdout()
-
-	io.WriteString(out, _ANSI_CURSOR_OFF)
-	defer io.WriteString(out, _ANSI_CURSOR_ON)
-
 	csvlines := list.New()
 	mode := &uncsv.Mode{}
 
@@ -372,7 +367,14 @@ func mains() error {
 	if *flag16be {
 		mode.SetUTF16BE()
 	}
+
+	var out io.Writer
 	var reader *bufio.Reader
+	if len(flag.Args()) <= 0 {
+		out = colorable.NewColorableStderr()
+	} else {
+		out = colorable.NewColorableStdout()
+	}
 	if len(flag.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
 		// Start with one empty line
 		newRow := uncsv.NewRow(mode)
@@ -409,6 +411,9 @@ func mains() error {
 			return io.EOF
 		}
 	}
+	io.WriteString(out, _ANSI_CURSOR_OFF)
+	defer io.WriteString(out, _ANSI_CURSOR_ON)
+
 	if _, ok := out.(*os.File); ok {
 		if err := pilot.Calibrate(); err != nil {
 			return err
@@ -726,7 +731,7 @@ func mains() error {
 var version string
 
 func main() {
-	fmt.Printf("%s %s-%s-%s by %s\n",
+	fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
 		os.Args[0], version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
 	flag.Parse()
