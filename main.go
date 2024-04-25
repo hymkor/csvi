@@ -131,18 +131,22 @@ func drawLine(
 		if cursor.Modified() {
 			io.WriteString(out, _ANSI_UNDERLINE_OFF)
 		}
-		screenWidth -= cw
-		if screenWidth <= 0 {
-			break
-		}
 		if i == cursorPos {
+			io.WriteString(out, "\x1B[K")
 			if reverse {
 				io.WriteString(out, style.Odd[0])
 			} else {
 				io.WriteString(out, style.Even[0])
 			}
 		}
+		screenWidth -= cw
+		if screenWidth <= 0 {
+			break
+		}
 		fmt.Fprintf(out, "\x1B[%dG", nextI*cellWidth+1)
+		if i == cursorPos {
+			io.WriteString(out, "\x1B[K")
+		}
 		i = nextI
 	}
 }
