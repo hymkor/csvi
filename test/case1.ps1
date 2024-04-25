@@ -1,5 +1,7 @@
 Set-PSDebug -Strict
 
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
+
 function Try-Test($op,$exp){
     $source = @"
 あ,い,う,え,お

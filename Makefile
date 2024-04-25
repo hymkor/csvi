@@ -38,7 +38,7 @@ manifest:
 	make-scoop-manifest *-windows-*.zip > $(NAME).json
 
 test:
-	cd test && pwsh case0.ps1 && pwsh case1.ps1 && pwsh case2.ps1
+	pwsh test/case0.ps1 && pwsh test/case1.ps1 && pwsh test/case2.ps1
 
 benchmark:
 	powershell "if ( -not (Test-Path 27OSAKA.CSV) ){ curl.exe -O https://www.post.japanpost.jp/zipcode/dl/kogaki/zip/27osaka.zip ; unzip.exe 27osaka.zip ; Remove-Item 27osaka.zip} ; $$start = Get-Date ; .\csvi.exe -auto 'l|l|l|l|l|l|l|l|l|l|l|l|l|l|q|y' 27OSAKA.CSV ; $$end = Get-Date ; Write-Host ($$end-$$start).TotalSeconds"

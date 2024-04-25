@@ -1,5 +1,7 @@
 Set-PSDebug -Strict
 
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
+
 $resultPath = [System.IO.Path]::GetTempFileName() + ".csv"
 ..\csvi -auto "i|ahaha|w|$resultPath|q|y" >nul
 $result = Get-Content $resultPath -Raw

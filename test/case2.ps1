@@ -1,5 +1,7 @@
 Set-PSDebug -Strict
 
+Set-Location (Split-Path $MyInvocation.MyCommand.path)
+
 function Equal-Bytes($a,$b){
     if ($a.Length -ne $b.Length) {
         return $false
