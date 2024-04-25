@@ -45,13 +45,13 @@ type _ColorStyle struct {
 }
 
 var bodyColorStyle = _ColorStyle{
-	Cursor: [...]string{"\x1B[107;30m", "\x1B[40;37m"},
+	Cursor: [...]string{"\x1B[107;30;22m", "\x1B[40;37m"},
 	Even:   [...]string{"\x1B[48;5;235;37;1m", "\x1B[22;40m"},
 	Odd:    [...]string{"\x1B[40;37;1m", "\x1B[22m"},
 }
 
 var headColorStyle = _ColorStyle{
-	Cursor: [...]string{"\x1B[107;30m", "\x1B[40;36m"},
+	Cursor: [...]string{"\x1B[107;30;22m", "\x1B[40;36m"},
 	Even:   [...]string{"\x1B[48;5;235;36;1m", "\x1B[22;40m"},
 	Odd:    [...]string{"\x1B[40;36;1m", "\x1B[22m"},
 }
