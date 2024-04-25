@@ -1,3 +1,7 @@
+v1.8.1
+======
+Apr.26, 2024
+
 * Fix: crashed on starting `csvi` with no arguments
 * Fix: a cell were not flipped when the cursor was in a cell with no text.
 * Fix: the foreground color was not black, but gray.
