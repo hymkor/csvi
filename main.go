@@ -31,9 +31,6 @@ const (
 	_ANSI_ERASE_LINE       = "\x1B[0m\x1B[0K"
 	_ANSI_ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
 
-	_ANSI_BLINK_ON  = "\x1B[6m"
-	_ANSI_BLINK_OFF = "\x1B[25m"
-
 	_ANSI_UNDERLINE_ON  = "\x1B[4m"
 	_ANSI_UNDERLINE_OFF = "\x1B[24m"
 )
