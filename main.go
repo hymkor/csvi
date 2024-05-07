@@ -312,6 +312,7 @@ type Config struct {
 	Pilot       Pilot
 	FixColumn   bool
 	ReadOnly    bool
+	Message     string
 }
 
 const (
@@ -373,7 +374,7 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 
 	view := newView()
 
-	message := ""
+	message := cfg.Message
 	var killbuffer string
 	for {
 		screenWidth, screenHeight, err := pilot.Size()
