@@ -311,9 +311,13 @@ type Config struct {
 	HeaderLines int
 	Pilot       Pilot
 	FixColumn   bool
+	ReadOnly    bool
 }
 
-const msgColumnFixed = "The order of Columns is fixed !"
+const (
+	msgColumnFixed = "The order of Columns is fixed !"
+	msgReadOnly    = "Read Only Mode !"
+)
 
 func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, error) {
 	pilot := cfg.Pilot
@@ -433,7 +437,7 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 		case keys.CtrlL:
 			view.clearCache()
 		case "q", keys.Escape:
-			if yesNo(pilot, out, "Quit Sure ? [y/n]") {
+			if cfg.ReadOnly || yesNo(pilot, out, "Quit Sure ? [y/n]") {
 				io.WriteString(out, "\n")
 				return frontPtr(csvlines), nil
 			}
@@ -558,6 +562,10 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 				message = msgColumnFixed
 				break
 			}
+			if cfg.ReadOnly {
+				message = msgReadOnly
+				break
+			}
 			view.clearCache()
 			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
 			if err != nil {
@@ -572,6 +580,10 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 		case "a":
 			if cfg.FixColumn {
 				message = msgColumnFixed
+				break
+			}
+			if cfg.ReadOnly {
+				message = msgReadOnly
 				break
 			}
 			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
@@ -595,6 +607,10 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 				cursorRow.Replace(cursorCol, text, mode)
 			}
 		case "r", "R", keys.F2:
+			if cfg.ReadOnly {
+				message = msgReadOnly
+				break
+			}
 			cursor := &cursorRow.Cell[cursorCol]
 			q := cursor.IsQuoted()
 			view.clearCache()
@@ -617,6 +633,10 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 		case "d", "x":
 			if cfg.FixColumn {
 				message = msgColumnFixed
+				break
+			}
+			if cfg.ReadOnly {
+				message = msgReadOnly
 				break
 			}
 			if len(cursorRow.Cell) <= 1 {

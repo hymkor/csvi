@@ -28,6 +28,7 @@ var (
 	flag16le      = flag.Bool("16le", false, "Force read/write as UTF-16LE")
 	flag16be      = flag.Bool("16be", false, "Force read/write as UTF-16BE")
 	flagFixColumn = flag.Bool("fixcol", false, "Do not insert/delete a column")
+	flagReadOnly  = flag.Bool("readonly", false, "Read Only Mode")
 )
 
 const (
@@ -102,6 +103,7 @@ func mains() error {
 		CellWidth:   int(*flagCellWidth),
 		HeaderLines: int(*flagHeader),
 		FixColumn:   *flagFixColumn,
+		ReadOnly:    *flagReadOnly,
 	}.Main(mode, reader, out)
 
 	return err
