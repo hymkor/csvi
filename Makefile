@@ -17,6 +17,7 @@ EXE:=$(shell go env GOEXE)
 all:
 	go fmt ./...
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && pushd "cmd/csvi" && go build -o "$(CURDIR)" $(GOOPT) && popd
 
 _dist:
 	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
