@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -69,7 +68,7 @@ func mains() error {
 	}
 
 	var out io.Writer
-	var reader *bufio.Reader
+	var reader io.Reader
 	if len(flag.Args()) <= 0 {
 		out = colorable.NewColorableStderr()
 	} else {
@@ -93,7 +92,7 @@ func mains() error {
 		if *flagSemicolon {
 			mode.Comma = ';'
 		}
-		reader = bufio.NewReader(multiFileReader(args...))
+		reader = multiFileReader(args...)
 	}
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)

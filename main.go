@@ -315,7 +315,7 @@ type Config struct {
 
 const msgColumnFixed = "The order of Columns is fixed !"
 
-func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*RowPtr, error) {
+func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, error) {
 	pilot := cfg.Pilot
 	if pilot == nil {
 		var err error
@@ -331,7 +331,12 @@ func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*
 		}
 	}
 	csvlines := list.New()
-	if reader != nil {
+	var reader *bufio.Reader
+	if in != nil {
+		var ok bool
+		if reader, ok = in.(*bufio.Reader); !ok {
+			reader = bufio.NewReader(in)
+		}
 		for i := 0; i < 100; i++ {
 			row, err := uncsv.ReadLine(reader, mode)
 			if err != nil && err != io.EOF {
