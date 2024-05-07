@@ -1,18 +1,14 @@
-package main
+package csvi
 
 import (
 	"bufio"
 	"container/list"
-	"flag"
 	"fmt"
 	"io"
 	"os"
-	"runtime"
 	"strings"
 	"time"
 
-	"github.com/mattn/go-colorable"
-	"github.com/mattn/go-isatty"
 	"github.com/mattn/go-runewidth"
 
 	"github.com/nyaosorg/go-readline-ny"
@@ -52,20 +48,6 @@ var headColorStyle = _ColorStyle{
 	Even:   [...]string{"\x1B[48;5;235;36;1m", "\x1B[22;40m"},
 	Odd:    [...]string{"\x1B[40;36;1m", "\x1B[22m"},
 }
-
-var (
-	flagCellWidth = flag.Uint("w", 14, "set the width of cell")
-	flagHeader    = flag.Uint("h", 1, "the number of row-header")
-	flagTsv       = flag.Bool("t", false, "use TAB as field-separator")
-	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
-	flagSemicolon = flag.Bool("semicolon", false, "use Semicolon as field-separator")
-	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
-	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
-	flagHelp      = flag.Bool("help", false, "this help")
-	flagAuto      = flag.String("auto", "", "autopilot")
-	flag16le      = flag.Bool("16le", false, "Force read/write as UTF-16LE")
-	flag16be      = flag.Bool("16be", false, "Force read/write as UTF-16BE")
-)
 
 var replaceTable = strings.NewReplacer(
 	"\r", "\u240D",
@@ -158,7 +140,7 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
+func drawPage(page func(func([]uncsv.Cell) bool), cellWidth, csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -175,7 +157,7 @@ func drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin, w, h int, styl
 			cursorPos = csrpos
 		}
 		var buffer strings.Builder
-		drawLine(record, int(*flagCellWidth), w, cursorPos, reverse, style, &buffer)
+		drawLine(record, cellWidth, w, cursorPos, reverse, style, &buffer)
 		line := buffer.String()
 		if f := cache[count]; f != line {
 			io.WriteString(out, line)
@@ -215,10 +197,10 @@ func (v *_View) clearCache() {
 	clear(v.bodyCache)
 }
 
-func (v *_View) Draw(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func (v *_View) Draw(header, startRow, cursorRow *RowPtr, cellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
-	if h := int(*flagHeader); h > 0 {
+	if h := headerLines; h > 0 {
 		enum := func(callback func([]uncsv.Cell) bool) {
 			for i := 0; i < h && header != nil; i++ {
 				if !callback(cellsAfter(header.Cell, startCol)) {
@@ -227,10 +209,10 @@ func (v *_View) Draw(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, 
 				header = header.Next()
 			}
 		}
-		lfCount = drawPage(enum, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, v.headCache, out)
+		lfCount = drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, v.headCache, out)
 	}
-	if h := int(*flagHeader); startRow.lnum < h {
-		for i := 0; i < h && startRow != nil; i++ {
+	if startRow.lnum < headerLines {
+		for i := 0; i < headerLines && startRow != nil; i++ {
 			startRow = startRow.Next()
 		}
 	}
@@ -248,17 +230,17 @@ func (v *_View) Draw(header, startRow, cursorRow *_RowPtr, startCol, cursorCol, 
 		}
 	}
 	style := &bodyColorStyle
-	if *flagHeader%2 == 1 {
+	if headerLines%2 == 1 {
 		style = &_ColorStyle{
 			Cursor: bodyColorStyle.Cursor,
 			Even:   bodyColorStyle.Odd,
 			Odd:    bodyColorStyle.Even,
 		}
 	}
-	return lfCount + drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
+	return lfCount + drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
 }
 
-func yesNo(pilot _Pilot, out io.Writer, message string) bool {
+func yesNo(pilot Pilot, out io.Writer, message string) bool {
 	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
 	io.WriteString(out, _ANSI_CURSOR_ON)
 	ch, err := pilot.GetKey()
@@ -270,7 +252,7 @@ func first[T any](value T, _ error) T {
 	return value
 }
 
-func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *_RowPtr, cursorCol int, screenWidth int) {
+func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *RowPtr, cursorCol int, screenWidth int) {
 	n := 0
 	if mode.Comma == '\t' {
 		n += first(io.WriteString(out, "[TSV]"))
@@ -315,88 +297,42 @@ func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *_RowPtr, cursor
 	}
 }
 
-type _Pilot interface {
+type Pilot interface {
 	Size() (int, int, error)
 	Calibrate() error
 	GetKey() (string, error)
-	ReadLine(io.Writer, string, string, candidate) (string, error)
+	ReadLine(io.Writer, string, string, Candidate) (string, error)
 	GetFilename(io.Writer, string, string) (string, error)
 	Close() error
 }
 
-func mains() error {
-	if *flagHelp {
-		flag.Usage()
-		return nil
-	}
+type Config struct {
+	CellWidth   int
+	HeaderLines int
+	Pilot       Pilot
+}
 
-	disable := colorable.EnableColorsStdout(nil)
-	if disable != nil {
-		defer disable()
-	}
-
-	var pilot _Pilot
-	if *flagAuto != "" {
-		pilot = &_AutoPilot{script: *flagAuto}
-	} else {
+func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*RowPtr, error) {
+	pilot := cfg.Pilot
+	if pilot == nil {
 		var err error
 		pilot, err = newManualCtl()
 		if err != nil {
-			return err
+			return nil, err
+		}
+		pilot.Close()
+	}
+	if _, ok := out.(*os.File); ok {
+		if err := pilot.Calibrate(); err != nil {
+			return nil, err
 		}
 	}
-	defer pilot.Close()
-
 	csvlines := list.New()
-	mode := &uncsv.Mode{}
-
-	if *flagIana != "" {
-		if err := mode.SetEncoding(*flagIana); err != nil {
-			return fmt.Errorf("-iana %w", err)
-		}
-	}
-	if *flagNonUTF8 {
-		mode.NonUTF8 = true
-	}
-	if *flag16le {
-		mode.SetUTF16LE()
-	}
-	if *flag16be {
-		mode.SetUTF16BE()
-	}
-
-	var out io.Writer
-	var reader *bufio.Reader
-	if len(flag.Args()) <= 0 {
-		out = colorable.NewColorableStderr()
-	} else {
-		out = colorable.NewColorableStdout()
-	}
-	if len(flag.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
-		// Start with one empty line
-		newRow := uncsv.NewRow(mode)
-		csvlines.PushBack(&newRow)
-		mode.Comma = '\t'
-	} else {
-		mode.Comma = ','
-		args := flag.Args()
-		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
-			mode.Comma = '\t'
-		}
-		if *flagTsv {
-			mode.Comma = '\t'
-		}
-		if *flagCsv {
-			mode.Comma = ','
-		}
-		if *flagSemicolon {
-			mode.Comma = ';'
-		}
-		reader = bufio.NewReader(multiFileReader(args...))
+	if reader != nil {
 		for i := 0; i < 100; i++ {
 			row, err := uncsv.ReadLine(reader, mode)
 			if err != nil && err != io.EOF {
-				return err
+				return nil, err
 			}
 			csvlines.PushBack(row)
 			if err == io.EOF {
@@ -404,19 +340,10 @@ func mains() error {
 				break
 			}
 		}
-		if csvlines.Len() <= 0 {
-			return io.EOF
-		}
+	} else {
+		newRow := uncsv.NewRow(mode)
+		csvlines.PushBack(&newRow)
 	}
-	io.WriteString(out, _ANSI_CURSOR_OFF)
-	defer io.WriteString(out, _ANSI_CURSOR_ON)
-
-	if _, ok := out.(*os.File); ok {
-		if err := pilot.Calibrate(); err != nil {
-			return err
-		}
-	}
-
 	cursorCol := 0
 	cursorRow := frontPtr(csvlines)
 	startRow := frontPtr(csvlines)
@@ -439,21 +366,21 @@ func mains() error {
 	for {
 		screenWidth, screenHeight, err := pilot.Size()
 		if err != nil {
-			return err
+			return nil, err
 		}
-		screenHeight -= int(*flagHeader)
+		screenHeight -= cfg.HeaderLines
 		if lastWidth != screenWidth || lastHeight != screenHeight {
 			view.clearCache()
 			lastWidth = screenWidth
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
 		}
-		cols := (screenWidth - 1) / int(*flagCellWidth)
+		cols := (screenWidth - 1) / cfg.CellWidth
 
-		lfCount := view.Draw(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
+		lfCount := view.Draw(frontPtr(csvlines), startRow, cursorRow, cfg.CellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = view.Draw(frontPtr(csvlines), startRow, cursorRow, startCol, cursorCol, screenHeight, screenWidth, out)
+			lfCount = view.Draw(frontPtr(csvlines), startRow, cursorRow, cfg.CellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
@@ -490,7 +417,7 @@ func mains() error {
 			return err != io.EOF
 		})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		message = ""
 
@@ -500,7 +427,7 @@ func mains() error {
 		case "q", keys.Escape:
 			if yesNo(pilot, out, "Quit Sure ? [y/n]") {
 				io.WriteString(out, "\n")
-				return nil
+				return frontPtr(csvlines), nil
 			}
 		case "j", keys.Down, keys.CtrlN, keys.Enter:
 			if next := cursorRow.Next(); next != nil {
@@ -690,7 +617,7 @@ func mains() error {
 				for {
 					row, err := uncsv.ReadLine(reader, mode)
 					if err != nil && err != io.EOF {
-						return err
+						return nil, err
 					}
 					csvlines.PushBack(row)
 					if err == io.EOF {
@@ -722,18 +649,5 @@ func mains() error {
 			startCol = cursorCol - cols + 1
 		}
 		up(lfCount, out)
-	}
-}
-
-var version string
-
-func main() {
-	fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
-		os.Args[0], version, runtime.GOOS, runtime.GOARCH, runtime.Version())
-
-	flag.Parse()
-	if err := mains(); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
 	}
 }

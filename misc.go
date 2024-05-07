@@ -1,4 +1,4 @@
-package main
+package csvi
 
 import (
 	"strings"
@@ -18,30 +18,30 @@ func cutStrInWidth(s string, cellwidth int) (string, int) {
 	return s, w
 }
 
-type candidate []string
+type Candidate []string
 
-func (c candidate) Len() int {
+func (c Candidate) Len() int {
 	return len(c)
 }
 
-func (c candidate) At(n int) string {
+func (c Candidate) At(n int) string {
 	return c[len(c)-n-1]
 }
 
-func (c candidate) Delimiters() string {
+func (c Candidate) Delimiters() string {
 	return ""
 }
 
-func (c candidate) Enclosures() string {
+func (c Candidate) Enclosures() string {
 	return ""
 }
 
-func (c candidate) List(field []string) (fullnames, basenames []string) {
+func (c Candidate) List(field []string) (fullnames, basenames []string) {
 	return c, c
 }
 
-func makeCandidate(row, col int, cursor *_RowPtr) candidate {
-	result := candidate(make([]string, 0, 100))
+func makeCandidate(row, col int, cursor *RowPtr) Candidate {
+	result := Candidate(make([]string, 0, 100))
 	set := make(map[string]struct{})
 	for ; cursor != nil; cursor = cursor.Prev() {
 		if col >= len(cursor.Cell) {
@@ -65,7 +65,7 @@ func makeCandidate(row, col int, cursor *_RowPtr) candidate {
 	return result
 }
 
-func searchForward(cursor *_RowPtr, c int, target string) (*_RowPtr, int) {
+func searchForward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
 	c++
 	for cursor != nil {
 		for c < len(cursor.Cell) {
@@ -80,7 +80,7 @@ func searchForward(cursor *_RowPtr, c int, target string) (*_RowPtr, int) {
 	return nil, c
 }
 
-func searchBackward(cursor *_RowPtr, c int, target string) (*_RowPtr, int) {
+func searchBackward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
 	c--
 	for {
 		for c >= 0 {

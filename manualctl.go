@@ -1,4 +1,4 @@
-package main
+package csvi
 
 import (
 	"context"
@@ -65,7 +65,7 @@ var skkInit = sync.OnceFunc(func() {
 	}
 })
 
-func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate) (string, error) {
+func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candidate) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,

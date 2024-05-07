@@ -1,4 +1,4 @@
-package csvi
+package main
 
 import (
 	"io"
