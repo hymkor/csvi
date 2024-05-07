@@ -28,6 +28,7 @@ var (
 	flagAuto      = flag.String("auto", "", "autopilot")
 	flag16le      = flag.Bool("16le", false, "Force read/write as UTF-16LE")
 	flag16be      = flag.Bool("16be", false, "Force read/write as UTF-16BE")
+	flagFixColumn = flag.Bool("fixcol", false, "Do not insert/delete a column")
 )
 
 const (
@@ -101,6 +102,7 @@ func mains() error {
 		Pilot:       pilot,
 		CellWidth:   int(*flagCellWidth),
 		HeaderLines: int(*flagHeader),
+		FixColumn:   *flagFixColumn,
 	}.Main(mode, reader, out)
 
 	return err

@@ -310,7 +310,10 @@ type Config struct {
 	CellWidth   int
 	HeaderLines int
 	Pilot       Pilot
+	FixColumn   bool
 }
+
+const msgColumnFixed = "The order of Columns is fixed !"
 
 func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*RowPtr, error) {
 	pilot := cfg.Pilot
@@ -546,6 +549,10 @@ func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*
 				startRow = startPrevP.Next()
 			}
 		case "i":
+			if cfg.FixColumn {
+				message = msgColumnFixed
+				break
+			}
 			view.clearCache()
 			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
 			if err != nil {
@@ -558,6 +565,10 @@ func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*
 				cursorCol++
 			}
 		case "a":
+			if cfg.FixColumn {
+				message = msgColumnFixed
+				break
+			}
 			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 				// current column is the last one and it is empty
 				view.clearCache()
@@ -599,6 +610,10 @@ func (cfg Config) Main(mode *uncsv.Mode, reader *bufio.Reader, out io.Writer) (*
 			cursorRow.Replace(cursorCol, killbuffer, mode)
 			message = "pasted: " + killbuffer
 		case "d", "x":
+			if cfg.FixColumn {
+				message = msgColumnFixed
+				break
+			}
 			if len(cursorRow.Cell) <= 1 {
 				cursorRow.Replace(0, "", mode)
 			} else {
