@@ -1,3 +1,7 @@
+* Add the option `-fixcol` that disables keys `i`,`a`, and `x` not to shift columns.
+* Move the main function to the sub-package `cmd/csvi` to be available as a package of Go
+* Add the option `-readonly` that forbide changing the value of cell. When enabled, "q" shutdowns csvi immediately
+
 v1.8.1
 ======
 Apr.26, 2024
