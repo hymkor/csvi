@@ -20,7 +20,7 @@ all:
 	$(SET) "CGO_ENABLED=0" && pushd "cmd/csvi" && go build -o "$(CURDIR)" $(GOOPT) && popd
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && go build $(GOOPT)
+	$(MAKE) all
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
