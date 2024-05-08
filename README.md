@@ -39,7 +39,7 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 ### Use "go install"
 
 ```
-go install github.com/hymkor/csvi@latest
+go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
 ### Use scoop-installer
