@@ -1,6 +1,6 @@
 v1.9.0
 ======
-(2024.05.08)
+May.08, 2024
 
 * Add the option `-fixcol` that disables keys `i`,`a`, and `x` not to shift columns.
 * Move the main function to the sub-package `cmd/csvi` to be available as a package of Go
