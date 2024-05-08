@@ -328,7 +328,7 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 		if err != nil {
 			return nil, err
 		}
-		pilot.Close()
+		defer pilot.Close()
 	}
 	if _, ok := out.(*os.File); ok {
 		if err := pilot.Calibrate(); err != nil {
