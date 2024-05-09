@@ -321,6 +321,11 @@ const (
 )
 
 func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, error) {
+	cellWidth := cfg.CellWidth
+	if cellWidth <= 0 {
+		cellWidth = 14
+	}
+
 	pilot := cfg.Pilot
 	if pilot == nil {
 		var err error
@@ -388,12 +393,12 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
 		}
-		cols := (screenWidth - 1) / cfg.CellWidth
+		cols := (screenWidth - 1) / cellWidth
 
-		lfCount := view.Draw(frontPtr(csvlines), startRow, cursorRow, cfg.CellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+		lfCount := view.Draw(frontPtr(csvlines), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = view.Draw(frontPtr(csvlines), startRow, cursorRow, cfg.CellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+			lfCount = view.Draw(frontPtr(csvlines), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
