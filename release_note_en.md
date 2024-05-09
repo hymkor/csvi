@@ -1,3 +1,7 @@
+v1.9.1
+======
+May.09, 2024
+
 * Fix timing to close the terminal input was incorrect
   (For some reason it hasn't surfaced as a problem)
 
