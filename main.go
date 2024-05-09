@@ -307,6 +307,7 @@ type Pilot interface {
 }
 
 type Config struct {
+	*uncsv.Mode
 	CellWidth   int
 	HeaderLines int
 	Pilot       Pilot
@@ -320,7 +321,18 @@ const (
 	msgReadOnly    = "Read Only Mode !"
 )
 
+// Deprecated: use Config.Edit
 func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, error) {
+	cfg.Mode = mode
+	return cfg.Edit(in, out)
+}
+
+func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
+	mode := cfg.Mode
+	if mode == nil {
+		mode = &uncsv.Mode{}
+	}
+
 	cellWidth := cfg.CellWidth
 	if cellWidth <= 0 {
 		cellWidth = 14

@@ -99,12 +99,13 @@ func mains() error {
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
 	_, err := csvi.Config{
+		Mode:        mode,
 		Pilot:       pilot,
 		CellWidth:   int(*flagCellWidth),
 		HeaderLines: int(*flagHeader),
 		FixColumn:   *flagFixColumn,
 		ReadOnly:    *flagReadOnly,
-	}.Main(mode, reader, out)
+	}.Edit(reader, out)
 
 	return err
 }
