@@ -47,4 +47,8 @@ test:
 benchmark:
 	pwsh test/benchmark.ps1
 
-.PHONY: all test dist _dist clean release manifest
+readme:
+	example-into-readme
+	example-into-readme -target README_ja.md
+
+.PHONY: all test dist _dist clean release manifest readme
