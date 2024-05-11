@@ -1,3 +1,7 @@
+v1.9.2
+======
+(2024.05.12)
+
 * パッケージ修正
     * csvi.Config.CellWidth のデフォルトを14桁とした
     * csvi.Config.Main のかわりに csvi.Config.Edit を用意

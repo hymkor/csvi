@@ -1,3 +1,7 @@
+v1.9.2
+======
+May.12, 2024
+
 * Modifing package
     * Use 14 for the default of csvi.Config.CellWidth
     * Implement csvi.Config.Edit as a function instead of csvi.Config.Main
