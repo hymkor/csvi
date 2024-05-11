@@ -328,6 +328,17 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, 
 }
 
 func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
+	var reader *bufio.Reader
+	var ok bool
+	if reader, ok = in.(*bufio.Reader); !ok {
+		reader = bufio.NewReader(in)
+	}
+	return cfg.edit(func() (*uncsv.Row, error) {
+		return uncsv.ReadLine(reader, cfg.Mode)
+	}, out)
+}
+
+func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*RowPtr, error) {
 	mode := cfg.Mode
 	if mode == nil {
 		mode = &uncsv.Mode{}
@@ -353,20 +364,15 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
 		}
 	}
 	csvlines := list.New()
-	var reader *bufio.Reader
-	if in != nil {
-		var ok bool
-		if reader, ok = in.(*bufio.Reader); !ok {
-			reader = bufio.NewReader(in)
-		}
+	if fetch != nil {
 		for i := 0; i < 100; i++ {
-			row, err := uncsv.ReadLine(reader, mode)
+			row, err := fetch()
 			if err != nil && err != io.EOF {
 				return nil, err
 			}
 			csvlines.PushBack(row)
 			if err == io.EOF {
-				reader = nil
+				fetch = nil
 				break
 			}
 		}
@@ -426,12 +432,12 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
 		displayUpdateTime := time.Now().Add(time.Second / interval)
 
 		ch, err := keyWorker.GetOr(func() bool {
-			if reader == nil {
+			if fetch == nil {
 				return false
 			}
-			row, err := uncsv.ReadLine(reader, mode)
+			row, err := fetch()
 			if err != nil {
-				reader = nil
+				fetch = nil
 				if err != io.EOF {
 					return false
 				}
@@ -670,10 +676,10 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
 				*cursor = cursor.Quote(mode)
 			}
 		case "w":
-			if reader != nil {
+			if fetch != nil {
 				io.WriteString(out, _ANSI_YELLOW+"\rw: Wait a moment for reading all data..."+_ANSI_ERASE_LINE)
 				for {
-					row, err := uncsv.ReadLine(reader, mode)
+					row, err := fetch()
 					if err != nil && err != io.EOF {
 						return nil, err
 					}
