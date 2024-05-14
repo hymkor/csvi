@@ -22,14 +22,19 @@ func main() {
 		Mode: &uncsv.Mode{Comma: ','},
 	}
 
-	row, err := cfg.Edit(strings.NewReader(source), colorable.NewColorableStdout())
+	result, err := cfg.Edit(strings.NewReader(source), colorable.NewColorableStdout())
 
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
 
-	for ; row != nil; row = row.Next() {
+	// // env GOEXPERIMENT=rangefunc go run example
+	// for row := range result.Each {
+	//     os.Stdout.Write(row.Rebuild(cfg.Mode))
+	// }
+	result.Each(func(row *uncsv.Row) bool {
 		os.Stdout.Write(row.Rebuild(cfg.Mode))
-	}
+		return true
+	})
 }

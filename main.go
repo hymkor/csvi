@@ -322,12 +322,12 @@ const (
 )
 
 // Deprecated: use Config.Edit
-func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*RowPtr, error) {
+func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Result, error) {
 	cfg.Mode = mode
 	return cfg.Edit(in, out)
 }
 
-func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
+func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
 	var reader *bufio.Reader
 	var ok bool
 	if reader, ok = in.(*bufio.Reader); !ok {
@@ -338,7 +338,7 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*RowPtr, error) {
 	}, out)
 }
 
-func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*RowPtr, error) {
+func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
 	mode := cfg.Mode
 	if mode == nil {
 		mode = &uncsv.Mode{}
@@ -463,7 +463,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*RowPtr
 		case "q", keys.Escape:
 			if cfg.ReadOnly || yesNo(pilot, out, "Quit Sure ? [y/n]") {
 				io.WriteString(out, "\n")
-				return frontPtr(csvlines), nil
+				return &Result{first: frontPtr(csvlines)}, nil
 			}
 		case "j", keys.Down, keys.CtrlN, keys.Enter:
 			if next := cursorRow.Next(); next != nil {

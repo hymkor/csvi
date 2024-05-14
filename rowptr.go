@@ -56,3 +56,15 @@ func (r *RowPtr) InsertBefore(val *uncsv.Row) *RowPtr {
 	next := r.list.InsertBefore(val, r.element)
 	return &RowPtr{Row: next.Value.(*uncsv.Row), element: next, lnum: r.lnum + 1, list: r.list}
 }
+
+type Result struct {
+	first *RowPtr
+}
+
+func (r Result) Each(callback func(*uncsv.Row) bool) {
+	for p := r.first; p != nil; p = p.Next() {
+		if !callback(p.Row) {
+			break
+		}
+	}
+}
