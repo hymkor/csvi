@@ -1,3 +1,7 @@
+v1.9.3
+======
+May.17, 2024
+
 * Modifing pacakge
     * Change the return value of `Config.Edit` from `(*RowPtr,error)` to `(*Result,error)`
 

@@ -1,3 +1,7 @@
+v1.9.3
+======
+(2024.05.17)
+
 * パッケージ修正
     * `Config.Edit` の戻り値を`(*RowPtr,error)` から `(*Result,error)` へ変更
 
