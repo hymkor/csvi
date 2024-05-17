@@ -1,3 +1,6 @@
+* Modifing pacakge
+    * Change the return value of `Config.Edit` from `(*RowPtr,error)` to `(*Result,error)`
+
 v1.9.2
 ======
 May.12, 2024
