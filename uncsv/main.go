@@ -173,6 +173,10 @@ func (c *Cell) Restore(mode *Mode) {
 	c.text = dequote(mode.decode(c.original))
 }
 
+func (c *Cell) Original() []byte {
+	return c.original
+}
+
 type Row struct {
 	// Cell must have one or more element at least
 	Cell []Cell
