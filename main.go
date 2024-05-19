@@ -542,6 +542,11 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 			if cursorRow.Term == "" {
 				cursorRow.Term = mode.DefaultTerm
 			}
+			if cfg.FixColumn {
+				for len(newRow.Cell) < len(cursorRow.Cell) {
+					newRow.Insert(0, "", mode)
+				}
+			}
 			cursorRow = cursorRow.InsertAfter(&newRow)
 			repaint()
 			view.clearCache()
@@ -551,6 +556,11 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 		case "O":
 			startPrevP := startRow.Prev()
 			newRow := uncsv.NewRow(mode)
+			if cfg.FixColumn {
+				for len(newRow.Cell) < len(cursorRow.Cell) {
+					newRow.Insert(0, "", mode)
+				}
+			}
 			cursorRow = cursorRow.InsertBefore(&newRow)
 			if startPrevP != nil {
 				startRow = startPrevP.Next()
