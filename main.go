@@ -396,6 +396,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 	defer keyWorker.Close()
 
 	view := newView()
+	var removedRows []*uncsv.Row
 
 	message := cfg.Message
 	var killbuffer string
@@ -463,7 +464,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 		case "q", keys.Escape:
 			if cfg.ReadOnly || yesNo(pilot, out, "Quit Sure ? [y/n]") {
 				io.WriteString(out, "\n")
-				return &Result{first: frontPtr(csvlines)}, nil
+				return &Result{
+					first:   frontPtr(csvlines),
+					removed: removedRows,
+				}, nil
 			}
 		case "j", keys.Down, keys.CtrlN, keys.Enter:
 			if next := cursorRow.Next(); next != nil {
@@ -578,6 +582,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 			startPrevP := startRow.Prev()
 			prevP := cursorRow.Prev()
 			removedRow := cursorRow.Remove()
+			removedRows = append(removedRows, removedRow)
 			if prevP == nil {
 				cursorRow = frontPtr(csvlines)
 			} else if next := prevP.Next(); next != nil {

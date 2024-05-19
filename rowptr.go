@@ -58,12 +58,21 @@ func (r *RowPtr) InsertBefore(val *uncsv.Row) *RowPtr {
 }
 
 type Result struct {
-	first *RowPtr
+	first   *RowPtr
+	removed []*uncsv.Row
 }
 
 func (r Result) Each(callback func(*uncsv.Row) bool) {
 	for p := r.first; p != nil; p = p.Next() {
 		if !callback(p.Row) {
+			break
+		}
+	}
+}
+
+func (r Result) RemovedRows(callback func(*uncsv.Row) bool) {
+	for _, p := range r.removed {
+		if !callback(p) {
 			break
 		}
 	}
