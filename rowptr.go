@@ -2,6 +2,7 @@ package csvi
 
 import (
 	"container/list"
+	"io"
 
 	"github.com/hymkor/csvi/uncsv"
 )
@@ -57,21 +58,46 @@ func (r *RowPtr) InsertBefore(val *uncsv.Row) *RowPtr {
 	return &RowPtr{Row: next.Value.(*uncsv.Row), element: next, lnum: r.lnum + 1, list: r.list}
 }
 
-type Result struct {
-	first   *RowPtr
-	removed []*uncsv.Row
+type Result = Application
+
+type Application struct {
+	csvLines    *list.List
+	removedRows []*uncsv.Row
+	out         io.Writer
+	Pilot
+	*Config
 }
 
-func (r Result) Each(callback func(*uncsv.Row) bool) {
-	for p := r.first; p != nil; p = p.Next() {
+func (app *Application) Write(data []byte) (int, error) {
+	return app.out.Write(data)
+}
+
+func (app *Application) Front() *RowPtr {
+	return frontPtr(app.csvLines)
+}
+
+func (app *Application) Back() *RowPtr {
+	return backPtr(app.csvLines)
+}
+
+func (app *Application) Len() int {
+	return app.csvLines.Len()
+}
+
+func (app *Application) Push(row *uncsv.Row) {
+	app.csvLines.PushBack(row)
+}
+
+func (app *Application) Each(callback func(*uncsv.Row) bool) {
+	for p := app.Front(); p != nil; p = p.Next() {
 		if !callback(p.Row) {
 			break
 		}
 	}
 }
 
-func (r Result) RemovedRows(callback func(*uncsv.Row) bool) {
-	for _, p := range r.removed {
+func (app *Application) RemovedRows(callback func(*uncsv.Row) bool) {
+	for _, p := range app.removedRows {
 		if !callback(p) {
 			break
 		}

@@ -1,7 +1,6 @@
 package csvi
 
 import (
-	"container/list"
 	"flag"
 	"io"
 	"os"
@@ -12,9 +11,9 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func dump(csvlines *list.List, mode *uncsv.Mode, w io.Writer) {
-	cursor := frontPtr(csvlines)
-	mode.DumpBy(
+func dump(app *Application, w io.Writer) {
+	cursor := app.Front()
+	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
 			if cursor == nil {
 				return nil
@@ -25,7 +24,7 @@ func dump(csvlines *list.List, mode *uncsv.Mode, w io.Writer) {
 		}, w)
 }
 
-func cmdWrite(pilot Pilot, csvlines *list.List, mode *uncsv.Mode, out io.Writer) error {
+func cmdWrite(app *Application) error {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {
@@ -34,12 +33,12 @@ func cmdWrite(pilot Pilot, csvlines *list.List, mode *uncsv.Mode, out io.Writer)
 			return err
 		}
 	}
-	fname, err = pilot.GetFilename(out, "write to>", fname)
+	fname, err = app.GetFilename(app, "write to>", fname)
 	if err != nil {
 		return nil
 	}
 	if fname == "-" {
-		dump(csvlines, mode, os.Stdout)
+		dump(app, os.Stdout)
 		return nil
 	}
 	fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
@@ -47,7 +46,7 @@ func cmdWrite(pilot Pilot, csvlines *list.List, mode *uncsv.Mode, out io.Writer)
 		if _, ok := overWritten[fname]; ok {
 			os.Remove(fname)
 		} else {
-			if !yesNo(pilot, out, "Overwrite as \""+fname+"\" [y/n] ?") {
+			if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
 				return nil
 			}
 			backupName := fname + "~"
@@ -60,7 +59,7 @@ func cmdWrite(pilot Pilot, csvlines *list.List, mode *uncsv.Mode, out io.Writer)
 	if err != nil {
 		return err
 	}
-	dump(csvlines, mode, fd)
+	dump(app, fd)
 	if err := fd.Close(); err != nil {
 		return err
 	}

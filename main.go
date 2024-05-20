@@ -240,11 +240,11 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, cellWidth, headerLines
 	return lfCount + drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
 }
 
-func yesNo(pilot Pilot, out io.Writer, message string) bool {
-	fmt.Fprintf(out, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
-	io.WriteString(out, _ANSI_CURSOR_ON)
-	ch, err := pilot.GetKey()
-	io.WriteString(out, _ANSI_CURSOR_OFF)
+func (app *Application) YesNo(message string) bool {
+	fmt.Fprintf(app, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
+	io.WriteString(app, _ANSI_CURSOR_ON)
+	ch, err := app.GetKey()
+	io.WriteString(app, _ANSI_CURSOR_OFF)
 	return err == nil && ch == "y"
 }
 
@@ -306,6 +306,11 @@ type Pilot interface {
 	Close() error
 }
 
+type CommandResult struct {
+	Message string
+	Quit    bool
+}
+
 type Config struct {
 	*uncsv.Mode
 	CellWidth   int
@@ -314,6 +319,7 @@ type Config struct {
 	FixColumn   bool
 	ReadOnly    bool
 	Message     string
+	KeyMap      map[string]func(*Application) (*CommandResult, error)
 }
 
 const (
@@ -322,12 +328,12 @@ const (
 )
 
 // Deprecated: use Config.Edit
-func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Result, error) {
+func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Application, error) {
 	cfg.Mode = mode
 	return cfg.Edit(in, out)
 }
 
-func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
+func (cfg Config) Edit(in io.Reader, out io.Writer) (*Application, error) {
 	if in == nil {
 		return cfg.edit(nil, out)
 	}
@@ -340,7 +346,11 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
 	}, out)
 }
 
-func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Application, error) {
+	if cfg.KeyMap == nil {
+		cfg.KeyMap = make(map[string]func(*Application) (*CommandResult, error))
+	}
+
 	mode := cfg.Mode
 	if mode == nil {
 		mode = &uncsv.Mode{}
@@ -365,14 +375,19 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 			return nil, err
 		}
 	}
-	csvlines := list.New()
+	app := &Application{
+		Config:   &cfg,
+		csvLines: list.New(),
+		out:      out,
+		Pilot:    pilot,
+	}
 	if fetch != nil {
 		for i := 0; i < 100; i++ {
 			row, err := fetch()
 			if err != nil && err != io.EOF {
 				return nil, err
 			}
-			csvlines.PushBack(row)
+			app.Push(row)
 			if err == io.EOF {
 				fetch = nil
 				break
@@ -380,11 +395,11 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 		}
 	} else {
 		newRow := uncsv.NewRow(mode)
-		csvlines.PushBack(&newRow)
+		app.Push(&newRow)
 	}
 	cursorCol := 0
-	cursorRow := frontPtr(csvlines)
-	startRow := frontPtr(csvlines)
+	cursorRow := app.Front()
+	startRow := app.Front()
 	startCol := 0
 
 	lastSearch := searchForward
@@ -398,7 +413,6 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 	defer keyWorker.Close()
 
 	view := newView()
-	var removedRows []*uncsv.Row
 
 	message := cfg.Message
 	var killbuffer string
@@ -416,16 +430,16 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 		}
 		cols := (screenWidth - 1) / cellWidth
 
-		lfCount := view.Draw(frontPtr(csvlines), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = view.Draw(frontPtr(csvlines), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+			lfCount = view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		}
 
 		io.WriteString(out, _ANSI_YELLOW)
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
-		} else if 0 <= cursorRow.lnum && cursorRow.lnum < csvlines.Len() {
+		} else if 0 <= cursorRow.lnum && cursorRow.lnum < app.Len() {
 			printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
 		}
 		io.WriteString(out, _ANSI_RESET)
@@ -445,7 +459,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 					return false
 				}
 			}
-			csvlines.PushBack(row)
+			app.Push(row)
 			if message == "" && (err == io.EOF || time.Now().After(displayUpdateTime)) {
 				io.WriteString(out, "\r"+_ANSI_YELLOW)
 				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
@@ -460,256 +474,261 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 		}
 		message = ""
 
-		switch ch {
-		case keys.CtrlL:
-			view.clearCache()
-		case "q", keys.Escape:
-			if cfg.ReadOnly || yesNo(pilot, out, "Quit Sure ? [y/n]") {
-				io.WriteString(out, "\n")
-				return &Result{
-					first:   frontPtr(csvlines),
-					removed: removedRows,
-				}, nil
+		if handler, ok := cfg.KeyMap[ch]; ok {
+			cmdResult, err := handler(app)
+			if err != nil || cmdResult.Quit {
+				return app, err
 			}
-		case "j", keys.Down, keys.CtrlN, keys.Enter:
-			if next := cursorRow.Next(); next != nil {
-				cursorRow = next
-			}
-		case "k", keys.Up, keys.CtrlP:
-			if prev := cursorRow.Prev(); prev != nil {
-				cursorRow = prev
-			}
-		case "h", keys.Left, keys.CtrlB, keys.ShiftTab:
-			if cursorCol > 0 {
-				cursorCol--
-			}
-		case "l", keys.Right, keys.CtrlF, keys.CtrlI:
-			cursorCol++
-		case "0", "^", keys.CtrlA:
-			cursorCol = 0
-		case "$", keys.CtrlE:
-			cursorCol = len(cursorRow.Cell) - 1
-		case "<":
-			cursorRow = frontPtr(csvlines)
-			startRow = frontPtr(csvlines)
-			cursorCol = 0
-			startCol = 0
-		case ">", "G":
-			cursorRow = backPtr(csvlines)
-		case "n":
-			if lastWord == "" {
-				break
-			}
-			r, c := lastSearch(cursorRow, cursorCol, lastWord)
-			if r == nil {
-				message = fmt.Sprintf("%s: not found", lastWord)
-				break
-			}
-			cursorRow = r
-			cursorCol = c
-		case "N":
-			if lastWord == "" {
-				break
-			}
-			r, c := lastSearchRev(cursorRow, cursorCol, lastWord)
-			if r == nil {
-				message = fmt.Sprintf("%s: not found", lastWord)
-				break
-			}
-			cursorRow = r
-			cursorCol = c
-		case "/", "?":
-			var err error
-			view.clearCache()
-			lastWord, err = pilot.ReadLine(out, ch, "", nil)
-			if err != nil {
-				if err != readline.CtrlC {
-					message = err.Error()
-				}
-				break
-			}
-			if ch == "/" {
-				lastSearch = searchForward
-				lastSearchRev = searchBackward
-			} else {
-				lastSearch = searchBackward
-				lastSearchRev = searchForward
-			}
-			r, c := lastSearch(cursorRow, cursorCol, lastWord)
-			if r == nil {
-				message = fmt.Sprintf("%s: not found", lastWord)
-				break
-			}
-			cursorRow = r
-			cursorCol = c
-		case "o":
-			newRow := uncsv.NewRow(mode)
-			newRow.Term = cursorRow.Term
-			if cursorRow.Term == "" {
-				cursorRow.Term = mode.DefaultTerm
-			}
-			if cfg.FixColumn {
-				for len(newRow.Cell) < len(cursorRow.Cell) {
-					newRow.Insert(0, "", mode)
-				}
-			}
-			cursorRow = cursorRow.InsertAfter(&newRow)
-			repaint()
-			view.clearCache()
-			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-			cursorRow.Replace(0, text, mode)
-
-		case "O":
-			startPrevP := startRow.Prev()
-			newRow := uncsv.NewRow(mode)
-			if cfg.FixColumn {
-				for len(newRow.Cell) < len(cursorRow.Cell) {
-					newRow.Insert(0, "", mode)
-				}
-			}
-			cursorRow = cursorRow.InsertBefore(&newRow)
-			if startPrevP != nil {
-				startRow = startPrevP.Next()
-			} else {
-				startRow = frontPtr(csvlines)
-			}
-			repaint()
-			view.clearCache()
-			text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-			cursorRow.Replace(0, text, mode)
-		case "D":
-			if csvlines.Len() <= 1 {
-				break
-			}
-			startPrevP := startRow.Prev()
-			prevP := cursorRow.Prev()
-			removedRow := cursorRow.Remove()
-			removedRows = append(removedRows, removedRow)
-			if prevP == nil {
-				cursorRow = frontPtr(csvlines)
-			} else if next := prevP.Next(); next != nil {
-				cursorRow = next
-			} else {
-				cursorRow = prevP
-				cursorRow.Term = removedRow.Term
-			}
-			if startPrevP == nil {
-				startRow = frontPtr(csvlines)
-			} else {
-				startRow = startPrevP.Next()
-			}
-		case "i":
-			if cfg.FixColumn {
-				message = msgColumnFixed
-				break
-			}
-			if cfg.ReadOnly {
-				message = msgReadOnly
-				break
-			}
-			view.clearCache()
-			text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
-			if err != nil {
-				break
-			}
-			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
-				cursorRow.Replace(cursorCol, text, mode)
-			} else {
-				cursorRow.Insert(cursorCol, text, mode)
-				cursorCol++
-			}
-		case "a":
-			if cfg.FixColumn {
-				message = msgColumnFixed
-				break
-			}
-			if cfg.ReadOnly {
-				message = msgReadOnly
-				break
-			}
-			if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
-				// current column is the last one and it is empty
+			message = cmdResult.Message
+		} else {
+			switch ch {
+			case keys.CtrlL:
 				view.clearCache()
-				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum, cursorCol+1, cursorRow))
-				if err != nil {
+			case "q", keys.Escape:
+				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
+					io.WriteString(out, "\n")
+					return app, nil
+				}
+			case "j", keys.Down, keys.CtrlN, keys.Enter:
+				if next := cursorRow.Next(); next != nil {
+					cursorRow = next
+				}
+			case "k", keys.Up, keys.CtrlP:
+				if prev := cursorRow.Prev(); prev != nil {
+					cursorRow = prev
+				}
+			case "h", keys.Left, keys.CtrlB, keys.ShiftTab:
+				if cursorCol > 0 {
+					cursorCol--
+				}
+			case "l", keys.Right, keys.CtrlF, keys.CtrlI:
+				cursorCol++
+			case "0", "^", keys.CtrlA:
+				cursorCol = 0
+			case "$", keys.CtrlE:
+				cursorCol = len(cursorRow.Cell) - 1
+			case "<":
+				cursorRow = app.Front()
+				startRow = app.Front()
+				cursorCol = 0
+				startCol = 0
+			case ">", "G":
+				cursorRow = app.Back()
+			case "n":
+				if lastWord == "" {
 					break
 				}
-				cursorRow.Replace(cursorCol, text, mode)
-			} else {
-				cursorCol++
-				cursorRow.Insert(cursorCol, "", mode)
+				r, c := lastSearch(cursorRow, cursorCol, lastWord)
+				if r == nil {
+					message = fmt.Sprintf("%s: not found", lastWord)
+					break
+				}
+				cursorRow = r
+				cursorCol = c
+			case "N":
+				if lastWord == "" {
+					break
+				}
+				r, c := lastSearchRev(cursorRow, cursorCol, lastWord)
+				if r == nil {
+					message = fmt.Sprintf("%s: not found", lastWord)
+					break
+				}
+				cursorRow = r
+				cursorCol = c
+			case "/", "?":
+				var err error
+				view.clearCache()
+				lastWord, err = pilot.ReadLine(out, ch, "", nil)
+				if err != nil {
+					if err != readline.CtrlC {
+						message = err.Error()
+					}
+					break
+				}
+				if ch == "/" {
+					lastSearch = searchForward
+					lastSearchRev = searchBackward
+				} else {
+					lastSearch = searchBackward
+					lastSearchRev = searchForward
+				}
+				r, c := lastSearch(cursorRow, cursorCol, lastWord)
+				if r == nil {
+					message = fmt.Sprintf("%s: not found", lastWord)
+					break
+				}
+				cursorRow = r
+				cursorCol = c
+			case "o":
+				newRow := uncsv.NewRow(mode)
+				newRow.Term = cursorRow.Term
+				if cursorRow.Term == "" {
+					cursorRow.Term = mode.DefaultTerm
+				}
+				if cfg.FixColumn {
+					for len(newRow.Cell) < len(cursorRow.Cell) {
+						newRow.Insert(0, "", mode)
+					}
+				}
+				cursorRow = cursorRow.InsertAfter(&newRow)
 				repaint()
 				view.clearCache()
-				text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum+1, cursorCol+1, cursorRow))
+				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
+				cursorRow.Replace(0, text, mode)
+
+			case "O":
+				startPrevP := startRow.Prev()
+				newRow := uncsv.NewRow(mode)
+				if cfg.FixColumn {
+					for len(newRow.Cell) < len(cursorRow.Cell) {
+						newRow.Insert(0, "", mode)
+					}
+				}
+				cursorRow = cursorRow.InsertBefore(&newRow)
+				if startPrevP != nil {
+					startRow = startPrevP.Next()
+				} else {
+					startRow = app.Front()
+				}
+				repaint()
+				view.clearCache()
+				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
+				cursorRow.Replace(0, text, mode)
+			case "D":
+				if app.Len() <= 1 {
+					break
+				}
+				startPrevP := startRow.Prev()
+				prevP := cursorRow.Prev()
+				removedRow := cursorRow.Remove()
+				app.removedRows = append(app.removedRows, removedRow)
+				if prevP == nil {
+					cursorRow = app.Front()
+				} else if next := prevP.Next(); next != nil {
+					cursorRow = next
+				} else {
+					cursorRow = prevP
+					cursorRow.Term = removedRow.Term
+				}
+				if startPrevP == nil {
+					startRow = app.Front()
+				} else {
+					startRow = startPrevP.Next()
+				}
+			case "i":
+				if cfg.FixColumn {
+					message = msgColumnFixed
+					break
+				}
+				if cfg.ReadOnly {
+					message = msgReadOnly
+					break
+				}
+				view.clearCache()
+				text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
 				if err != nil {
-					cursorCol--
+					break
+				}
+				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
+					cursorRow.Replace(cursorCol, text, mode)
+				} else {
+					cursorRow.Insert(cursorCol, text, mode)
+					cursorCol++
+				}
+			case "a":
+				if cfg.FixColumn {
+					message = msgColumnFixed
+					break
+				}
+				if cfg.ReadOnly {
+					message = msgReadOnly
+					break
+				}
+				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
+					// current column is the last one and it is empty
+					view.clearCache()
+					text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum, cursorCol+1, cursorRow))
+					if err != nil {
+						break
+					}
+					cursorRow.Replace(cursorCol, text, mode)
+				} else {
+					cursorCol++
+					cursorRow.Insert(cursorCol, "", mode)
+					repaint()
+					view.clearCache()
+					text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum+1, cursorCol+1, cursorRow))
+					if err != nil {
+						cursorCol--
+						break
+					}
+					cursorRow.Replace(cursorCol, text, mode)
+				}
+			case "r", "R", keys.F2:
+				if cfg.ReadOnly {
+					message = msgReadOnly
+					break
+				}
+				cursor := &cursorRow.Cell[cursorCol]
+				q := cursor.IsQuoted()
+				view.clearCache()
+				text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
+				if err != nil {
 					break
 				}
 				cursorRow.Replace(cursorCol, text, mode)
-			}
-		case "r", "R", keys.F2:
-			if cfg.ReadOnly {
-				message = msgReadOnly
-				break
-			}
-			cursor := &cursorRow.Cell[cursorCol]
-			q := cursor.IsQuoted()
-			view.clearCache()
-			text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-			if err != nil {
-				break
-			}
-			cursorRow.Replace(cursorCol, text, mode)
-			if q {
-				*cursor = cursor.Quote(mode)
-			}
-		case "u":
-			cursorRow.Cell[cursorCol].Restore(mode)
-		case "y":
-			killbuffer = cursorRow.Cell[cursorCol].Text()
-			message = "yanked the current cell: " + killbuffer
-		case "p":
-			cursorRow.Replace(cursorCol, killbuffer, mode)
-			message = "pasted: " + killbuffer
-		case "d", "x":
-			if cfg.FixColumn {
-				message = msgColumnFixed
-				break
-			}
-			if cfg.ReadOnly {
-				message = msgReadOnly
-				break
-			}
-			if len(cursorRow.Cell) <= 1 {
-				cursorRow.Replace(0, "", mode)
-			} else {
-				cursorRow.Delete(cursorCol)
-			}
-		case "\"":
-			cursor := &cursorRow.Cell[cursorCol]
-			if cursor.IsQuoted() {
-				cursorRow.Replace(cursorCol, cursor.Text(), mode)
-			} else {
-				*cursor = cursor.Quote(mode)
-			}
-		case "w":
-			if fetch != nil {
-				io.WriteString(out, _ANSI_YELLOW+"\rw: Wait a moment for reading all data..."+_ANSI_ERASE_LINE)
-				for {
-					row, err := fetch()
-					if err != nil && err != io.EOF {
-						return nil, err
-					}
-					csvlines.PushBack(row)
-					if err == io.EOF {
-						break
+				if q {
+					*cursor = cursor.Quote(mode)
+				}
+			case "u":
+				cursorRow.Cell[cursorCol].Restore(mode)
+			case "y":
+				killbuffer = cursorRow.Cell[cursorCol].Text()
+				message = "yanked the current cell: " + killbuffer
+			case "p":
+				cursorRow.Replace(cursorCol, killbuffer, mode)
+				message = "pasted: " + killbuffer
+			case "d", "x":
+				if cfg.FixColumn {
+					message = msgColumnFixed
+					break
+				}
+				if cfg.ReadOnly {
+					message = msgReadOnly
+					break
+				}
+				if len(cursorRow.Cell) <= 1 {
+					cursorRow.Replace(0, "", mode)
+				} else {
+					cursorRow.Delete(cursorCol)
+				}
+			case "\"":
+				cursor := &cursorRow.Cell[cursorCol]
+				if cursor.IsQuoted() {
+					cursorRow.Replace(cursorCol, cursor.Text(), mode)
+				} else {
+					*cursor = cursor.Quote(mode)
+				}
+			case "w":
+				if fetch != nil {
+					io.WriteString(out, _ANSI_YELLOW+"\rw: Wait a moment for reading all data..."+_ANSI_ERASE_LINE)
+					for {
+						row, err := fetch()
+						if err != nil && err != io.EOF {
+							return nil, err
+						}
+						app.Push(row)
+						if err == io.EOF {
+							break
+						}
 					}
 				}
+				if err := cmdWrite(app); err != nil {
+					message = err.Error()
+				}
+				view.clearCache()
 			}
-			if err := cmdWrite(pilot, csvlines, mode, out); err != nil {
-				message = err.Error()
-			}
-			view.clearCache()
 		}
 		if L := len(cursorRow.Cell); L <= 0 {
 			cursorCol = 0
