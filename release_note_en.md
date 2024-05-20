@@ -1,6 +1,7 @@
 * Modifing package
     * Make `uncsv.Cell.Original()` that returns the original value before modified.
     * When `Config.FixColumn` is set true, the new row which `o` & `O` insert has all columns same as the row cursor exists
+    * `csvi.Result` has removed rows in a field.
 
 v1.9.3
 ======
