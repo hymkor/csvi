@@ -1,3 +1,7 @@
+v1.9.4
+======
+May 26, 2024
+
 * Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released
 * Modifing package
     * Make `uncsv.Cell.Original()` that returns the original value before modified.
