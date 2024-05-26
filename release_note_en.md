@@ -1,3 +1,7 @@
+v1.9.5
+======
+May 27, 2024
+
 * Modifying package
     * User functions can be assigned to keys
     * `csvi.Result` is the alias of `csvi.Application` now
