@@ -328,9 +328,11 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Result, 
 }
 
 func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
-	var reader *bufio.Reader
-	var ok bool
-	if reader, ok = in.(*bufio.Reader); !ok {
+	if in == nil {
+		return cfg.edit(nil, out)
+	}
+	reader, ok := in.(*bufio.Reader)
+	if !ok {
 		reader = bufio.NewReader(in)
 	}
 	return cfg.edit(func() (*uncsv.Row, error) {
