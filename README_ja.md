@@ -29,7 +29,7 @@ CSVI はLinux やWindows のターミナル用の CSV エディタです。
 
 ![image](./csvi.gif)
 
-[@emisjerry](https://github.com/emisjerry) さんによる [紹介動画](https://www.youtube.com/watch?v=_cxBQKpfUds) by 
+[@emisjerry](https://github.com/emisjerry) さんによる [紹介動画](https://www.youtube.com/watch?v=_cxBQKpfUds)
 
 Install
 -------

@@ -575,7 +575,11 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				repaint()
 				view.clearCache()
 				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-				cursorRow.Replace(0, text, mode)
+				if cursorCol < len(cursorRow.Cell) {
+					cursorRow.Replace(cursorCol, text, mode)
+				} else {
+					cursorRow.Replace(len(cursorRow.Cell)-1, text, mode)
+				}
 
 			case "O":
 				startPrevP := startRow.Prev()
@@ -594,7 +598,11 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				repaint()
 				view.clearCache()
 				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-				cursorRow.Replace(0, text, mode)
+				if cursorCol < len(cursorRow.Cell) {
+					cursorRow.Replace(cursorCol, text, mode)
+				} else {
+					cursorRow.Replace(len(cursorRow.Cell)-1, text, mode)
+				}
 			case "D":
 				if app.Len() <= 1 {
 					break
