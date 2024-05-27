@@ -29,6 +29,8 @@ Here are some key features:
 
 ![image](./csvi.gif)
 
+[Video](https://www.youtube.com/watch?v=_cxBQKpfUds) by [@emisjerry](https://github.com/emisjerry)
+
 Install
 -------
 
