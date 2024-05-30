@@ -16,19 +16,20 @@ import (
 )
 
 var (
-	flagCellWidth = flag.Uint("w", 14, "set the width of cell")
-	flagHeader    = flag.Uint("h", 1, "the number of row-header")
-	flagTsv       = flag.Bool("t", false, "use TAB as field-separator")
-	flagCsv       = flag.Bool("c", false, "use Comma as field-separator")
-	flagSemicolon = flag.Bool("semicolon", false, "use Semicolon as field-separator")
-	flagIana      = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
-	flagNonUTF8   = flag.Bool("nonutf8", false, "do not judge as utf8")
-	flagHelp      = flag.Bool("help", false, "this help")
-	flagAuto      = flag.String("auto", "", "autopilot")
-	flag16le      = flag.Bool("16le", false, "Force read/write as UTF-16LE")
-	flag16be      = flag.Bool("16be", false, "Force read/write as UTF-16BE")
-	flagFixColumn = flag.Bool("fixcol", false, "Do not insert/delete a column")
-	flagReadOnly  = flag.Bool("readonly", false, "Read Only Mode")
+	flagCellWidth     = flag.Uint("w", 14, "set the width of cell")
+	flagHeader        = flag.Uint("h", 1, "the number of row-header")
+	flagTsv           = flag.Bool("t", false, "use TAB as field-separator")
+	flagCsv           = flag.Bool("c", false, "use Comma as field-separator")
+	flagSemicolon     = flag.Bool("semicolon", false, "use Semicolon as field-separator")
+	flagIana          = flag.String("iana", "", "IANA-registered-name to decode/encode NonUTF8 text(for example: Shift_JIS,EUC-JP... )")
+	flagNonUTF8       = flag.Bool("nonutf8", false, "do not judge as utf8")
+	flagHelp          = flag.Bool("help", false, "this help")
+	flagAuto          = flag.String("auto", "", "autopilot")
+	flag16le          = flag.Bool("16le", false, "Force read/write as UTF-16LE")
+	flag16be          = flag.Bool("16be", false, "Force read/write as UTF-16BE")
+	flagFixColumn     = flag.Bool("fixcol", false, "Do not insert/delete a column")
+	flagReadOnly      = flag.Bool("readonly", false, "Read Only Mode")
+	flagProtectHeader = flag.Bool("p", false, "Protect the header line")
 )
 
 const (
@@ -99,12 +100,13 @@ func mains() error {
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
 	_, err := csvi.Config{
-		Mode:        mode,
-		Pilot:       pilot,
-		CellWidth:   int(*flagCellWidth),
-		HeaderLines: int(*flagHeader),
-		FixColumn:   *flagFixColumn,
-		ReadOnly:    *flagReadOnly,
+		Mode:          mode,
+		Pilot:         pilot,
+		CellWidth:     int(*flagCellWidth),
+		HeaderLines:   int(*flagHeader),
+		FixColumn:     *flagFixColumn,
+		ReadOnly:      *flagReadOnly,
+		ProtectHeader: *flagProtectHeader,
 	}.Edit(reader, out)
 
 	return err
