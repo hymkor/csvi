@@ -313,18 +313,20 @@ type CommandResult struct {
 
 type Config struct {
 	*uncsv.Mode
-	CellWidth   int
-	HeaderLines int
-	Pilot       Pilot
-	FixColumn   bool
-	ReadOnly    bool
-	Message     string
-	KeyMap      map[string]func(*Application) (*CommandResult, error)
+	CellWidth     int
+	HeaderLines   int
+	Pilot         Pilot
+	FixColumn     bool
+	ReadOnly      bool
+	ProtectHeader bool
+	Message       string
+	KeyMap        map[string]func(*Application) (*CommandResult, error)
 }
 
 const (
-	msgColumnFixed = "The order of Columns is fixed !"
-	msgReadOnly    = "Read Only Mode !"
+	msgColumnFixed   = "The order of Columns is fixed !"
+	msgReadOnly      = "Read Only Mode !"
+	msgProtectHeader = "Header is protected"
 )
 
 // Deprecated: use Config.Edit
@@ -561,6 +563,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				cursorRow = r
 				cursorCol = c
 			case "o":
+				if cfg.ProtectHeader && cursorRow.lnum+1 < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				newRow := uncsv.NewRow(mode)
 				newRow.Term = cursorRow.Term
 				if cursorRow.Term == "" {
@@ -582,6 +588,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				}
 
 			case "O":
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				startPrevP := startRow.Prev()
 				newRow := uncsv.NewRow(mode)
 				if cfg.FixColumn {
@@ -604,6 +614,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					cursorRow.Replace(len(cursorRow.Cell)-1, text, mode)
 				}
 			case "D":
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				if app.Len() <= 1 {
 					break
 				}
@@ -625,6 +639,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					startRow = startPrevP.Next()
 				}
 			case "i":
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				if cfg.FixColumn {
 					message = msgColumnFixed
 					break
@@ -645,6 +663,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					cursorCol++
 				}
 			case "a":
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				if cfg.FixColumn {
 					message = msgColumnFixed
 					break
@@ -674,6 +696,10 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					cursorRow.Replace(cursorCol, text, mode)
 				}
 			case "r", "R", keys.F2:
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				if cfg.ReadOnly {
 					message = msgReadOnly
 					break
@@ -695,9 +721,17 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				killbuffer = cursorRow.Cell[cursorCol].Text()
 				message = "yanked the current cell: " + killbuffer
 			case "p":
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				cursorRow.Replace(cursorCol, killbuffer, mode)
 				message = "pasted: " + killbuffer
 			case "d", "x":
+				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
 				if cfg.FixColumn {
 					message = msgColumnFixed
 					break
