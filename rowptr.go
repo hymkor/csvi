@@ -55,7 +55,8 @@ func (r *RowPtr) InsertAfter(val *uncsv.Row) *RowPtr {
 
 func (r *RowPtr) InsertBefore(val *uncsv.Row) *RowPtr {
 	next := r.list.InsertBefore(val, r.element)
-	return &RowPtr{Row: next.Value.(*uncsv.Row), element: next, lnum: r.lnum + 1, list: r.list}
+	r.lnum++
+	return &RowPtr{Row: next.Value.(*uncsv.Row), element: next, lnum: r.lnum - 1, list: r.list}
 }
 
 type Result = Application
