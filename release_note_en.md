@@ -1,3 +1,8 @@
+* When `-fixcol` is specified
+    * Fix: `o` and `O`: inserted column was always the first one of the new line
+    * Fix: `O`: the line of cursor is incorrect before new cell text is input
+* Add a new option to protect header (`-p' and `Config.ProtectHeader`)
+
 v1.9.5
 ======
 May 27, 2024
