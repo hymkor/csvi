@@ -341,12 +341,6 @@ func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
 	})
 }
 
-const (
-	msgColumnFixed   = "The order of Columns is fixed !"
-	msgReadOnly      = "Read Only Mode !"
-	msgProtectHeader = "Header is protected"
-)
-
 // Deprecated: use Config.Edit
 func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Application, error) {
 	cfg.Mode = mode
@@ -376,6 +370,32 @@ func isEmptyRow(row *uncsv.Row) bool {
 		}
 	}
 	return false
+}
+
+func (cfg *Config) checkWriteProtect(cursorRow *RowPtr) string {
+	const (
+		msgReadOnly      = "Read Only Mode !"
+		msgProtectHeader = "Header is protected"
+	)
+	if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
+		return msgProtectHeader
+	}
+	if cfg.ReadOnly {
+		return msgReadOnly
+	}
+	return ""
+}
+
+func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
+	const msgColumnFixed = "The order of Columns is fixed !"
+
+	if m := cfg.checkWriteProtect(cursorRow); m != "" {
+		return m
+	}
+	if cfg.FixColumn {
+		return msgColumnFixed
+	}
+	return ""
 }
 
 func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Application, error) {
@@ -598,8 +618,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				cursorRow = r
 				cursorCol = c
 			case "o":
-				if cfg.ProtectHeader && cursorRow.lnum+1 < cfg.HeaderLines {
-					message = msgProtectHeader
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
+					message = m
 					break
 				}
 				newRow := uncsv.NewRow(mode)
@@ -627,8 +647,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					cursorRow.Replace(newCol, tx, mode)
 				}
 			case "O":
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
+					message = m
 					break
 				}
 				startPrevP := startRow.Prev()
@@ -657,8 +677,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					cursorRow.Replace(newCol, tx, mode)
 				}
 			case "D":
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
+					message = m
 					break
 				}
 				if app.Len() <= 1 {
@@ -682,16 +702,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					startRow = startPrevP.Next()
 				}
 			case "i":
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
-					break
-				}
-				if cfg.FixColumn {
-					message = msgColumnFixed
-					break
-				}
-				if cfg.ReadOnly {
-					message = msgReadOnly
+				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+					message = m
 					break
 				}
 				view.clearCache()
@@ -712,16 +724,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					cursorCol++
 				}
 			case "a":
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
-					break
-				}
-				if cfg.FixColumn {
-					message = msgColumnFixed
-					break
-				}
-				if cfg.ReadOnly {
-					message = msgReadOnly
+				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+					message = m
 					break
 				}
 				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
@@ -757,12 +761,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					}
 				}
 			case "r", "R", keys.F2:
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
-					break
-				}
-				if cfg.ReadOnly {
-					message = msgReadOnly
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
+					message = m
 					break
 				}
 				cursor := &cursorRow.Cell[cursorCol]
@@ -786,23 +786,15 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				killbuffer = cursorRow.Cell[cursorCol].Text()
 				message = "yanked the current cell: " + killbuffer
 			case "p":
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
+					message = m
 					break
 				}
 				cursorRow.Replace(cursorCol, killbuffer, mode)
 				message = "pasted: " + killbuffer
 			case "d", "x":
-				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
-					message = msgProtectHeader
-					break
-				}
-				if cfg.FixColumn {
-					message = msgColumnFixed
-					break
-				}
-				if cfg.ReadOnly {
-					message = msgReadOnly
+				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+					message = m
 					break
 				}
 				if len(cursorRow.Cell) <= 1 {
