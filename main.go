@@ -366,6 +366,18 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*Application, error) {
 	}, out)
 }
 
+func isEmptyRow(row *uncsv.Row) bool {
+	switch len(row.Cell) {
+	case 0:
+		return true
+	case 1:
+		if len(row.Cell[0].Original()) <= 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Application, error) {
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*Application) (*CommandResult, error))
@@ -404,12 +416,17 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 	if fetch != nil {
 		for i := 0; i < 100; i++ {
 			row, err := fetch()
-			if err != nil && err != io.EOF {
-				return nil, err
+			if err != nil {
+				if err != io.EOF {
+					return nil, err
+				}
+				fetch = nil
+				if isEmptyRow(row) {
+					break
+				}
 			}
 			app.Push(row)
 			if err == io.EOF {
-				fetch = nil
 				break
 			}
 		}
@@ -475,7 +492,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 			row, err := fetch()
 			if err != nil {
 				fetch = nil
-				if err != io.EOF {
+				if err != io.EOF || isEmptyRow(row) {
 					return false
 				}
 			}
