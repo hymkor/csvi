@@ -311,16 +311,34 @@ type CommandResult struct {
 	Quit    bool
 }
 
+type CellValidatedEvent struct {
+	Text string
+	Row  int
+	Col  int
+}
+
 type Config struct {
 	*uncsv.Mode
-	CellWidth     int
-	HeaderLines   int
-	Pilot         Pilot
-	FixColumn     bool
-	ReadOnly      bool
-	ProtectHeader bool
-	Message       string
-	KeyMap        map[string]func(*Application) (*CommandResult, error)
+	CellWidth       int
+	HeaderLines     int
+	Pilot           Pilot
+	FixColumn       bool
+	ReadOnly        bool
+	ProtectHeader   bool
+	Message         string
+	KeyMap          map[string]func(*Application) (*CommandResult, error)
+	OnCellValidated func(*CellValidatedEvent) (string, error)
+}
+
+func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
+	if cfg.OnCellValidated == nil {
+		return text, nil
+	}
+	return cfg.OnCellValidated(&CellValidatedEvent{
+		Row:  row.lnum,
+		Col:  col,
+		Text: text,
+	})
 }
 
 const (
@@ -581,12 +599,16 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				repaint()
 				view.clearCache()
 				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-				if cursorCol < len(cursorRow.Cell) {
-					cursorRow.Replace(cursorCol, text, mode)
-				} else {
-					cursorRow.Replace(len(cursorRow.Cell)-1, text, mode)
-				}
 
+				newCol := cursorCol
+				if cursorCol >= len(cursorRow.Cell) {
+					newCol = len(cursorRow.Cell) - 1
+				}
+				if tx, err := cfg.validate(cursorRow, newCol, text); err != nil {
+					message = err.Error()
+				} else {
+					cursorRow.Replace(newCol, tx, mode)
+				}
 			case "O":
 				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
 					message = msgProtectHeader
@@ -608,10 +630,14 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				repaint()
 				view.clearCache()
 				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-				if cursorCol < len(cursorRow.Cell) {
-					cursorRow.Replace(cursorCol, text, mode)
+				newCol := cursorCol
+				if cursorCol >= len(cursorRow.Cell) {
+					newCol = len(cursorRow.Cell) - 1
+				}
+				if tx, err := cfg.validate(cursorRow, newCol, text); err != nil {
+					message = err.Error()
 				} else {
-					cursorRow.Replace(len(cursorRow.Cell)-1, text, mode)
+					cursorRow.Replace(newCol, tx, mode)
 				}
 			case "D":
 				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
@@ -656,6 +682,12 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				if err != nil {
 					break
 				}
+				if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
+					message = err.Error()
+					break
+				} else {
+					text = tx
+				}
 				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 					cursorRow.Replace(cursorCol, text, mode)
 				} else {
@@ -682,7 +714,12 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					if err != nil {
 						break
 					}
-					cursorRow.Replace(cursorCol, text, mode)
+					if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
+						message = err.Error()
+						break
+					} else {
+						cursorRow.Replace(cursorCol, tx, mode)
+					}
 				} else {
 					cursorCol++
 					cursorRow.Insert(cursorCol, "", mode)
@@ -690,10 +727,17 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 					view.clearCache()
 					text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum+1, cursorCol+1, cursorRow))
 					if err != nil {
+						cursorRow.Delete(cursorCol)
 						cursorCol--
 						break
 					}
-					cursorRow.Replace(cursorCol, text, mode)
+					if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
+						message = err.Error()
+						cursorRow.Delete(cursorCol)
+						cursorCol--
+					} else {
+						cursorRow.Replace(cursorCol, tx, mode)
+					}
 				}
 			case "r", "R", keys.F2:
 				if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
@@ -711,9 +755,13 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 				if err != nil {
 					break
 				}
-				cursorRow.Replace(cursorCol, text, mode)
-				if q {
-					*cursor = cursor.Quote(mode)
+				if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
+					message = err.Error()
+				} else {
+					cursorRow.Replace(cursorCol, tx, mode)
+					if q {
+						*cursor = cursor.Quote(mode)
+					}
 				}
 			case "u":
 				cursorRow.Cell[cursorCol].Restore(mode)
