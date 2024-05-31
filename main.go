@@ -317,6 +317,12 @@ type CellValidatedEvent struct {
 	Col  int
 }
 
+type KeyEventArgs struct {
+	*Application
+	CursorRow *RowPtr
+	CursorCol int
+}
+
 type Config struct {
 	*uncsv.Mode
 	CellWidth       int
@@ -326,7 +332,7 @@ type Config struct {
 	ReadOnly        bool
 	ProtectHeader   bool
 	Message         string
-	KeyMap          map[string]func(*Application) (*CommandResult, error)
+	KeyMap          map[string]func(*KeyEventArgs) (*CommandResult, error)
 	OnCellValidated func(*CellValidatedEvent) (string, error)
 }
 
@@ -400,7 +406,7 @@ func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
 
 func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Application, error) {
 	if cfg.KeyMap == nil {
-		cfg.KeyMap = make(map[string]func(*Application) (*CommandResult, error))
+		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
 	}
 
 	mode := cfg.Mode
@@ -532,7 +538,12 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 		message = ""
 
 		if handler, ok := cfg.KeyMap[ch]; ok {
-			cmdResult, err := handler(app)
+			e := &KeyEventArgs{
+				CursorRow:   cursorRow,
+				CursorCol:   cursorCol,
+				Application: app,
+			}
+			cmdResult, err := handler(e)
 			if err != nil || cmdResult.Quit {
 				return app, err
 			}
