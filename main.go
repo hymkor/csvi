@@ -378,11 +378,13 @@ func isEmptyRow(row *uncsv.Row) bool {
 	return false
 }
 
+const (
+	msgReadOnly      = "Read Only Mode !"
+	msgProtectHeader = "Header is protected"
+	msgColumnFixed   = "The order of Columns is fixed !"
+)
+
 func (cfg *Config) checkWriteProtect(cursorRow *RowPtr) string {
-	const (
-		msgReadOnly      = "Read Only Mode !"
-		msgProtectHeader = "Header is protected"
-	)
 	if cfg.ProtectHeader && cursorRow.lnum < cfg.HeaderLines {
 		return msgProtectHeader
 	}
@@ -393,8 +395,6 @@ func (cfg *Config) checkWriteProtect(cursorRow *RowPtr) string {
 }
 
 func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
-	const msgColumnFixed = "The order of Columns is fixed !"
-
 	if m := cfg.checkWriteProtect(cursorRow); m != "" {
 		return m
 	}
@@ -629,8 +629,12 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 				cursorRow = r
 				cursorCol = c
 			case "o":
-				if m := cfg.checkWriteProtect(cursorRow); m != "" {
-					message = m
+				if cfg.ProtectHeader && cursorRow.lnum+1 < cfg.HeaderLines {
+					message = msgProtectHeader
+					break
+				}
+				if cfg.ReadOnly {
+					message = msgReadOnly
 					break
 				}
 				newRow := uncsv.NewRow(mode)
