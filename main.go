@@ -404,7 +404,23 @@ func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
 	return ""
 }
 
-func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, col int) (string, error) {
+	candidates := makeCandidate(row.lnum-1, col, row)
+	for {
+		var err error
+		text, err = app.Config.Pilot.ReadLine(app.out, prompt, text, candidates)
+		if err != nil {
+			return "", err
+		}
+		tx, err := app.Config.validate(row, col, text)
+		if err == nil {
+			return tx, nil
+		}
+		prompt = fmt.Sprintf("%s: Re-enter>", err.Error())
+	}
+}
+
+func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
 	}
@@ -427,6 +443,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 			return nil, err
 		}
 		defer pilot.Close()
+		cfg.Pilot = pilot
 	}
 	if _, ok := out.(*os.File); ok {
 		if err := pilot.Calibrate(); err != nil {
@@ -434,7 +451,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 		}
 	}
 	app := &_Application{
-		Config:   &cfg,
+		Config:   cfg,
 		csvLines: list.New(),
 		out:      out,
 		Pilot:    pilot,
@@ -650,16 +667,12 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 				cursorRow = cursorRow.InsertAfter(&newRow)
 				repaint()
 				view.clearCache()
-				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-
 				newCol := cursorCol
 				if cursorCol >= len(cursorRow.Cell) {
 					newCol = len(cursorRow.Cell) - 1
 				}
-				if tx, err := cfg.validate(cursorRow, newCol, text); err != nil {
-					message = err.Error()
-				} else {
-					cursorRow.Replace(newCol, tx, mode)
+				if text, err := app.readlineAndValidate("new line>", "", cursorRow, newCol); err == nil {
+					cursorRow.Replace(newCol, text, mode)
 				}
 			case "O":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
@@ -681,15 +694,12 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 				}
 				repaint()
 				view.clearCache()
-				text, _ := pilot.ReadLine(out, "new line>", "", makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
 				newCol := cursorCol
 				if cursorCol >= len(cursorRow.Cell) {
 					newCol = len(cursorRow.Cell) - 1
 				}
-				if tx, err := cfg.validate(cursorRow, newCol, text); err != nil {
-					message = err.Error()
-				} else {
-					cursorRow.Replace(newCol, tx, mode)
+				if text, err := app.readlineAndValidate("new line>", "", cursorRow, newCol); err == nil {
+					cursorRow.Replace(newCol, text, mode)
 				}
 			case "D":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
@@ -722,21 +732,13 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 					break
 				}
 				view.clearCache()
-				text, err := pilot.ReadLine(out, "insert cell>", "", makeCandidate(cursorRow.lnum, cursorCol, cursorRow))
-				if err != nil {
-					break
-				}
-				if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
-					message = err.Error()
-					break
-				} else {
-					text = tx
-				}
-				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
-					cursorRow.Replace(cursorCol, text, mode)
-				} else {
-					cursorRow.Insert(cursorCol, text, mode)
-					cursorCol++
+				if text, err := app.readlineAndValidate("insert cell>", "", cursorRow, cursorCol); err == nil {
+					if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
+						cursorRow.Replace(cursorCol, text, mode)
+					} else {
+						cursorRow.Insert(cursorCol, text, mode)
+						cursorCol++
+					}
 				}
 			case "a":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
@@ -746,33 +748,20 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 					// current column is the last one and it is empty
 					view.clearCache()
-					text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum, cursorCol+1, cursorRow))
-					if err != nil {
-						break
-					}
-					if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
-						message = err.Error()
-						break
-					} else {
-						cursorRow.Replace(cursorCol, tx, mode)
+					if text, err := app.readlineAndValidate("append cell>", "", cursorRow, cursorCol+1); err == nil {
+						cursorRow.Replace(cursorCol, text, mode)
 					}
 				} else {
 					cursorCol++
 					cursorRow.Insert(cursorCol, "", mode)
 					repaint()
 					view.clearCache()
-					text, err := pilot.ReadLine(out, "append cell>", "", makeCandidate(cursorRow.lnum+1, cursorCol+1, cursorRow))
-					if err != nil {
-						cursorRow.Delete(cursorCol)
-						cursorCol--
-						break
-					}
-					if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
-						message = err.Error()
+					if text, err := app.readlineAndValidate("append cell>", "", cursorRow, cursorCol+1); err != nil {
+						// cancel
 						cursorRow.Delete(cursorCol)
 						cursorCol--
 					} else {
-						cursorRow.Replace(cursorCol, tx, mode)
+						cursorRow.Replace(cursorCol, text, mode)
 					}
 				}
 			case "r", "R", keys.F2:
@@ -783,14 +772,8 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result
 				cursor := &cursorRow.Cell[cursorCol]
 				q := cursor.IsQuoted()
 				view.clearCache()
-				text, err := pilot.ReadLine(out, "replace cell>", cursor.Text(), makeCandidate(cursorRow.lnum-1, cursorCol, cursorRow))
-				if err != nil {
-					break
-				}
-				if tx, err := cfg.validate(cursorRow, cursorCol, text); err != nil {
-					message = err.Error()
-				} else {
-					cursorRow.Replace(cursorCol, tx, mode)
+				if text, err := app.readlineAndValidate("replace cell>", cursor.Text(), cursorRow, cursorCol); err == nil {
+					cursorRow.Replace(cursorCol, text, mode)
 					if q {
 						*cursor = cursor.Quote(mode)
 					}
