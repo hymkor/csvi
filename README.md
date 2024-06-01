@@ -83,6 +83,9 @@ Options
 * `-auto string` auto pilot (for testcode)
 * `-nonutf8` do not judge as UTF-8
 * `-w uint` set the width of cell (default 14)
+* `-fixcol` Do not increase or decrease the number of columns
+* `-p` Protect the header line
+* `-readonly` Read Only Mode
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
