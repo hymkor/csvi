@@ -240,7 +240,7 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, cellWidth, headerLines
 	return lfCount + drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
 }
 
-func (app *Application) YesNo(message string) bool {
+func (app *_Application) YesNo(message string) bool {
 	fmt.Fprintf(app, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
 	io.WriteString(app, _ANSI_CURSOR_ON)
 	ch, err := app.GetKey()
@@ -318,7 +318,7 @@ type CellValidatedEvent struct {
 }
 
 type KeyEventArgs struct {
-	*Application
+	*_Application
 	CursorRow *RowPtr
 	CursorCol int
 }
@@ -348,12 +348,12 @@ func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
 }
 
 // Deprecated: use Config.Edit
-func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Application, error) {
+func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Result, error) {
 	cfg.Mode = mode
 	return cfg.Edit(in, out)
 }
 
-func (cfg Config) Edit(in io.Reader, out io.Writer) (*Application, error) {
+func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
 	if in == nil {
 		return cfg.edit(nil, out)
 	}
@@ -404,7 +404,7 @@ func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
 	return ""
 }
 
-func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Application, error) {
+func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
 	}
@@ -433,7 +433,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 			return nil, err
 		}
 	}
-	app := &Application{
+	app := &_Application{
 		Config:   &cfg,
 		csvLines: list.New(),
 		out:      out,
@@ -539,13 +539,13 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 
 		if handler, ok := cfg.KeyMap[ch]; ok {
 			e := &KeyEventArgs{
-				CursorRow:   cursorRow,
-				CursorCol:   cursorCol,
-				Application: app,
+				CursorRow:    cursorRow,
+				CursorCol:    cursorCol,
+				_Application: app,
 			}
 			cmdResult, err := handler(e)
 			if err != nil || cmdResult.Quit {
-				return app, err
+				return &Result{_Application: app}, err
 			}
 			message = cmdResult.Message
 		} else {
@@ -555,7 +555,7 @@ func (cfg Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Applic
 			case "q", keys.Escape:
 				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
 					io.WriteString(out, "\n")
-					return app, nil
+					return &Result{_Application: app}, nil
 				}
 			case "j", keys.Down, keys.CtrlN, keys.Enter:
 				if next := cursorRow.Next(); next != nil {

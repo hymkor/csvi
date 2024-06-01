@@ -11,7 +11,7 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func dump(app *Application, w io.Writer) {
+func dump(app *_Application, w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
@@ -24,7 +24,7 @@ func dump(app *Application, w io.Writer) {
 		}, w)
 }
 
-func cmdWrite(app *Application) error {
+func cmdWrite(app *_Application) error {
 	fname := "-"
 	var err error
 	if args := flag.Args(); len(args) >= 1 {
