@@ -59,6 +59,10 @@ func (r *RowPtr) InsertBefore(val *uncsv.Row) *RowPtr {
 	return &RowPtr{Row: next.Value.(*uncsv.Row), element: next, lnum: r.lnum - 1, list: r.list}
 }
 
+func (r *RowPtr) Index() int {
+	return r.lnum
+}
+
 type _Application struct {
 	csvLines    *list.List
 	removedRows []*uncsv.Row
