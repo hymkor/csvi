@@ -1,3 +1,7 @@
+v1.10.0
+=======
+Jun 02, 2024
+
 * When `-fixcol` is specified
     * Fix: `o` and `O`: inserted column was always the first one of the new line
     * Fix: `O`: the line of cursor is incorrect before new cell text is input
