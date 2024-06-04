@@ -1,3 +1,6 @@
+* Modifying package
+    * When the cell validation fails, prompt to modify the input text
+
 v1.10.0
 =======
 Jun 02, 2024
