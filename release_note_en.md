@@ -1,3 +1,7 @@
+v1.11.0
+=======
+Oct 6, 2024
+
 * Implement the prediction like PowerShell 7 on the cell editing. (`→` or `Ctrl-F` inserts the text of the predicition) [go-readline-ny v1.5.0]
 * Support the hankaku-kana mode on the SKK input (`Ctrl-Q` to enter the hankaku-kana mode from SKK kana mode) [go-readline-skk v0.4.0]
 
