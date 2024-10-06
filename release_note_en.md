@@ -1,3 +1,6 @@
+- Fix: suggestions did not start when the original value of the current cell was empty
+- Fix: the search target for suggestions shifted one column to the right when inserting a cell value with `a`.
+
 v1.11.0
 =======
 Oct 6, 2024
