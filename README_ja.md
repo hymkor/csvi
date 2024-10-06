@@ -83,7 +83,7 @@ Options
 * `-auto string` 自動処理 (テストコード用)
 * `-nonutf8` UTF-8 と判断しない
 * `-w uint` セルを幅を設定 (default 14)
-* `-fixcol` 列の数の増減を禁止する
+* `-fixcol` セルの挿入削除を禁止する (`i`, `a`, `x` を無効化)
 * `-p` ヘッダー行を保護する
 * `-readonly` 読み取り専用モード
 

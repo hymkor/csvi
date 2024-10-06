@@ -83,7 +83,7 @@ Options
 * `-auto string` auto pilot (for testcode)
 * `-nonutf8` do not judge as UTF-8
 * `-w uint` set the width of cell (default 14)
-* `-fixcol` Do not increase or decrease the number of columns
+* `-fixcol` forbide the insert or delete the cell (disable `i`, `a` and `x`)
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
 
