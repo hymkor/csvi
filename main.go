@@ -748,7 +748,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if cells := cursorRow.Cell; len(cells) == 1 && cells[0].Text() == "" {
 					// current column is the last one and it is empty
 					view.clearCache()
-					if text, err := app.readlineAndValidate("append cell>", "", cursorRow, cursorCol+1); err == nil {
+					if text, err := app.readlineAndValidate("append cell>", "", cursorRow, cursorCol); err == nil {
 						cursorRow.Replace(cursorCol, text, mode)
 					}
 				} else {
@@ -756,7 +756,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					cursorRow.Insert(cursorCol, "", mode)
 					repaint()
 					view.clearCache()
-					if text, err := app.readlineAndValidate("append cell>", "", cursorRow, cursorCol+1); err != nil {
+					if text, err := app.readlineAndValidate("append cell>", "", cursorRow, cursorCol); err != nil {
 						// cancel
 						cursorRow.Delete(cursorCol)
 						cursorCol--
