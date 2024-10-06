@@ -2,7 +2,7 @@ v1.11.0
 =======
 Oct 6, 2024
 
-* Implement the prediction like PowerShell 7 on the cell editing. (`→` or `Ctrl-F` inserts the text of the predicition) [go-readline-ny v1.5.0]
+* While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. [go-readline-ny v1.5.0]
 * Support the hankaku-kana mode on the SKK input (`Ctrl-Q` to enter the hankaku-kana mode from SKK kana mode) [go-readline-skk v0.4.0]
 
 [go-readline-ny v1.5.0]: https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0

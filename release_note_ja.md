@@ -2,7 +2,7 @@ v1.11.0
 =======
 (2024.10.06)
 
-* セル編集でPowerShell 7 風の入力予測をするようにした(`→` もしくは `Ctrl-F` で予測結果を採用する) [go-readline-ny v1.5.0]
+* セル編集中に、同じ列で現在入力中のテキストを含むセルのテキストを候補として自動的に表示し、→ もしくは Ctrl-F で採用できるようにした (`→` もしくは `Ctrl-F` で予測結果を採用する) [go-readline-ny v1.5.0]
 * SKK入力で半角カナ入力をサポート(SKKのかな入力モードで`Ctrl-Q`を押下する) [go-readline-skk v0.4.0]
 
 [go-readline-ny v1.5.0]: https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0
