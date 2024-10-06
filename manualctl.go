@@ -53,6 +53,8 @@ func (m _ManualCtl) GetKey() (string, error) {
 	return readline.GetKey(m.TTY)
 }
 
+var predictColor = [...]string{"\x1B[3;22;34m", "\x1B[23;39m"}
+
 var skkInit = sync.OnceFunc(func() {
 	env := os.Getenv("GOREADLINESKK")
 	if env != "" {
@@ -78,7 +80,8 @@ func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candida
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
-		Coloring: &skk.Coloring{},
+		Coloring:     &skk.Coloring{},
+		PredictColor: predictColor,
 	}
 	if len(c) > 0 {
 		editor.BindKey(keys.CtrlI, completion.CmdCompletion{
@@ -103,7 +106,8 @@ func (m _ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (strin
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
-		Coloring: &skk.Coloring{},
+		Coloring:     &skk.Coloring{},
+		PredictColor: predictColor,
 	}
 	editor.BindKey(keys.CtrlI, completion.CmdCompletionOrList{
 		Completion: completion.File{},
