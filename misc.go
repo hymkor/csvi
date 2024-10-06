@@ -43,13 +43,23 @@ func (c Candidate) List(field []string) (fullnames, basenames []string) {
 func makeCandidate(row, col int, cursor *RowPtr) Candidate {
 	result := Candidate(make([]string, 0, 100))
 	set := make(map[string]struct{})
+	count := 0
 	for ; cursor != nil; cursor = cursor.Prev() {
+		count++
 		if col >= len(cursor.Cell) {
-			break
+			if count == 1 {
+				continue
+			} else {
+				break
+			}
 		}
 		value := cursor.Cell[col].Text()
 		if value == "" {
-			break
+			if count == 1 {
+				continue
+			} else {
+				break
+			}
 		}
 		if _, ok := set[value]; !ok {
 			result = append(result, value)
