@@ -473,14 +473,16 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				break
 			}
 		}
-	} else {
+	}
+	startRow := app.Front()
+	startCol := 0
+	if startRow == nil {
 		newRow := uncsv.NewRow(mode)
 		app.Push(&newRow)
+		startRow = app.Front()
 	}
 	cursorCol := 0
 	cursorRow := app.Front()
-	startRow := app.Front()
-	startCol := 0
 
 	lastSearch := searchForward
 	lastSearchRev := searchBackward

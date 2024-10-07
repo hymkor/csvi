@@ -40,6 +40,9 @@ func (r *RowPtr) Clone() *RowPtr {
 
 func frontPtr(L *list.List) *RowPtr {
 	front := L.Front()
+	if front == nil {
+		return nil
+	}
 	return &RowPtr{Row: front.Value.(*uncsv.Row), element: front, lnum: 0, list: L}
 }
 
