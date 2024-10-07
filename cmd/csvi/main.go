@@ -115,7 +115,7 @@ func mains() error {
 var version string
 
 func main() {
-	fmt.Fprintf(os.Stderr, "%s %s-%s-%s by %s\n",
+	fmt.Fprintf(os.Stderr, "%s %s-%s-%s built with %s\n",
 		os.Args[0], version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 
 	flag.Parse()
