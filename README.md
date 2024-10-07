@@ -82,7 +82,7 @@ Options
 * `-16le` Force read/write as UTF-16LE
 * `-auto string` auto pilot (for testcode)
 * `-nonutf8` do not judge as UTF-8
-* `-w uint` set the width of cell (default 14)
+* `-w widths` set the widths of cells (e.g., `-w 14,0:10,1:20` to set the first column to 10 characters wide, the second column to 20 characters wide, and all others to 14 characters wide)
 * `-fixcol` forbide the insert or delete the cell (disable `i`, `a` and `x`)
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
