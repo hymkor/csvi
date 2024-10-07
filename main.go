@@ -57,9 +57,17 @@ var replaceTable = strings.NewReplacer(
 
 // See. en.wikipedia.org/wiki/Unicode_control_characters#Control_pictures
 
+func sum(f func(n int) int, from, to int) int {
+	result := 0
+	for i := from; i < to; i++ {
+		result += f(i)
+	}
+	return result
+}
+
 func drawLine(
 	csvs []uncsv.Cell,
-	cellWidth int,
+	cellWidth func(int) int,
 	screenWidth int,
 	cursorPos int,
 	reverse bool,
@@ -89,9 +97,9 @@ func drawLine(
 		csvs = csvs[1:]
 		nextI := i + 1
 
-		cw := cellWidth
+		cw := cellWidth(i)
 		for len(csvs) > 0 && csvs[0].Text() == "" && nextI != cursorPos {
-			cw += cellWidth
+			cw += cellWidth(nextI)
 			csvs = csvs[1:]
 			nextI++
 		}
@@ -122,7 +130,7 @@ func drawLine(
 		if screenWidth <= 0 {
 			break
 		}
-		fmt.Fprintf(out, "\x1B[%dG", nextI*cellWidth+1)
+		fmt.Fprintf(out, "\x1B[%dG", sum(cellWidth, 0, nextI)+1)
 		if i == cursorPos {
 			io.WriteString(out, "\x1B[K")
 		}
@@ -140,7 +148,7 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), cellWidth, csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
+func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -197,9 +205,12 @@ func (v *_View) clearCache() {
 	clear(v.bodyCache)
 }
 
-func (v *_View) Draw(header, startRow, cursorRow *RowPtr, cellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth func(int) int, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
+	cellWidth := func(n int) int {
+		return _cellWidth(n + startCol)
+	}
 	if h := headerLines; h > 0 {
 		enum := func(callback func([]uncsv.Cell) bool) {
 			for i := 0; i < h && header != nil; i++ {
@@ -325,7 +336,7 @@ type KeyEventArgs struct {
 
 type Config struct {
 	*uncsv.Mode
-	CellWidth       int
+	CellWidth       func(int) int
 	HeaderLines     int
 	Pilot           Pilot
 	FixColumn       bool
@@ -431,8 +442,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	}
 
 	cellWidth := cfg.CellWidth
-	if cellWidth <= 0 {
-		cellWidth = 14
+	if cellWidth == nil {
+		cellWidth = func(int) int {
+			return 14
+		}
 	}
 
 	pilot := cfg.Pilot
@@ -510,7 +523,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			lastHeight = screenHeight
 			io.WriteString(out, _ANSI_CURSOR_OFF)
 		}
-		cols := (screenWidth - 1) / cellWidth
 
 		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		repaint := func() {
@@ -844,8 +856,20 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		}
 		if cursorCol < startCol {
 			startCol = cursorCol
-		} else if cursorCol >= startCol+cols {
-			startCol = cursorCol - cols + 1
+		} else {
+			cellWidth := cfg.CellWidth
+			if cellWidth == nil {
+				cellWidth = func(int) int {
+					return 14
+				}
+			}
+			for {
+				w := sum(cellWidth, startCol, cursorCol+1)
+				if w <= screenWidth {
+					break
+				}
+				startCol++
+			}
 		}
 		up(lfCount, out)
 	}
