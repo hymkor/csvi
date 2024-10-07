@@ -1,3 +1,5 @@
+* Fix: panic when 0 bytes files (`nul` or `/dev/null`) were given
+
 v1.11.1
 =======
 Oct 7, 2024
