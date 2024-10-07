@@ -1,4 +1,8 @@
+* [#4] Define the different width for cells. e.g., `-w 14,0:10,1:20` means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to [@kevin-gwyrdh])
 * Fix: panic when 0 bytes files (`nul` or `/dev/null`) were given
+
+[#4]: https://github.com/hymkor/csvi/issues/4
+[@kevin-gwyrdh]: https://github.com/kevin-gwyrdh
 
 v1.11.1
 =======

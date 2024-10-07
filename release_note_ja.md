@@ -1,4 +1,8 @@
+* [#4] 列ごとに違う幅を設定できるようにした。例: `-w 14,0:10,1:20` 1列目は10桁,2列目は20桁,他は14桁とする (Thanks to [@kevin-gwyrdh])
 * 0バイトのファイル(`nul`,`/dev/null`)を与えるとクラッシュする不具合を修正
+
+[#4]: https://github.com/hymkor/csvi/issues/4
+[@kevin-gwyrdh]: https://github.com/kevin-gwyrdh
 
 v1.11.1
 =======
