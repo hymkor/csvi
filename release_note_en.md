@@ -1,3 +1,7 @@
+v1.12.0
+=======
+Oct 8, 2024
+
 * [#4] Define the different width for cells. e.g., `-w 14,0:10,1:20` means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to [@kevin-gwyrdh])
 * Fix: panic when 0 bytes files (`nul` or `/dev/null`) were given
 
