@@ -1,3 +1,5 @@
+* Enable displaying a title row above the header row (`-title` option)
+
 v1.12.0
 =======
 Oct 8, 2024
