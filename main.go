@@ -345,6 +345,7 @@ type Config struct {
 	Message         string
 	KeyMap          map[string]func(*KeyEventArgs) (*CommandResult, error)
 	OnCellValidated func(*CellValidatedEvent) (string, error)
+	Titles          []string
 }
 
 func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
@@ -509,13 +510,18 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 
 	view := newView()
 
+	screenWidth, _screenHeight, err := pilot.Size()
+	if err != nil {
+		return nil, err
+	}
+	for _, title := range cfg.Titles {
+		s, _ := cutStrInWidth(title, screenWidth-1)
+		fmt.Fprintln(out, s)
+	}
 	message := cfg.Message
 	var killbuffer string
 	for {
-		screenWidth, screenHeight, err := pilot.Size()
-		if err != nil {
-			return nil, err
-		}
+		screenHeight := _screenHeight - len(cfg.Titles)
 		screenHeight -= cfg.HeaderLines
 		if lastWidth != screenWidth || lastHeight != screenHeight {
 			view.clearCache()

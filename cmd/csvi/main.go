@@ -31,6 +31,7 @@ var (
 	flagFixColumn     = flag.Bool("fixcol", false, "Do not insert/delete a column")
 	flagReadOnly      = flag.Bool("readonly", false, "Read Only Mode")
 	flagProtectHeader = flag.Bool("p", false, "Protect the header line")
+	flagTitle         = flag.String("title", "", "Set title string")
 )
 
 const (
@@ -151,6 +152,10 @@ func mains() error {
 	if err := cw.Parse(*flagCellWidth); err != nil {
 		return err
 	}
+	var titles []string
+	if *flagTitle != "" {
+		titles = []string{*flagTitle}
+	}
 	_, err := csvi.Config{
 		Mode:          mode,
 		Pilot:         pilot,
@@ -159,6 +164,7 @@ func mains() error {
 		FixColumn:     *flagFixColumn,
 		ReadOnly:      *flagReadOnly,
 		ProtectHeader: *flagProtectHeader,
+		Titles:        titles,
 	}.Edit(reader, out)
 
 	return err

@@ -8,10 +8,36 @@ import (
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
 	w := 0
+	escape := false
 	for n, c := range s {
+		if escape {
+			if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') {
+				escape = false
+			}
+			continue
+		}
+		if c == '\x1B' {
+			escape = true
+			continue
+		}
 		w1 := runewidth.RuneWidth(c)
 		if w+w1 > cellwidth {
-			return s[:n], w
+			var buffer strings.Builder
+			buffer.WriteString(s[:n])
+			for _, c := range s[n:] {
+				if escape {
+					buffer.WriteRune(c)
+					if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') {
+						escape = false
+					}
+					continue
+				}
+				if c == '\x1B' {
+					buffer.WriteByte('\x1B')
+					escape = true
+				}
+			}
+			return buffer.String(), w
 		}
 		w += w1
 	}
