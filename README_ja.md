@@ -207,8 +207,8 @@ Release Note
 Acknowledgements
 ----------------
 
-- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) #1
-- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) #4
+- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) [#1](https://github.com/hymkor/csvi/issues/1)
+- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) [#4](https://github.com/hymkor/csvi/issues/4)
 
 Author
 ------
