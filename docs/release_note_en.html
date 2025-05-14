@@ -1,0 +1,1450 @@
+<!DOCTYPE html><html><head>
+<title>&#34;CSVI&#34; Release notes</title>
+<style type="text/css"><!--
+/* light */
+.markdown-body {
+  color-scheme: light;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin: 0;
+  color: #1f2328;
+  background-color: #ffffff;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.markdown-body .octicon {
+  display: inline-block;
+  fill: currentColor;
+  vertical-align: text-bottom;
+}
+
+.markdown-body h1:hover .anchor .octicon-link:before,
+.markdown-body h2:hover .anchor .octicon-link:before,
+.markdown-body h3:hover .anchor .octicon-link:before,
+.markdown-body h4:hover .anchor .octicon-link:before,
+.markdown-body h5:hover .anchor .octicon-link:before,
+.markdown-body h6:hover .anchor .octicon-link:before {
+  width: 16px;
+  height: 16px;
+  content: ' ';
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");
+}
+
+.markdown-body details,
+.markdown-body figcaption,
+.markdown-body figure {
+  display: block;
+}
+
+.markdown-body summary {
+  display: list-item;
+}
+
+.markdown-body [hidden] {
+  display: none !important;
+}
+
+.markdown-body a {
+  background-color: transparent;
+  color: #0969da;
+  text-decoration: none;
+}
+
+.markdown-body abbr[title] {
+  border-bottom: none;
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted;
+}
+
+.markdown-body b,
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body dfn {
+  font-style: italic;
+}
+
+.markdown-body h1 {
+  margin: .67em 0;
+  font-weight: 600;
+  padding-bottom: .3em;
+  font-size: 2em;
+  border-bottom: 1px solid #d1d9e0b3;
+}
+
+.markdown-body mark {
+  background-color: #fff8c5;
+  color: #1f2328;
+}
+
+.markdown-body small {
+  font-size: 90%;
+}
+
+.markdown-body sub,
+.markdown-body sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.markdown-body sub {
+  bottom: -0.25em;
+}
+
+.markdown-body sup {
+  top: -0.5em;
+}
+
+.markdown-body img {
+  border-style: none;
+  max-width: 100%;
+  box-sizing: content-box;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre,
+.markdown-body samp {
+  font-family: monospace;
+  font-size: 1em;
+}
+
+.markdown-body figure {
+  margin: 1em 2.5rem;
+}
+
+.markdown-body hr {
+  box-sizing: content-box;
+  overflow: hidden;
+  background: transparent;
+  border-bottom: 1px solid #d1d9e0b3;
+  height: .25em;
+  padding: 0;
+  margin: 1.5rem 0;
+  background-color: #d1d9e0;
+  border: 0;
+}
+
+.markdown-body input {
+  font: inherit;
+  margin: 0;
+  overflow: visible;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.markdown-body [type=button],
+.markdown-body [type=reset],
+.markdown-body [type=submit] {
+  -webkit-appearance: button;
+  appearance: button;
+}
+
+.markdown-body [type=checkbox],
+.markdown-body [type=radio] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body [type=number]::-webkit-inner-spin-button,
+.markdown-body [type=number]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+.markdown-body [type=search]::-webkit-search-cancel-button,
+.markdown-body [type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.markdown-body ::-webkit-input-placeholder {
+  color: inherit;
+  opacity: .54;
+}
+
+.markdown-body ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  appearance: button;
+  font: inherit;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body ::placeholder {
+  color: #59636e;
+  opacity: 1;
+}
+
+.markdown-body hr::before {
+  display: table;
+  content: "";
+}
+
+.markdown-body hr::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdown-body table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  font-variant: tabular-nums;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body details summary {
+  cursor: pointer;
+}
+
+.markdown-body a:focus,
+.markdown-body [role=button]:focus,
+.markdown-body input[type=radio]:focus,
+.markdown-body input[type=checkbox]:focus {
+  outline: 2px solid #0969da;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.markdown-body a:focus:not(:focus-visible),
+.markdown-body [role=button]:focus:not(:focus-visible),
+.markdown-body input[type=radio]:focus:not(:focus-visible),
+.markdown-body input[type=checkbox]:focus:not(:focus-visible) {
+  outline: solid 1px transparent;
+}
+
+.markdown-body a:focus-visible,
+.markdown-body [role=button]:focus-visible,
+.markdown-body input[type=radio]:focus-visible,
+.markdown-body input[type=checkbox]:focus-visible {
+  outline: 2px solid #0969da;
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.markdown-body a:not([class]):focus,
+.markdown-body a:not([class]):focus-visible,
+.markdown-body input[type=radio]:focus,
+.markdown-body input[type=radio]:focus-visible,
+.markdown-body input[type=checkbox]:focus,
+.markdown-body input[type=checkbox]:focus-visible {
+  outline-offset: 0;
+}
+
+.markdown-body kbd {
+  display: inline-block;
+  padding: 0.25rem;
+  font: 11px ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  line-height: 10px;
+  color: #1f2328;
+  vertical-align: middle;
+  background-color: #f6f8fa;
+  border: solid 1px #d1d9e0b3;
+  border-bottom-color: #d1d9e0b3;
+  border-radius: 6px;
+  box-shadow: inset 0 -1px 0 #d1d9e0b3;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-body h2 {
+  font-weight: 600;
+  padding-bottom: .3em;
+  font-size: 1.5em;
+  border-bottom: 1px solid #d1d9e0b3;
+}
+
+.markdown-body h3 {
+  font-weight: 600;
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-weight: 600;
+  font-size: .875em;
+}
+
+.markdown-body h6 {
+  font-weight: 600;
+  font-size: .85em;
+  color: #59636e;
+}
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+  padding: 0 1em;
+  color: #59636e;
+  border-left: .25em solid #d1d9e0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2em;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ul ul ol,
+.markdown-body ul ol ol,
+.markdown-body ol ul ol,
+.markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body tt,
+.markdown-body code,
+.markdown-body samp {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-size: 12px;
+  word-wrap: normal;
+}
+
+.markdown-body .octicon {
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-body input::-webkit-outer-spin-button,
+.markdown-body input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.markdown-body .mr-2 {
+  margin-right: 0.5rem !important;
+}
+
+.markdown-body::before {
+  display: table;
+  content: "";
+}
+
+.markdown-body::after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdown-body>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+.markdown-body a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown-body .absent {
+  color: #d1242f;
+}
+
+.markdown-body .anchor {
+  float: left;
+  padding-right: 0.25rem;
+  margin-left: -20px;
+  line-height: 1;
+}
+
+.markdown-body .anchor:focus {
+  outline: none;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre,
+.markdown-body details {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+  color: #1f2328;
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+
+.markdown-body h1 tt,
+.markdown-body h1 code,
+.markdown-body h2 tt,
+.markdown-body h2 code,
+.markdown-body h3 tt,
+.markdown-body h3 code,
+.markdown-body h4 tt,
+.markdown-body h4 code,
+.markdown-body h5 tt,
+.markdown-body h5 code,
+.markdown-body h6 tt,
+.markdown-body h6 code {
+  padding: 0 .2em;
+  font-size: inherit;
+}
+
+.markdown-body summary h1,
+.markdown-body summary h2,
+.markdown-body summary h3,
+.markdown-body summary h4,
+.markdown-body summary h5,
+.markdown-body summary h6 {
+  display: inline-block;
+}
+
+.markdown-body summary h1 .anchor,
+.markdown-body summary h2 .anchor,
+.markdown-body summary h3 .anchor,
+.markdown-body summary h4 .anchor,
+.markdown-body summary h5 .anchor,
+.markdown-body summary h6 .anchor {
+  margin-left: -40px;
+}
+
+.markdown-body summary h1,
+.markdown-body summary h2 {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.markdown-body ul.no-list,
+.markdown-body ol.no-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.markdown-body ol[type="a s"] {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body ol[type="A s"] {
+  list-style-type: upper-alpha;
+}
+
+.markdown-body ol[type="i s"] {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ol[type="I s"] {
+  list-style-type: upper-roman;
+}
+
+.markdown-body ol[type="1"] {
+  list-style-type: decimal;
+}
+
+.markdown-body div>ol:not([type]) {
+  list-style-type: decimal;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body li>p {
+  margin-top: 1rem;
+}
+
+.markdown-body li+li {
+  margin-top: .25em;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  padding: 0;
+  margin-top: 1rem;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.markdown-body dl dd {
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-body table th {
+  font-weight: 600;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #d1d9e0;
+}
+
+.markdown-body table td>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table tr {
+  background-color: #ffffff;
+  border-top: 1px solid #d1d9e0b3;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.markdown-body table img {
+  background-color: transparent;
+}
+
+.markdown-body img[align=right] {
+  padding-left: 20px;
+}
+
+.markdown-body img[align=left] {
+  padding-right: 20px;
+}
+
+.markdown-body .emoji {
+  max-width: none;
+  vertical-align: text-top;
+  background-color: transparent;
+}
+
+.markdown-body span.frame {
+  display: block;
+  overflow: hidden;
+}
+
+.markdown-body span.frame>span {
+  display: block;
+  float: left;
+  width: auto;
+  padding: 7px;
+  margin: 13px 0 0;
+  overflow: hidden;
+  border: 1px solid #d1d9e0;
+}
+
+.markdown-body span.frame span img {
+  display: block;
+  float: left;
+}
+
+.markdown-body span.frame span span {
+  display: block;
+  padding: 5px 0 0;
+  clear: both;
+  color: #1f2328;
+}
+
+.markdown-body span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both;
+}
+
+.markdown-body span.align-center>span {
+  display: block;
+  margin: 13px auto 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.markdown-body span.align-center span img {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.markdown-body span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both;
+}
+
+.markdown-body span.align-right>span {
+  display: block;
+  margin: 13px 0 0;
+  overflow: hidden;
+  text-align: right;
+}
+
+.markdown-body span.align-right span img {
+  margin: 0;
+  text-align: right;
+}
+
+.markdown-body span.float-left {
+  display: block;
+  float: left;
+  margin-right: 13px;
+  overflow: hidden;
+}
+
+.markdown-body span.float-left span {
+  margin: 13px 0 0;
+}
+
+.markdown-body span.float-right {
+  display: block;
+  float: right;
+  margin-left: 13px;
+  overflow: hidden;
+}
+
+.markdown-body span.float-right>span {
+  display: block;
+  margin: 13px auto 0;
+  overflow: hidden;
+  text-align: right;
+}
+
+.markdown-body code,
+.markdown-body tt {
+  padding: .2em .4em;
+  margin: 0;
+  font-size: 85%;
+  white-space: break-spaces;
+  background-color: #818b981f;
+  border-radius: 6px;
+}
+
+.markdown-body code br,
+.markdown-body tt br {
+  display: none;
+}
+
+.markdown-body del code {
+  text-decoration: inherit;
+}
+
+.markdown-body samp {
+  font-size: 85%;
+}
+
+.markdown-body pre code {
+  font-size: 100%;
+}
+
+.markdown-body pre>code {
+  padding: 0;
+  margin: 0;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
+.markdown-body .highlight {
+  margin-bottom: 1rem;
+}
+
+.markdown-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  padding: 1rem;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  color: #1f2328;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+}
+
+.markdown-body pre code,
+.markdown-body pre tt {
+  display: inline;
+  max-width: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.markdown-body .csv-data td,
+.markdown-body .csv-data th {
+  padding: 5px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.markdown-body .csv-data .blob-num {
+  padding: 10px 0.5rem 9px;
+  text-align: right;
+  background: #ffffff;
+  border: 0;
+}
+
+.markdown-body .csv-data tr {
+  border-top: 0;
+}
+
+.markdown-body .csv-data th {
+  font-weight: 600;
+  background: #f6f8fa;
+  border-top: 0;
+}
+
+.markdown-body [data-footnote-ref]::before {
+  content: "[";
+}
+
+.markdown-body [data-footnote-ref]::after {
+  content: "]";
+}
+
+.markdown-body .footnotes {
+  font-size: 12px;
+  color: #59636e;
+  border-top: 1px solid #d1d9e0;
+}
+
+.markdown-body .footnotes ol {
+  padding-left: 1rem;
+}
+
+.markdown-body .footnotes ol ul {
+  display: inline-block;
+  padding-left: 1rem;
+  margin-top: 1rem;
+}
+
+.markdown-body .footnotes li {
+  position: relative;
+}
+
+.markdown-body .footnotes li:target::before {
+  position: absolute;
+  top: calc(0.5rem*-1);
+  right: calc(0.5rem*-1);
+  bottom: calc(0.5rem*-1);
+  left: calc(1.5rem*-1);
+  pointer-events: none;
+  content: "";
+  border: 2px solid #0969da;
+  border-radius: 6px;
+}
+
+.markdown-body .footnotes li:target {
+  color: #1f2328;
+}
+
+.markdown-body .footnotes .data-footnote-backref g-emoji {
+  font-family: monospace;
+}
+
+.markdown-body body:has(:modal) {
+  padding-right: var(--dialog-scrollgutter) !important;
+}
+
+.markdown-body .pl-c {
+  color: #59636e;
+}
+
+.markdown-body .pl-c1,
+.markdown-body .pl-s .pl-v {
+  color: #0550ae;
+}
+
+.markdown-body .pl-e,
+.markdown-body .pl-en {
+  color: #6639ba;
+}
+
+.markdown-body .pl-smi,
+.markdown-body .pl-s .pl-s1 {
+  color: #1f2328;
+}
+
+.markdown-body .pl-ent {
+  color: #0550ae;
+}
+
+.markdown-body .pl-k {
+  color: #cf222e;
+}
+
+.markdown-body .pl-s,
+.markdown-body .pl-pds,
+.markdown-body .pl-s .pl-pse .pl-s1,
+.markdown-body .pl-sr,
+.markdown-body .pl-sr .pl-cce,
+.markdown-body .pl-sr .pl-sre,
+.markdown-body .pl-sr .pl-sra {
+  color: #0a3069;
+}
+
+.markdown-body .pl-v,
+.markdown-body .pl-smw {
+  color: #953800;
+}
+
+.markdown-body .pl-bu {
+  color: #82071e;
+}
+
+.markdown-body .pl-ii {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+
+.markdown-body .pl-c2 {
+  color: #f6f8fa;
+  background-color: #cf222e;
+}
+
+.markdown-body .pl-sr .pl-cce {
+  font-weight: bold;
+  color: #116329;
+}
+
+.markdown-body .pl-ml {
+  color: #3b2300;
+}
+
+.markdown-body .pl-mh,
+.markdown-body .pl-mh .pl-en,
+.markdown-body .pl-ms {
+  font-weight: bold;
+  color: #0550ae;
+}
+
+.markdown-body .pl-mi {
+  font-style: italic;
+  color: #1f2328;
+}
+
+.markdown-body .pl-mb {
+  font-weight: bold;
+  color: #1f2328;
+}
+
+.markdown-body .pl-md {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+
+.markdown-body .pl-mi1 {
+  color: #116329;
+  background-color: #dafbe1;
+}
+
+.markdown-body .pl-mc {
+  color: #953800;
+  background-color: #ffd8b5;
+}
+
+.markdown-body .pl-mi2 {
+  color: #d1d9e0;
+  background-color: #0550ae;
+}
+
+.markdown-body .pl-mdr {
+  font-weight: bold;
+  color: #8250df;
+}
+
+.markdown-body .pl-ba {
+  color: #59636e;
+}
+
+.markdown-body .pl-sg {
+  color: #818b98;
+}
+
+.markdown-body .pl-corl {
+  text-decoration: underline;
+  color: #0a3069;
+}
+
+.markdown-body [role=button]:focus:not(:focus-visible),
+.markdown-body [role=tabpanel][tabindex="0"]:focus:not(:focus-visible),
+.markdown-body button:focus:not(:focus-visible),
+.markdown-body summary:focus:not(:focus-visible),
+.markdown-body a:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.markdown-body [tabindex="0"]:focus:not(:focus-visible),
+.markdown-body details-dialog:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.markdown-body g-emoji {
+  display: inline-block;
+  min-width: 1ch;
+  font-family: "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 1em;
+  font-style: normal !important;
+  font-weight: 400;
+  line-height: 1;
+  vertical-align: -0.075em;
+}
+
+.markdown-body g-emoji img {
+  width: 1em;
+  height: 1em;
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item label {
+  font-weight: 400;
+}
+
+.markdown-body .task-list-item.enabled label {
+  cursor: pointer;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 0.25rem;
+}
+
+.markdown-body .task-list-item .handle {
+  display: none;
+}
+
+.markdown-body .task-list-item-checkbox {
+  margin: 0 .2em .25em -1.4em;
+  vertical-align: middle;
+}
+
+.markdown-body ul:dir(rtl) .task-list-item-checkbox {
+  margin: 0 -1.6em .25em .2em;
+}
+
+.markdown-body ol:dir(rtl) .task-list-item-checkbox {
+  margin: 0 -1.6em .25em .2em;
+}
+
+.markdown-body .contains-task-list:hover .task-list-item-convert-container,
+.markdown-body .contains-task-list:focus-within .task-list-item-convert-container {
+  display: block;
+  width: auto;
+  height: 24px;
+  overflow: visible;
+  clip: auto;
+}
+
+.markdown-body ::-webkit-calendar-picker-indicator {
+  filter: invert(50%);
+}
+
+.markdown-body .markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  color: inherit;
+  border-left: .25em solid #d1d9e0;
+}
+
+.markdown-body .markdown-alert>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body .markdown-alert>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body .markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1;
+}
+
+.markdown-body .markdown-alert.markdown-alert-note {
+  border-left-color: #0969da;
+}
+
+.markdown-body .markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #0969da;
+}
+
+.markdown-body .markdown-alert.markdown-alert-important {
+  border-left-color: #8250df;
+}
+
+.markdown-body .markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: #8250df;
+}
+
+.markdown-body .markdown-alert.markdown-alert-warning {
+  border-left-color: #9a6700;
+}
+
+.markdown-body .markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #9a6700;
+}
+
+.markdown-body .markdown-alert.markdown-alert-tip {
+  border-left-color: #1a7f37;
+}
+
+.markdown-body .markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #1a7f37;
+}
+
+.markdown-body .markdown-alert.markdown-alert-caution {
+  border-left-color: #cf222e;
+}
+
+.markdown-body .markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: #d1242f;
+}
+
+.markdown-body>*:first-child>.heading-element:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body .highlight pre:has(+.zeroclipboard-container) {
+  min-height: 52px;
+}
+
+
+	.markdown-body {
+		box-sizing: border-box;
+		max-width: 980px;
+		margin: 0 auto;
+		padding: 45px;
+	}
+	body{
+		display:flex;
+		overflow-y: scroll;
+	}
+	@media screen{
+		div.sidebar{ width:30% }
+		div.main{ width:70% }
+	}
+
+	@media print{
+		div.sidebar,div.footer{ display:none }
+		div.main{ width:100%!}(MISSING)
+	}
+
+// -->
+</style></head><body>
+<div class="main markdown-body">
+<h1 id="v1130">v1.13.0 <a href="#v1130">.</a></h1>
+<p>May 14, 2025</p>
+<h2 id="-experimental-release-for-macos-users">🚀 Experimental Release for macOS Users <a href="#-experimental-release-for-macos-users">.</a></h2>
+<p>This release includes a <strong>macOS build for the first time</strong>!</p>
+<p>We don't have access to a macOS environment, so we can't test it ourselves.
+If you're a macOS user and willing to help, <strong>please try it and report back</strong> through GitHub Issues or Discussions.</p>
+<p>Thank you for your support!</p>
+<h2 id="other-changes">Other changes <a href="#other-changes">.</a></h2>
+<ul>
+<li>Added <code>-title</code> option to display a title row above the header row.</li>
+</ul>
+<h1 id="v1120">v1.12.0 <a href="#v1120">.</a></h1>
+<p>Oct 8, 2024</p>
+<ul>
+<li><a href="https://github.com/hymkor/csvi/issues/4">#4</a> Define the different width for cells. e.g., <code>-w 14,0:10,1:20</code> means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to <a href="https://github.com/kevin-gwyrdh">@kevin-gwyrdh</a>)</li>
+<li>Fix: panic when 0 bytes files (<code>nul</code> or <code>/dev/null</code>) were given</li>
+</ul>
+<h1 id="v1111">v1.11.1 <a href="#v1111">.</a></h1>
+<p>Oct 7, 2024</p>
+<ul>
+<li>Fix: suggestions did not start when the original value of the current cell was empty</li>
+<li>Fix: the search target for suggestions shifted one column to the right when inserting a cell value with <code>a</code>.</li>
+</ul>
+<h1 id="v1110">v1.11.0 <a href="#v1110">.</a></h1>
+<p>Oct 6, 2024</p>
+<ul>
+<li>While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. <a href="https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0">go-readline-ny v1.5.0</a></li>
+<li>Support the hankaku-kana mode on the SKK input (<code>Ctrl-Q</code> to enter the hankaku-kana mode from SKK kana mode) <a href="https://github.com/nyaosorg/go-readline-skk/releases/tag/v0.4.0">go-readline-skk v0.4.0</a></li>
+</ul>
+<h1 id="v1101">v1.10.1 <a href="#v1101">.</a></h1>
+<p>Jun 10, 2024</p>
+<ul>
+<li>Modifying package
+<ul>
+<li>When the cell validation fails, prompt to modify the input text</li>
+</ul>
+</li>
+</ul>
+<h1 id="v1100">v1.10.0 <a href="#v1100">.</a></h1>
+<p>Jun 02, 2024</p>
+<ul>
+<li>When <code>-fixcol</code> is specified
+<ul>
+<li>Fix: <code>o</code> and <code>O</code>: inserted column was always the first one of the new line</li>
+<li>Fix: <code>O</code>: the line of cursor is incorrect before new cell text is input</li>
+</ul>
+</li>
+<li>Add a new option to protect header (<code>-p</code> and <code>Config.ProtectHeader</code>)</li>
+<li>Do not create a row contains nothing but EOF.</li>
+<li>Modifying package
+<ul>
+<li>Added a mechanism for cell input validation</li>
+<li>Change the parameter type of hander function for key pressed from Application to KeyEventArgs (Compatiblity broken)</li>
+<li>Unexport type <code>Application</code> and <code>(*Config) Edit</code> returns <code>*Result</code> instead</li>
+</ul>
+</li>
+</ul>
+<h1 id="v195">v1.9.5 <a href="#v195">.</a></h1>
+<p>May 27, 2024</p>
+<ul>
+<li>Modifying package
+<ul>
+<li>User functions can be assigned to keys</li>
+<li><code>csvi.Result</code> is the alias of <code>csvi.Application</code> now</li>
+</ul>
+</li>
+</ul>
+<h1 id="v194">v1.9.4 <a href="#v194">.</a></h1>
+<p>May 26, 2024</p>
+<ul>
+<li>Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released</li>
+<li>Modifing package
+<ul>
+<li>Make <code>uncsv.Cell.Original()</code> that returns the original value before modified.</li>
+<li>When <code>Config.FixColumn</code> is set true, the new row which <code>o</code> &amp; <code>O</code> insert has all columns same as the row cursor exists</li>
+<li><code>csvi.Result</code> has removed rows in a field.</li>
+</ul>
+</li>
+</ul>
+<h1 id="v193">v1.9.3 <a href="#v193">.</a></h1>
+<p>May.17, 2024</p>
+<ul>
+<li>Modifing pacakge
+<ul>
+<li>Change the return value of <code>Config.Edit</code> from <code>(*RowPtr,error)</code> to <code>(*Result,error)</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="v192">v1.9.2 <a href="#v192">.</a></h1>
+<p>May.12, 2024</p>
+<ul>
+<li>Modifing package
+<ul>
+<li>Use 14 for the default of csvi.Config.CellWidth</li>
+<li>Implement csvi.Config.Edit as a function instead of csvi.Config.Main</li>
+</ul>
+</li>
+</ul>
+<h1 id="v191">v1.9.1 <a href="#v191">.</a></h1>
+<p>May.09, 2024</p>
+<ul>
+<li>Fix timing to close the terminal input was incorrect
+(For some reason it hasn't surfaced as a problem)</li>
+</ul>
+<h1 id="v190">v1.9.0 <a href="#v190">.</a></h1>
+<p>May.08, 2024</p>
+<ul>
+<li>Add the option <code>-fixcol</code> that disables keys <code>i</code>,<code>a</code>, and <code>x</code> not to shift columns.</li>
+<li>Move the main function to the sub-package <code>cmd/csvi</code> to be available as a package of Go</li>
+<li>Add the option <code>-readonly</code> that forbide changing the value of cell. When enabled, &quot;q&quot; shutdowns csvi immediately</li>
+</ul>
+<h1 id="v181">v1.8.1 <a href="#v181">.</a></h1>
+<p>Apr.26, 2024</p>
+<ul>
+<li>Fix: crashed on starting <code>csvi</code> with no arguments</li>
+<li>Fix: a cell were not flipped when the cursor was in a cell with no text.</li>
+<li>Fix: the foreground color was not black, but gray.</li>
+<li>Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes <code>foo\r\n</code> when executing <code>echo &quot;foo&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; foo.txt</code></li>
+</ul>
+<h1 id="v180">v1.8.0 <a href="#v180">.</a></h1>
+<p>Apr.24, 2024</p>
+<ul>
+<li>Update the read bytes of the status line 4 times per second.</li>
+<li>Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.</li>
+</ul>
+<h1 id="v171">v1.7.1 <a href="#v171">.</a></h1>
+<p>Apr 16 2024</p>
+<ul>
+<li>Set cursor on or off when yes or no is asked.</li>
+<li>Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.</li>
+</ul>
+<h1 id="v170">v1.7.0 <a href="#v170">.</a></h1>
+<p>Apr 15 2024</p>
+<ul>
+<li>Added the <code>-auto</code> option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.</li>
+<li>Added the <code>-16le</code> and <code>-16be</code> options to force interpretation as UTF-16 little-endian or big-endian encoding, respectively.</li>
+<li><code>-semicolon</code>: Enabled using semicolons as field delimiters (for some European locales that use commas as decimal separators). Considered allowing arbitrary delimiter strings, but decided against it to avoid potential issues.</li>
+<li><code>-nonutf8</code>: Added an option to handle cases where data is incorrectly interpreted as UTF-8 when it is not actually encoded that way.</li>
+<li>Added the <code>-help</code> option to display a list of available options.</li>
+<li>Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.</li>
+</ul>
+<h1 id="v160">v1.6.0 <a href="#v160">.</a></h1>
+<p>Apr 8 2024</p>
+<ul>
+<li>Rename from CSView to CSVI because not a few products that have the same name exist in the same category.</li>
+<li>Previously, users must have waited until all the lines were read, but now users can operate when the first 100 lines are read. The rest lines are read while waiting for key input.</li>
+<li>Improve memory efficiency by holding row data with &quot;container/list&quot; now, those were held with slice.</li>
+<li>Fix: <code>o</code> after <code>&gt;</code>: the last line was joined with the previous line in the saved file.</li>
+<li>Prevent the displayed position from being incorrect even when it contains the character whose width is difficult to judge</li>
+<li>Fix: the problem abortion at starting on Windows 8.1</li>
+<li>Enable to build without <code>env GOEXPERIMENT=rangefunc</code></li>
+<li>Show (CURRENT-COLUMN-POSITION,CURRENT-ROW-POSITION/ALL-READ-ROWS-NUMBER) on the status line.</li>
+</ul>
+<h1 id="v150">v1.5.0 <a href="#v150">.</a></h1>
+<p>Mar 31 2024</p>
+<ul>
+<li>Support UTF16
+<ul>
+<li>Judge the file encoding UTF16 when the first two bytes are <code>\xFE\xFF</code> or <code>\xFF\xFE</code>, or <code>\0</code> is one of the two bytes</li>
+</ul>
+</li>
+</ul>
+<h1 id="v140">v1.4.0 <a href="#v140">.</a></h1>
+<p>Mar 27 2024</p>
+<ul>
+<li>Fix the problem the cache buffer for drawing did not work on v1.3.0</li>
+<li>Set 1 as the default value of <code>-h</code> option and the first line is fixed header on default
+<ul>
+<li>To disable, use <code>-h 0</code></li>
+<li>Change the type <code>uint</code> (unsigned integer)</li>
+</ul>
+</li>
+<li>The width of the cells can be changed with <code>-w uint</code></li>
+<li>Even when the double quotations get redundant as the result to edit, they are not removed now</li>
+<li>When inputting the save filename, the initial position of the cursor is now before the extension</li>
+<li>Modifying the package <code>uncsv</code>
+<ul>
+<li>Rename: <code>(Cell) ReadableSource</code> → <code>(Cell) SourceText()</code></li>
+<li>Implment: <code>(Cell) Source</code> that returns the binary value before decoding</li>
+</ul>
+</li>
+</ul>
+<h1 id="v130">v1.3.0 <a href="#v130">.</a></h1>
+<p>Mar 25 2024</p>
+<ul>
+<li><code>[CRLF]</code> or <code>[LF]</code> in the status line now indicates the line feed code of the current line instead of the representative line feed code of the entire file.</li>
+<li>Rename sub-package: <code>csv</code>(<code>unbreakable-csv</code>) to <code>uncsv</code>(<code>uncsv</code>)</li>
+<li>The first few lines can now be fixed as header lines.(<code>-h int</code>)</li>
+</ul>
+<h1 id="v120">v1.2.0 <a href="#v120">.</a></h1>
+<p>Feb 29 2024</p>
+<ul>
+<li><code>a</code>,<code>o</code>,<code>O</code>: make new cell and repaint before getline is called</li>
+<li>Readline: Ctrl-P: fetch the value of the cell above the same column</li>
+<li>Readline: TAB: complete with the values of the cell above the same column</li>
+<li>In principle, data other than cells changed by the user will remain as they are
+<ul>
+<li>If ByteOrderMark is attached to the beginning of the file, do not delete</li>
+<li>Do not insert ByteOrderMark if there is no BOM at the beginning of the file</li>
+<li>For cells that do not contain line breaks or commas, double quotation marks are not added or deleted , and the current status is kept</li>
+<li>Even if the line break code is different from LF or CRLF for each line, maintain it as much as possible.</li>
+</ul>
+</li>
+<li><code>a</code>: works same as <code>r</code> when the current line is empty</li>
+<li><code>w</code>: support filename completion</li>
+<li>Enabled to specify encoding other than UTF8 with <code>-iana NAME</code> (mainly for Linux)</li>
+<li>Cell source data is now displayed on the status line.</li>
+<li>Draw underline on the modified cells</li>
+<li>Implement <code>&quot;</code>: enclose or remove double quotations if possible</li>
+<li>Implement <code>u</code>: restore the original value of the current cell</li>
+<li>Fix: cell width was incorrect when it contained characters whose widths are ambiguous</li>
+<li>Add key assigns: <code>G</code>:Go to EOF, <code>Enter</code>:go to next line, <code>TAB</code>:go to the rightside cell, <code>Shift</code>+<code>TAB</code>:go to the leftside cell</li>
+</ul>
+<h1 id="v113">v1.1.3 <a href="#v113">.</a></h1>
+<p>Feb 16 2024</p>
+<ul>
+<li>Fix: the attributes of text converted by SKK were incorrect on Windows 8.1</li>
+</ul>
+<h1 id="v112">v1.1.2 <a href="#v112">.</a></h1>
+<p>Oct 01 2023</p>
+<ul>
+<li>Strings being converted with SKK are now displayed as reversed or underlined</li>
+<li>Fix: SKK failed to start when user-jisyo file did not exist</li>
+</ul>
+<h1 id="v111">v1.1.1 <a href="#v111">.</a></h1>
+<p>Sep 20 2023</p>
+<ul>
+<li>Use <code>:</code> for the path list separator instead of <code>;</code> from %GOREADLINESKK% on Linux</li>
+</ul>
+<h1 id="v110">v1.1.0 <a href="#v110">.</a></h1>
+<p>Sep 20 2023</p>
+<ul>
+<li>Backport from <a href="https://github.com/hymkor/lispread">lispread</a>
+<ul>
+<li>Implement 'y'(yank) and 'p'(paste)</li>
+<li>&quot;o&quot; and &quot;O&quot; query the text for the new cell now</li>
+<li>Fix: error was not reported when the specified file is a directory</li>
+<li>When no arguments are given and stdin is terminal, start with 1 cell immidiately</li>
+<li>Support <a href="https://github.com/nyaosorg/go-readline-skk">go-readline-skk</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="v100">v1.0.0 <a href="#v100">.</a></h1>
+<p>Sep 11 2023</p>
+<ul>
+<li>Fix for the the imcompatibility between v0.8.3 and v0.14.0 of go-readline-ny</li>
+</ul>
+<h1 id="v062">v0.6.2 <a href="#v062">.</a></h1>
+<p>Nov 23 2022</p>
+<ul>
+<li>Fix: (#3) Too long field breaks the screen layout</li>
+</ul>
+<h1 id="v061">v0.6.1 <a href="#v061">.</a></h1>
+<p>Feb 19 2022</p>
+<ul>
+<li>Display [TSV],[CSV],[LF],[CRLF] on the status line.</li>
+</ul>
+<h1 id="v060">v0.6.0 <a href="#v060">.</a></h1>
+<p>Dec 10 2021</p>
+<ul>
+<li>Change visual:
+<ul>
+<li>Change the field width 12 to 14</li>
+<li>Change the background pattern: blue-ichimatsu -&gt; gray-stripe</li>
+<li>Show all cell string when the rightside cell is empty</li>
+<li>Show <code>[BOM]``[ANSI]</code> marks</li>
+</ul>
+</li>
+<li><code>w</code> can override exist file
+<ul>
+<li>Output with ansi-encoding if input file is encoded by ansi-encoding</li>
+<li>Fix: on Linux, the size of the output was zero bytes</li>
+<li>BOM is restored to the saved file when original file has a BOM</li>
+</ul>
+</li>
+<li>Fix: empty lines in the input data were ignored.</li>
+<li><code>x</code>: assign delete cell same as <code>d</code></li>
+</ul>
+<h1 id="v050">v0.5.0 <a href="#v050">.</a></h1>
+<p>Mar 27 2020</p>
+<ul>
+<li><code>o</code> - append a new line after the current line</li>
+<li><code>O</code> - insert a new line before the current line</li>
+<li><code>D</code> - delete the current line</li>
+</ul>
+<h1 id="v040">v0.4.0 <a href="#v040">.</a></h1>
+<p>Nov 4 2019</p>
+<ul>
+<li>Support window resized</li>
+<li>Implement Ctrl-L repaint</li>
+<li><code>w</code>: (save)
+<ul>
+<li>field separator for output becomes one for input now</li>
+<li>do not overwrite to a existing file</li>
+<li>default fname is args[0] or &quot;-&quot;</li>
+<li>filename '-' means stdout</li>
+</ul>
+</li>
+<li>Use stderr for drawing rather than stdout</li>
+<li><code>q</code>: (quit) ask yes/no</li>
+</ul>
+<h1 id="v030">v0.3.0 <a href="#v030">.</a></h1>
+<p>Nov 2 2019</p>
+<ul>
+<li>Support editing and writing to the file.</li>
+</ul>
+<h1 id="v020">v0.2.0 <a href="#v020">.</a></h1>
+<p>Oct 31 2019</p>
+<ul>
+<li>Implement search command <code>/</code>,<code>?</code>,<code>n</code>,<code>N</code></li>
+</ul>
+<h1 id="v010">v0.1.0 <a href="#v010">.</a></h1>
+<p>Oct 27 2019</p>
+<ul>
+<li>first release</li>
+</ul>
+</div><!-- "main" -->
+</body></html>
