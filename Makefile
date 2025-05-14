@@ -53,4 +53,10 @@ readme:
 	example-into-readme
 	example-into-readme -target README_ja.md
 
-.PHONY: all test dist _dist clean release manifest readme
+docs:
+	goawk "{ gsub(/README_ja/,'index_ja');print }" README.md | minipage -title "\"CSVI\" Terminal CSV Editor" - > docs\index.html
+	goawk "{ gsub(/README/,'index');print }" README_ja.md | minipage -title "\"CSVI\" Terminal CSV Editor" - > docs\index_ja.html
+	minipage -title "\"CSVI\" Release notes" release_note_en.md > docs\release_note_en.html
+	minipage -title "\"CSVI\" Release notes" release_note_ja.md > docs\release_note_ja.html
+
+.PHONY: all test dist _dist clean release manifest readme docs
