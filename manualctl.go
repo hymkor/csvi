@@ -55,17 +55,21 @@ func (m _ManualCtl) GetKey() (string, error) {
 
 var predictColor = [...]string{"\x1B[3;22;34m", "\x1B[23;39m"}
 
-var skkInit = sync.OnceFunc(func() {
-	env := os.Getenv("GOREADLINESKK")
-	if env != "" {
-		_, err := skk.Config{
-			MiniBuffer: skk.MiniBufferOnCurrentLine{},
-		}.SetupWithString(env)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
+var skkInitOnce sync.Once
+
+func skkInit() {
+	skkInitOnce.Do(func() {
+		env := os.Getenv("GOREADLINESKK")
+		if env != "" {
+			_, err := skk.Config{
+				MiniBuffer: skk.MiniBufferOnCurrentLine{},
+			}.SetupWithString(env)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err.Error())
+			}
 		}
-	}
-})
+	})
+}
 
 func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candidate) (string, error) {
 	skkInit()
