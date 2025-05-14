@@ -13,7 +13,7 @@ require (
 	github.com/nyaosorg/go-readline-ny v1.9.0
 	github.com/nyaosorg/go-readline-skk v0.5.0
 	github.com/nyaosorg/go-windows-mbcs v0.4.3
-	golang.org/x/text v0.25.0
+	golang.org/x/text v0.22.0
 )
 
 require (
