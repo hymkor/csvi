@@ -204,3 +204,14 @@ Release Note
 
 - [English](./release_note_en.md)
 - [Japanese](./release_note_ja.md)
+
+Acknowledgements
+----------------
+
+- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) #1
+- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) #4
+
+Author
+------
+
+- [hymkor (HAYAMA Kaoru)](https://github.com/hymkor)
