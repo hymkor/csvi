@@ -28,6 +28,8 @@ dist:
 	$(SET) "GOOS=linux" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 	$(SET) "GOOS=windows" && $(SET) "GOARCH=386"   && $(MAKE) _dist
 	$(SET) "GOOS=windows" && $(SET) "GOARCH=amd64" && $(MAKE) _dist
+	$(SET) "GOOS=darwin" && $(SET) "GOARCH=amd64"  && $(MAKE) _dist
+	$(SET) "GOOS=darwin" && $(SET) "GOARCH=arm64"  && $(MAKE) _dist
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
