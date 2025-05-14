@@ -1,3 +1,7 @@
+v1.13.0
+=======
+May 14, 2025
+
 ## 🚀 Experimental Release for macOS Users
 
 This release includes a **macOS build for the first time**!
