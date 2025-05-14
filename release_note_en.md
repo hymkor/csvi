@@ -1,4 +1,15 @@
-* Enable displaying a title row above the header row (`-title` option)
+## 🚀 Experimental Release for macOS Users
+
+This release includes a **macOS build for the first time**!
+
+We don't have access to a macOS environment, so we can't test it ourselves.
+If you're a macOS user and willing to help, **please try it and report back** through GitHub Issues or Discussions.
+
+Thank you for your support!
+
+## Other changes
+
+- Added `-title` option to display a title row above the header row.
 
 v1.12.0
 =======
