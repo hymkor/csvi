@@ -210,6 +210,7 @@ Acknowledgements
 
 - [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) [#1](https://github.com/hymkor/csvi/issues/1)
 - [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) [#4](https://github.com/hymkor/csvi/issues/4)
+- [rinodrops (Rino)](https://github.com/rinodrops) [#5](https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997)
 
 Author
 ------
