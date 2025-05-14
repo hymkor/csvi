@@ -201,8 +201,12 @@ func newView() *_View {
 }
 
 func (v *_View) clearCache() {
-	clear(v.headCache)
-	clear(v.bodyCache)
+	for k := range v.headCache {
+		delete(v.headCache, k)
+	}
+	for k := range v.bodyCache {
+		delete(v.bodyCache, k)
+	}
 }
 
 func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth func(int) int, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
