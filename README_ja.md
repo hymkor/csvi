@@ -1,29 +1,39 @@
-"CSVI" - Terminal CSV Editor
+"CSVI" - ターミナル用CSVエディタ
 ============================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
-[&lt;English&gt;](./README.md) / **&lt;Japanese&gt;**
+[\<English\>](./README.md) / **<Japanese>**
 
-- *同分野に同名の製品が比較的多いため、1.6.0 より CSView は CSVI に改名しました。*
+> *同分野に同名の製品が比較的多いため、バージョン 1.6.0 より CSView は CSVI に改名しました。*
 
-CSVI はLinux やWindows のターミナル用の CSV エディタです。
-次のような特徴があります。
+**CSVI** は、Linux や Windows のターミナル上で動作する CSV エディタです。
 
-- セル選択は vi 風、セル編集は Emacs 風のキー操作
-- ファイル / 標準入力両方からの読み取りに対応
-- すばやく起動し、データをバックグランドで読み込み
-- 修正されたセルには下線を表示
-    - １キー(`u`) でセルを加筆前の状態に戻すことが可能
-- ユーザが修正していないセルは極力元々の表現を維持するようにする
-    - 改行やカンマを含まないセルでの、二重引用符の有無
-    - 各行ごとに LF と CRLF の違い
-    - ファイルの先頭に BOM の有無
-    - 二重引用符などをデコードする前の表現、文字コード、改行コード、区切り文字などを最下行に表示
-- 様々な文字コードをサポート
-    - UTF8 (default)
-    - UTF16
-    - Windows のコードページ (自動判別)
-    - [IANA registry] (-iana NAME) で指定されるエンコーディング
+### &#x2728; 主な特徴
+
+- **保存時の差分が最小**  
+  編集していないセルは、元のテキストの表現（改行コード、二重引用符、BOM、エンコーディング、区切り文字など）を極力維持します。  
+  そのため、本当に加えた変更だけが差分として現れます。実データを安全に編集したい場合に最適です。
+
+- **vi風のカーソル移動、Emacs風のセル編集**  
+  `h/j/k/l` などで移動、`Ctrl` 系のキーで編集できます。
+
+- **ファイル／標準入力の両方に対応**  
+  CSVファイルを直接開くだけでなく、パイプ経由のデータも読み込めます。
+
+- **高速な起動とバックグラウンド読込**  
+  ファイルをすばやく開きつつ、読み込み処理は裏で進行します。
+
+- **変更の視覚的な表示**  
+  編集したセルには下線が表示され、`u`キーで変更前の状態に戻せます。
+
+- **元データの構文情報を表示**  
+  引用符の有無、区切り文字、文字コードなどの詳細を、画面最下行に表示します。
+
+- **多様な文字コードのサポート**  
+  - UTF-8（デフォルト）  
+  - UTF-16  
+  - Windows の現在のコードページ（自動検出）  
+  - [IANA registry] に登録された任意のエンコーディング（`-iana NAME` で指定）
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -44,7 +54,7 @@ Install
 go install github.com/hymkor/csvi@latest
 ```
 
-### scoop インストーラーを使う場合
+### scoop インストーラーを使う場合 (Windowsのみ)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
@@ -96,7 +106,7 @@ Options
     * `h`,`Ctrl`-`B`,`←`,`Shift`-`TAB` (左)
     * `j`,`Ctrl`-`N`,`↓`,`Enter` (下)
     * `k`,`Ctrl`-`P`,`↑` (上)
-    * `l`,`Ctrl`-`F`,`←`,`TAB` (右)
+    * `l`,`Ctrl`-`F`,`→`,`TAB` (右)
     * `<` (ファイル先頭)
     * `>`,`G` (ファイル末尾)
     * `0`,`^`,`Ctrl`-`A` (行頭)
@@ -132,6 +142,9 @@ Readline with SKK[^SKK]
     - (example) `set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo`
 - Linux
     - `export GOREADLINE=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH`
+
+(注: `~` はWindowsでも`cmd.exe`内であってもアプリ側で %USERPROFILE% へ自動で展開します)
+
 
 [^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editor.
 

@@ -2,28 +2,39 @@
 ============================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
-**&lt;English&gt;** / [&lt;Japanese&gt;](./README_ja.md)
+**\<English\>** / [\<Japanese\>](./README_ja.md)
 
-- *Since the version 1.6.0, CSView is renamed to CSVI because not a few products that have the same name exist in the same category.*
+> *As of version 1.6.0, CSView has been renamed to CSVI to avoid conflicts with other tools using the same name.*
 
-CSVI is the CSV editor that runs on the terminal of Linux and Windows.
-Here are some key features:
+**CSVI** is a terminal-based CSV editor for Linux and Windows.
 
-- Keybinding: vi-like on moving cursor and Emacs-like on editing cell
-- It reads the data from both file and standard-input
-- Start quickly and load data in the background
-- Modified cells are displayed with underline
-    - With one key `u`, original value before modifying can be restored
-- Non-user-modified cells retain their original values
-    - Enclosing double quotations or not of the cell value that contains neither commas nor line breaks
-    - LF or CRLF for line breaks
-    - BOM of the beginning of files
-    - The representation before decoding double quotations, encoding, field and record sperators and so on are displayed on the bottom line
-- CSVI supports the following encodings:
-    - UTF8 (default)
-    - UTF16
-    - Current codepage on Windows (automatically detected)
-    - Encodings specified by the [IANA registry] (-iana NAME)
+### &#x2728; Key Features
+
+- **Minimal changes on save**  
+  CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
+  Only actual edits are saved—making it ideal for clean diffs and safe edits to production data.
+
+- **vi-style and Emacs-style keybindings**  
+  Move the cursor like in vi, and edit cells like in Emacs.
+
+- **Reads from both file and standard input**  
+  You can pipe CSV data into CSVI or open a file directly.
+
+- **Fast startup and background loading**  
+  Opens large files quickly without blocking the interface.
+
+- **Visual feedback for edits**  
+  Modified cells are underlined.  
+  Press `u` to undo a cell's change and restore its original value.
+
+- **Shows original format details**  
+  The bottom line of the screen shows technical info: quoting, encoding, field separators, and more—just as they appeared in the original file.
+
+- **Flexible encoding support**  
+  - UTF-8 (default)  
+  - UTF-16  
+  - Current Windows code page (auto-detected)  
+  - Any encoding from the [IANA registry] using `-iana NAME`
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -44,7 +55,7 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
-### Use scoop-installer
+### Use scoop-installer (Windows only)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
@@ -83,7 +94,7 @@ Options
 * `-auto string` auto pilot (for testcode)
 * `-nonutf8` do not judge as UTF-8
 * `-w widths` set the widths of cells (e.g., `-w 14,0:10,1:20` to set the first column to 10 characters wide, the second column to 20 characters wide, and all others to 14 characters wide)
-* `-fixcol` forbide the insert or delete the cell (disable `i`, `a` and `x`)
+* `-fixcol` forbid insertion or deletion of cells (disables `i`, `a`, and `x`)
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
 
@@ -96,7 +107,7 @@ Key-binding
     * `h`,`Ctrl`-`B`,`←`,`Shift`-`TAB` (move cursor left)
     * `j`,`Ctrl`-`N`,`↓`,`Enter` (move cursor down)
     * `k`,`Ctrl`-`P`,`↑` (move cursor up)
-    * `l`,`Ctrl`-`F`,`←`,`TAB` (move cursor right)
+    * `l`,`Ctrl`-`F`,`→`,`TAB` (move cursor right)
     * `<` (move the beginning of file)
     * `>`,`G` (move the end of file)
     * `0`,`^`,`Ctrl`-`A` (move the beginning of the current line)
@@ -133,12 +144,14 @@ When the environment variable GOREADLINESKK is defined, [go-readline-skk] is use
 - Linux
     - `export GOREADLINE=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH`
 
+(Note: `~` is automatically expanded to `%USERPROFILE%` on Windows, even in `cmd.exe`.)
+
 [^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editor.
 
 [go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
-Use as a package
-----------------
+Use as a Go package
+-------------------
 
 ```example.go
 package main
