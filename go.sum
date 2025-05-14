@@ -16,8 +16,8 @@ github.com/nyaosorg/go-readline-ny v1.9.1 h1:TpQyXaNWtCN0TCRgUbGLMN8rKoPiwh2Xq58
 github.com/nyaosorg/go-readline-ny v1.9.1/go.mod h1:54AzdC//M5EzTWRdvUHv2ChuYgp58mRrStTlpxiCmT0=
 github.com/nyaosorg/go-readline-skk v0.5.0 h1:+YWtmWveOV2ovchQAP3AHdTa9yfd9rbFn+/ZyqEfw18=
 github.com/nyaosorg/go-readline-skk v0.5.0/go.mod h1:Fe48AMXOmzDXIz9wDu+BnfnALnrZrU1deema5D70sTA=
-github.com/nyaosorg/go-windows-mbcs v0.4.3 h1:4/qX+VhzvpINp4ptREYgTunMzIRBEasXsZL8uV4JhY4=
-github.com/nyaosorg/go-windows-mbcs v0.4.3/go.mod h1:80D9r2RNEPG2STQVD5tsgGB/SNkT6HS0ZlKufUn/F70=
+github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=
+github.com/nyaosorg/go-windows-mbcs v0.4.4/go.mod h1:P610Wyc6LcgDbx2VZhwUQn02XRuwjqGK2l/3wox3auA=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
