@@ -6,7 +6,9 @@
 
 > *As of version 1.6.0, CSView has been renamed to CSVI to avoid conflicts with other tools using the same name.*
 
-**CSVI** is a terminal-based CSV editor for Linux and Windows.
+**CSVI** is a terminal-based CSV editor for Linux and Windows.  
+macOS is also supported experimentally, as the developer does not have direct access to a macOS environment.  
+→ You can try it from [v1.13.0](https://github.com/hymkor/csvi/releases/tag/v1.13.0)
 
 ### &#x2728; Key Features
 
@@ -48,6 +50,9 @@ Install
 ### Manual Installation
 
 Download the binary package from [Releases](https://github.com/hymkor/csvi/releases) and extract the executable.
+
+> ⚠️ Note: The macOS build is experimental and not yet tested.
+> Please let us know if you encounter any issues!
 
 ### Use "go install"
 

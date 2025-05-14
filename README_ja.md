@@ -7,6 +7,7 @@
 > *同分野に同名の製品が比較的多いため、バージョン 1.6.0 より CSView は CSVI に改名しました。*
 
 **CSVI** は、Linux や Windows のターミナル上で動作する CSV エディタです。
+( macOS でも動作するはずですが、検証環境が開発側にないため、実験的なサポート状態です →サポートバージョン: [v1.13.0](https://github.com/hymkor/csvi/releases/tag/v1.13.0) )
 
 ### &#x2728; 主な特徴
 
@@ -47,6 +48,9 @@ Install
 ### Manual Installation
 
 [Releases](https://github.com/hymkor/csvi/releases) よりバイナリパッケージをダウンロードして、実行ファイルを展開してください
+
+> ⚠️ Note: macOS用バイナリは実験的ビルドで、検証できていません。
+> もし何らかの問題を確認されましたらお知らせください！
 
 ### "go install" を使う場合
 
