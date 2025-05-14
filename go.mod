@@ -1,8 +1,6 @@
 module github.com/hymkor/csvi
 
-go 1.23.0
-
-toolchain go1.24.3
+go 1.20
 
 require (
 	github.com/hymkor/go-cursorposition v0.0.3
