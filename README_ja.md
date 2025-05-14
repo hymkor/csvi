@@ -2,7 +2,7 @@
 ============================
 [![GoDev](https://pkg.go.dev/badge/github.com/hymkor/csvi)](https://pkg.go.dev/github.com/hymkor/csvi)
 
-[\<English\>](./README.md) / **<Japanese>**
+[\<English\>](./README.md) / **\<Japanese\>**
 
 > *同分野に同名の製品が比較的多いため、バージョン 1.6.0 より CSView は CSVI に改名しました。*
 
