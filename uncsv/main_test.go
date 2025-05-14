@@ -2,6 +2,7 @@ package uncsv
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"strings"
 	"testing"
@@ -76,4 +77,22 @@ func TestDeleteWithBom(t *testing.T) {
 	upd(t, "\uFEFF123,456,789\r\nXYZ", "\uFEFF456,789\r\nXYZ", func(r []Row, m *Mode) {
 		r[0].Delete(0)
 	})
+}
+
+func TestSlicesInsert(t *testing.T) {
+	source := []byte{1, 2, 3, 4}
+	result := slicesInsert(source, 2, 7)
+	expect := []byte{1, 2, 7, 3, 4}
+	if !bytes.Equal(expect, result) {
+		t.Fatal()
+	}
+}
+
+func TestSlicesDelete(t *testing.T) {
+	source := []byte{1, 2, 3, 4}
+	result := slicesDelete(source, 1, 3)
+	expect := []byte{1, 4}
+	if !bytes.Equal(expect, result) {
+		t.Fatal()
+	}
 }

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -412,7 +411,7 @@ func newCell(text string, mode *Mode) Cell {
 	}
 	if quote {
 		source = append(source, '"')
-		source = slices.Insert(source, 0, '"')
+		source = slicesInsert(source, 0, '"')
 	}
 	if mode.NonUTF8 {
 		if s, err := mode._encode(string(source)); err == nil {
@@ -449,7 +448,7 @@ func NewRow(mode *Mode) Row {
 }
 
 func (row *Row) Insert(i int, text string, mode *Mode) {
-	row.Cell = slices.Insert(row.Cell, i, newCell(text, mode))
+	row.Cell = slicesInsert(row.Cell, i, newCell(text, mode))
 }
 
 func (row *Row) Replace(i int, text string, mode *Mode) {
@@ -459,5 +458,17 @@ func (row *Row) Replace(i int, text string, mode *Mode) {
 }
 
 func (row *Row) Delete(i int) {
-	row.Cell = slices.Delete(row.Cell, i, i+1)
+	row.Cell = slicesDelete(row.Cell, i, i+1)
+}
+
+func slicesInsert[T any](array []T, at int, val T) []T {
+	array = append(array, val)
+	copy(array[at+1:], array[at:])
+	array[at] = val
+	return array
+}
+
+func slicesDelete[T any](array []T, from int, to int) []T {
+	copy(array[from:], array[to:])
+	return array[:len(array)-(to-from)]
 }
