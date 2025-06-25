@@ -18,7 +18,7 @@ Write-Output "third" | Out-File $source3path
 $resultPath = [System.IO.Path]::GetTempFileName() + ".csv"
 Write-Host ("output-file: {0}" -f $resultPath)
 
-csvi -auto "w|$resultPath|q|y" $source1path $source2path $source3path
+..\csvi -auto "w|$resultPath|q|y" $source1path $source2path $source3path
 
 $expect = "first`r`nsecond`r`nthird`r`n"
 $result = ( Get-Content $resultPath -Raw)
