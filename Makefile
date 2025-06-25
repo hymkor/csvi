@@ -66,4 +66,11 @@ docs:
 	minipage -title "\"CSVI\" Release notes" release_note_en.md > docs\release_note_en.html
 	minipage -title "\"CSVI\" Release notes" release_note_ja.md > docs\release_note_ja.html
 
+get:
+	$(GO) get -u
+	$(GO) get golang.org/x/sys@v0.30.0
+	$(GO) get golang.org/x/text@v0.22.0
+	$(GO) get golang.org/x/term@v0.29.0 
+	$(GO) mod tidy
+
 .PHONY: all test dist _dist clean release manifest readme docs
