@@ -24,7 +24,7 @@ EXE:=$(shell $(GO) env GOEXE)
 all:
 	$(GO) fmt ./...
 	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT)
-	$(SET) "CGO_ENABLED=0" && pushd "cmd/csvi" && $(GO) build -o "$(CURDIR)" $(GOOPT) && popd
+	$(SET) "CGO_ENABLED=0" && cd "cmd/csvi" && $(GO) build -o "$(CURDIR)" $(GOOPT) && cd "../.."
 
 _dist:
 	$(MAKE) all
