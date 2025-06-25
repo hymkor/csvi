@@ -1,3 +1,5 @@
+* Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
+
 v1.13.0
 =======
 May 14, 2025
