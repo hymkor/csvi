@@ -661,6 +661,25 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				cursorRow = r
 				cursorCol = c
+			case "*", "#":
+				view.clearCache()
+				if ch == "*" || ch == "#" {
+					lastWord = cursorRow.Cell[cursorCol].Text()
+				}
+				if ch == "*" {
+					lastSearch = searchExactForward
+					lastSearchRev = searchExactBackward
+				} else {
+					lastSearch = searchExactBackward
+					lastSearchRev = searchExactForward
+				}
+				r, c := lastSearch(cursorRow, cursorCol, lastWord)
+				if r == nil {
+					message = fmt.Sprintf("%s: not found", lastWord)
+					break
+				}
+				cursorRow = r
+				cursorCol = c
 			case "/", "?":
 				var err error
 				view.clearCache()

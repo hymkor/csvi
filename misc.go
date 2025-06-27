@@ -116,11 +116,43 @@ func searchForward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
 	return nil, c
 }
 
+func searchExactForward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
+	c++
+	for cursor != nil {
+		for c < len(cursor.Cell) {
+			if strings.EqualFold(cursor.Cell[c].Text(), target) {
+				return cursor, c
+			}
+			c++
+		}
+		cursor = cursor.Next()
+		c = 0
+	}
+	return nil, c
+}
+
 func searchBackward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
 	c--
 	for {
 		for c >= 0 {
 			if strings.Contains(cursor.Cell[c].Text(), target) {
+				return cursor, c
+			}
+			c--
+		}
+		cursor = cursor.Prev()
+		if cursor == nil {
+			return nil, c
+		}
+		c = len(cursor.Cell) - 1
+	}
+}
+
+func searchExactBackward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
+	c--
+	for {
+		for c >= 0 {
+			if strings.EqualFold(cursor.Cell[c].Text(), target) {
 				return cursor, c
 			}
 			c--
