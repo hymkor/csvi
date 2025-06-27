@@ -118,10 +118,12 @@ Key-binding
     * `0`,`^`,`Ctrl`-`A` (move the beginning of the current line)
     * `$`,`Ctrl`-`E` (move the end of the current line)
 * Search
-    * `/` (search forward)
-    * `?` (search backward)
-    * `n` (search next)
-    * `N` (search next reverse)
+    * `/` (search forward for a partial match)
+    * `?` (search backward for a partial match)
+    * `n` (repeat the previous search forward)
+    * `N` (repeat the previous search backward)
+    * `*` (search forward for the next cell that exactly matches the current one)
+    * `#` (search backward for the previous cell that exactly matches the current one)
 * Edit
     * `i` (insert a new cell before the current one)
     * `a` (append a new cell after the current one)
