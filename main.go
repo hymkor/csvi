@@ -316,7 +316,7 @@ type Pilot interface {
 	Size() (int, int, error)
 	Calibrate() error
 	GetKey() (string, error)
-	ReadLine(io.Writer, string, string, Candidate) (string, error)
+	ReadLine(out io.Writer, prompt, defaultText string, c Candidate) (string, error)
 	GetFilename(io.Writer, string, string) (string, error)
 	Close() error
 }
@@ -592,6 +592,22 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		} else {
 			switch ch {
 			case keys.CtrlL:
+				view.clearCache()
+			case "L":
+				newEncoding, err := pilot.ReadLine(out, "This will discard all unsaved changes. Switch encoding to:", "", nil)
+				if err != nil {
+					message = err.Error()
+					break
+				}
+				if err := mode.SetEncoding(newEncoding); err != nil {
+					message = err.Error()
+					break
+				}
+				mode.NonUTF8 = true
+				cfg.Mode = mode
+				for p := app.Front(); p != nil; p = p.Next() {
+					p.Restore(mode)
+				}
 				view.clearCache()
 			case "q", keys.Escape:
 				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {

@@ -461,6 +461,13 @@ func (row *Row) Delete(i int) {
 	row.Cell = slicesDelete(row.Cell, i, i+1)
 }
 
+func (row *Row) Restore(mode *Mode) {
+	for i, c := range row.Cell {
+		c.Restore(mode)
+		row.Cell[i] = c
+	}
+}
+
 func slicesInsert[T any](array []T, at int, val T) []T {
 	array = append(array, val)
 	copy(array[at+1:], array[at:])
