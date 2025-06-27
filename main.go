@@ -594,7 +594,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			case keys.CtrlL:
 				view.clearCache()
 			case "L":
-				newEncoding, err := pilot.ReadLine(out, "This will discard all unsaved changes. Switch encoding to:", "", nil)
+				newEncoding, err := pilot.ReadLine(out, "This will discard all unsaved changes. Switch encoding to:", "", ianaNames)
 				if err != nil {
 					message = err.Error()
 					break
