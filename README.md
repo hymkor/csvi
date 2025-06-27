@@ -135,6 +135,7 @@ Key-binding
     * `u` (restore the original value of the current cell)
     * `y` (copy the value of the current cell to kill-buffer)
     * `p` (paste the value of kill-buffer to the current cell)
+* `L` (reload the file using a specified encoding)
 * Repaint: `Ctrl`-`L`
 * Quit: `q` or `ESC`
 
