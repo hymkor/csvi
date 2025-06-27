@@ -1,6 +1,7 @@
 * Added `L` (Shift-L) command to reload the file using a specified encoding to correct detection errors
    - Encoding name completion is supported.
    - UTF-16LE and UTF-16BE are not supported yet.
+* Added search command (`*` and `#`) to find the next occurrence of the current cell's content
 
 v1.13.1
 =======
