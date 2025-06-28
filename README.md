@@ -10,7 +10,7 @@
 macOS is also supported experimentally, as the developer does not have direct access to a macOS environment.  
 → You can try it from [v1.13.0](https://github.com/hymkor/csvi/releases/tag/v1.13.0)
 
-### &#x2728; Key Features
+### &#10024; Key Features
 
 - **Minimal changes on save**  
   CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
@@ -51,7 +51,7 @@ Install
 
 Download the binary package from [Releases](https://github.com/hymkor/csvi/releases) and extract the executable.
 
-> ⚠️ Note: The macOS build is experimental and not yet tested.
+> &#9888;&#65039; Note: The macOS build is experimental and not yet tested.
 > Please let us know if you encounter any issues!
 
 ### Use "go install"
