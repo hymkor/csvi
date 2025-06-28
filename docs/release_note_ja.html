@@ -1106,33 +1106,60 @@
   min-height: 52px;
 }
 
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
 
-	.markdown-body {
-		box-sizing: border-box;
-		max-width: 980px;
-		margin: 0 auto;
-		padding: 45px;
-	}
-	body{
-		display:flex;
-		overflow-y: scroll;
-	}
-	@media screen{
-		div.sidebar{ width:30% }
-		div.main{ width:70% }
-	}
-
-	@media print{
-		div.sidebar,div.footer{ display:none }
-		div.main{ width:100%!}(MISSING)
-	}
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
 
 // -->
-</style></head><body>
+</style>
+</head><body>
 <div class="main markdown-body">
-<h1 id="v1130">v1.13.0 <a href="#v1130">.</a></h1>
+<h1 id="v1140">v1.14.0</h1>
+<p>Jun 2, 2025</p>
+<ul>
+<li>エンコーディングの誤判定を修正するため、指定されたエンコーディングでファイルを再読み込みする <code>L</code> (Shift-L) コマンドを追加
+<ul>
+<li>エンコーディング名の補完に対応</li>
+<li>UTF-16LE および UTF-16BE には未対応</li>
+</ul>
+</li>
+<li>現在カーソルがあるセルの内容で検索するコマンド <code>*</code>, <code>#</code> を追加</li>
+</ul>
+<h1 id="v1131">v1.13.1</h1>
+<p>Jun 25, 2025</p>
+<ul>
+<li>Windows 7,8,2008Server 環境での動作を可能にするため、Go 1.20.14 でビルドできるようにした</li>
+</ul>
+<h1 id="v1130">v1.13.0</h1>
 <p>May 14, 2025</p>
-<h2 id="--macos-">🚀 実験的な macOS 版の公開 <a href="#--macos-">.</a></h2>
+<h2 id="--macos-">🚀 実験的な macOS 版の公開</h2>
 <p>このリリースでは、初めて macOS 向けバイナリを含めています！
 Go 製である本ツールは理論上 macOS でも動作可能ですが、作者自身は macOS を所持しておらず、動作確認ができていません。</p>
 <p>そのため今回は、実験的なプレリリースという形で macOS 版を同梱し、動作確認へのご協力をお願いするものです。</p>
@@ -1141,29 +1168,29 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </blockquote>
 <p>など、Issue でフィードバックをもらえるととても助かります。</p>
 <p>この macOS バイナリは、単に GOOS=darwin としてビルドしたもので、特別な対応は行っていません。今後の正式対応の参考にさせていただきます。</p>
-<h2 id="heading">その他の変更 <a href="#heading">.</a></h2>
+<h2 id="heading">その他の変更</h2>
 <ul>
 <li><code>-title</code> オプションの追加により、ヘッダー行の上にタイトル行を表示できるようにした。</li>
 </ul>
-<h1 id="v1120">v1.12.0 <a href="#v1120">.</a></h1>
+<h1 id="v1120">v1.12.0</h1>
 <p>Oct 8, 2024</p>
 <ul>
 <li><a href="https://github.com/hymkor/csvi/issues/4">#4</a> 列ごとに違う幅を設定できるようにした。例: <code>-w 14,0:10,1:20</code> 1列目は10桁,2列目は20桁,他は14桁とする (Thanks to <a href="https://github.com/kevin-gwyrdh">@kevin-gwyrdh</a>)</li>
 <li>0バイトのファイル(<code>nul</code>,<code>/dev/null</code>)を与えるとクラッシュする不具合を修正</li>
 </ul>
-<h1 id="v1111">v1.11.1 <a href="#v1111">.</a></h1>
+<h1 id="v1111">v1.11.1</h1>
 <p>(2024.10.07)</p>
 <ul>
 <li>現行セルの元の値が空の時、予測表示が始まらない問題を修正</li>
 <li><code>a</code> でセル値を挿入する際、予測候補の検索先が一つ右の列にズレていた不具合を修正</li>
 </ul>
-<h1 id="v1110">v1.11.0 <a href="#v1110">.</a></h1>
+<h1 id="v1110">v1.11.0</h1>
 <p>(2024.10.06)</p>
 <ul>
 <li>セル編集中に、同じ列で現在入力中のテキストを含むセルのテキストを候補として自動的に表示し、→ もしくは Ctrl-F で採用できるようにした (<code>→</code> もしくは <code>Ctrl-F</code> で予測結果を採用する) <a href="https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0">go-readline-ny v1.5.0</a></li>
 <li>SKK入力で半角カナ入力をサポート(SKKのかな入力モードで<code>Ctrl-Q</code>を押下する) <a href="https://github.com/nyaosorg/go-readline-skk/releases/tag/v0.4.0">go-readline-skk v0.4.0</a></li>
 </ul>
-<h1 id="v1101">v1.10.1 <a href="#v1101">.</a></h1>
+<h1 id="v1101">v1.10.1</h1>
 <p>(2024.06.10)</p>
 <ul>
 <li>パッケージ修正
@@ -1172,7 +1199,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v1100">v1.10.0 <a href="#v1100">.</a></h1>
+<h1 id="v1100">v1.10.0</h1>
 <p>(2024.06.02)</p>
 <ul>
 <li>カラム数固定(<code>-fixcol</code>)の時
@@ -1191,7 +1218,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v195">v1.9.5 <a href="#v195">.</a></h1>
+<h1 id="v195">v1.9.5</h1>
 <p>(2024.05.27)</p>
 <ul>
 <li>パッケージ修正
@@ -1201,7 +1228,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v194">v1.9.4 <a href="#v194">.</a></h1>
+<h1 id="v194">v1.9.4</h1>
 <p>(2024.05.26)</p>
 <ul>
 <li>v1.9.3 で入力がゼロ行の時にクラッシュする問題を修正 (実行ファイルは未リリース)</li>
@@ -1213,7 +1240,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v193">v1.9.3 <a href="#v193">.</a></h1>
+<h1 id="v193">v1.9.3</h1>
 <p>(2024.05.17)</p>
 <ul>
 <li>パッケージ修正
@@ -1222,7 +1249,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v192">v1.9.2 <a href="#v192">.</a></h1>
+<h1 id="v192">v1.9.2</h1>
 <p>(2024.05.12)</p>
 <ul>
 <li>パッケージ修正
@@ -1232,20 +1259,20 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v191">v1.9.1 <a href="#v191">.</a></h1>
+<h1 id="v191">v1.9.1</h1>
 <p>(2024.05.09)</p>
 <ul>
 <li>端末入力(go-tty)のクローズタイミングがおかしかった点を修正
 (なぜか問題として表面化していない)</li>
 </ul>
-<h1 id="v190">v1.9.0 <a href="#v190">.</a></h1>
+<h1 id="v190">v1.9.0</h1>
 <p>(2024.05.08)</p>
 <ul>
 <li>列をズレさせないよう、<code>i</code>,<code>a</code>,<code>x</code> などを無効にする オプション <code>-fixcol</code> を追加</li>
 <li>Goパッケージとして利用できるよう、main 関数を<code>cmd/main</code> へ移動</li>
 <li>セルの変更を禁止する <code>-readonly</code> オプションの追加。この時は &quot;q&quot; で確認プロンプトは出さない</li>
 </ul>
-<h1 id="v181">v1.8.1 <a href="#v181">.</a></h1>
+<h1 id="v181">v1.8.1</h1>
 <p>(2024.04.26)</p>
 <ul>
 <li>引数なしで <code>csvi</code> を起動すると落ちる問題を修正</li>
@@ -1253,19 +1280,19 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <li>カーソルの文字色が黒ではなく灰色になっていた不具合を修正</li>
 <li><code>echo &quot;foo&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; foo.txt</code> で foo.txt が <code>foo\r\n</code> になるように、引数ゼロ時の標準出力と標準エラー出力の使い分けを変更した。</li>
 </ul>
-<h1 id="v180">v1.8.0 <a href="#v180">.</a></h1>
+<h1 id="v180">v1.8.0</h1>
 <p>(2024.04.24)</p>
 <ul>
 <li>ステータスラインの読み込み済み行数を毎秒4回更新するようにした</li>
 <li>遅い端末向けに、ERASELINE(ESC[K) を出力する回数を削減して、表示更新速度を改善</li>
 </ul>
-<h1 id="v171">v1.7.1 <a href="#v171">.</a></h1>
+<h1 id="v171">v1.7.1</h1>
 <p>(2024.04.16)</p>
 <ul>
 <li>Yes/No を問い合わせる時、カーソルを On/Off するようにした。</li>
 <li>長い行から短い行に移動した後のカーソル位置が無効になることがあり、編集するとクラッシュする不具合(v1.6.0-)を修正</li>
 </ul>
-<h1 id="v170">v1.7.0 <a href="#v170">.</a></h1>
+<h1 id="v170">v1.7.0</h1>
 <p>(2024.04.15)</p>
 <ul>
 <li>Expect-Lua がなくても自動テストできるようにするためのオプション <code>-auto</code> を追加。これを使って、テスト用プログラムを全部 PowerShell で書き直した。テストで nkf32 も不要になった。</li>
@@ -1275,7 +1302,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <li>オプション一覧を表示する<code>-help</code>オプションを追加</li>
 <li>UTF16 かどうかを判断する先読みバイト数を10バイトに拡大</li>
 </ul>
-<h1 id="v160">v1.6.0 <a href="#v160">.</a></h1>
+<h1 id="v160">v1.6.0</h1>
 <p>(2024.04.08)</p>
 <ul>
 <li>同分野に同名の製品が比較的多いため、CSView より CSVI に改名した</li>
@@ -1287,7 +1314,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <li><code>env GOEXPERIMENT=rangefunc</code> がなくともビルドできるようにした</li>
 <li>ステータスラインに (現在の桁位置,現在の行位置/読み込み済み全行数) を表示させるようにした</li>
 </ul>
-<h1 id="v150">v1.5.0 <a href="#v150">.</a></h1>
+<h1 id="v150">v1.5.0</h1>
 <p>(2024.03.31)</p>
 <ul>
 <li>UTF16 をサポート
@@ -1296,7 +1323,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v140">v1.4.0 <a href="#v140">.</a></h1>
+<h1 id="v140">v1.4.0</h1>
 <p>(2024.03.27)</p>
 <ul>
 <li>v1.3.0 で画面の表示キャッシュがうまく効いていなかった不具合を修正</li>
@@ -1316,14 +1343,14 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v130">v1.3.0 <a href="#v130">.</a></h1>
+<h1 id="v130">v1.3.0</h1>
 <p>(2024.03.25)</p>
 <ul>
 <li>ステータスラインの <code>[CRLF]</code> <code>[LF]</code> はファイル全体の代表改行コードではなく、現在の行の改行コードを示すようにした。</li>
 <li>サブパッケージをリネーム: <code>csv</code>(<code>unbreakable-csv</code>) to <code>uncsv</code>(<code>uncsv</code>)</li>
 <li>最初の数行をヘッダー行として固定できるようにした(<code>-h int</code>)</li>
 </ul>
-<h1 id="v120">v1.2.0 <a href="#v120">.</a></h1>
+<h1 id="v120">v1.2.0</h1>
 <p>(2024.02.29)</p>
 <ul>
 <li><code>a</code>, <code>o</code>, <code>O</code>: 入力前に新セルを確保して、画面を再表示するようにした</li>
@@ -1347,23 +1374,23 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <li>幅があいまいな文字が含まれている場合、セルの幅が正しくなくなる不具合を修正</li>
 <li><code>G</code>:EOFへ移動, <code>Enter</code>:次の行へ, <code>TAB</code>:右の列へ, <code>Shift</code>+<code>TAB</code>:左の列へ移動を追加</li>
 </ul>
-<h1 id="v113">v1.1.3 <a href="#v113">.</a></h1>
+<h1 id="v113">v1.1.3</h1>
 <p>(2024.02.16)</p>
 <ul>
 <li>Windows 8.1 で、SKK変換しているテキストの表示属性がおかしくなる不具合を修正</li>
 </ul>
-<h1 id="v112">v1.1.2 <a href="#v112">.</a></h1>
+<h1 id="v112">v1.1.2</h1>
 <p>(2023.10.01)</p>
 <ul>
 <li>SKKで変換中の文字列を反転や下線で表示するようにした</li>
 <li>ユーザ辞書ファイルが存在しない時、SKKが起動に失敗する不具合を修正</li>
 </ul>
-<h1 id="v111">v1.1.1 <a href="#v111">.</a></h1>
+<h1 id="v111">v1.1.1</h1>
 <p>(2023.09.20)</p>
 <ul>
 <li>Linux では GOREADLINESKK での区切り文字で <code>;</code> のかわりに <code>:</code> を使うようにした</li>
 </ul>
-<h1 id="v110">v1.1.0 <a href="#v110">.</a></h1>
+<h1 id="v110">v1.1.0</h1>
 <p>(2023.09.20)</p>
 <ul>
 <li><a href="https://github.com/hymkor/lispread">lispread</a> からバックポート
@@ -1376,22 +1403,22 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </ul>
 </li>
 </ul>
-<h1 id="v100">v1.0.0 <a href="#v100">.</a></h1>
+<h1 id="v100">v1.0.0</h1>
 <p>(2023.09.11)</p>
 <ul>
 <li>go-readline-ny v0.8.3-v0.14.0 間の非互換性向け修正</li>
 </ul>
-<h1 id="v062">v0.6.2 <a href="#v062">.</a></h1>
+<h1 id="v062">v0.6.2</h1>
 <p>(2022.11.23)</p>
 <ul>
 <li>(#3) フィールドが長いと画面が崩れる不具合を修正</li>
 </ul>
-<h1 id="v061">v0.6.1 <a href="#v061">.</a></h1>
+<h1 id="v061">v0.6.1</h1>
 <p>(2022.02.19)</p>
 <ul>
 <li>ステータスラインに [TSV],[CSV],[LF],[CRLF] などを表示するようにした</li>
 </ul>
-<h1 id="v060">v0.6.0 <a href="#v060">.</a></h1>
+<h1 id="v060">v0.6.0</h1>
 <p>(2021.12.10)</p>
 <ul>
 <li>表示を改善
@@ -1412,14 +1439,14 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <li>入力データ中の空行が無視されてしまう問題を修正</li>
 <li><code>x</code>: <code>d</code>と同様に削除をアサイン</li>
 </ul>
-<h1 id="v050">v0.5.0 <a href="#v050">.</a></h1>
+<h1 id="v050">v0.5.0</h1>
 <p>(2020.3.27)</p>
 <ul>
 <li><code>o</code> - カーソルの下に行追加</li>
 <li><code>O</code> - カーソルの上に行挿入</li>
 <li><code>D</code> - カーソル上の行を削除</li>
 </ul>
-<h1 id="v040">v0.4.0 <a href="#v040">.</a></h1>
+<h1 id="v040">v0.4.0</h1>
 <p>(2019.11.4)</p>
 <ul>
 <li>ウインドウのリサイズに対応</li>
@@ -1435,17 +1462,17 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <li>画面描画に標準出力ではなく、標準エラー出力を用いるようにした</li>
 <li><code>q</code>(終了): 本当に終了するかを問い合わせするようにした</li>
 </ul>
-<h1 id="v030">v0.3.0 <a href="#v030">.</a></h1>
+<h1 id="v030">v0.3.0</h1>
 <p>(2019.11.2)</p>
 <ul>
 <li>ファイル出力に対応</li>
 </ul>
-<h1 id="v020">v0.2.0 <a href="#v020">.</a></h1>
+<h1 id="v020">v0.2.0</h1>
 <p>(2019.10.31)</p>
 <ul>
 <li>検索コマンド <code>/</code>,<code>?</code>,<code>n</code>,<code>N</code> を実装</li>
 </ul>
-<h1 id="v010">v0.1.0 <a href="#v010">.</a></h1>
+<h1 id="v010">v0.1.0</h1>
 <p>(2019.10.27)</p>
 <ul>
 <li>初版</li>

@@ -1106,60 +1106,87 @@
   min-height: 52px;
 }
 
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
 
-	.markdown-body {
-		box-sizing: border-box;
-		max-width: 980px;
-		margin: 0 auto;
-		padding: 45px;
-	}
-	body{
-		display:flex;
-		overflow-y: scroll;
-	}
-	@media screen{
-		div.sidebar{ width:30% }
-		div.main{ width:70% }
-	}
-
-	@media print{
-		div.sidebar,div.footer{ display:none }
-		div.main{ width:100%!}(MISSING)
-	}
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
 
 // -->
-</style></head><body>
+</style>
+</head><body>
 <div class="main markdown-body">
-<h1 id="v1130">v1.13.0 <a href="#v1130">.</a></h1>
+<h1 id="v1140">v1.14.0</h1>
+<p>Jun 2, 2025</p>
+<ul>
+<li>Added <code>L</code> (Shift-L) command to reload the file using a specified encoding to correct detection errors
+<ul>
+<li>Encoding name completion is supported.</li>
+<li>UTF-16LE and UTF-16BE are not supported yet.</li>
+</ul>
+</li>
+<li>Added search command (<code>*</code> and <code>#</code>) to find the next occurrence of the current cell's content</li>
+</ul>
+<h1 id="v1131">v1.13.1</h1>
+<p>Jun 25, 2025</p>
+<ul>
+<li>Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.</li>
+</ul>
+<h1 id="v1130">v1.13.0</h1>
 <p>May 14, 2025</p>
-<h2 id="-experimental-release-for-macos-users">🚀 Experimental Release for macOS Users <a href="#-experimental-release-for-macos-users">.</a></h2>
+<h2 id="-experimental-release-for-macos-users">🚀 Experimental Release for macOS Users</h2>
 <p>This release includes a <strong>macOS build for the first time</strong>!</p>
 <p>We don't have access to a macOS environment, so we can't test it ourselves.
 If you're a macOS user and willing to help, <strong>please try it and report back</strong> through GitHub Issues or Discussions.</p>
 <p>Thank you for your support!</p>
-<h2 id="other-changes">Other changes <a href="#other-changes">.</a></h2>
+<h2 id="other-changes">Other changes</h2>
 <ul>
 <li>Added <code>-title</code> option to display a title row above the header row.</li>
 </ul>
-<h1 id="v1120">v1.12.0 <a href="#v1120">.</a></h1>
+<h1 id="v1120">v1.12.0</h1>
 <p>Oct 8, 2024</p>
 <ul>
 <li><a href="https://github.com/hymkor/csvi/issues/4">#4</a> Define the different width for cells. e.g., <code>-w 14,0:10,1:20</code> means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to <a href="https://github.com/kevin-gwyrdh">@kevin-gwyrdh</a>)</li>
 <li>Fix: panic when 0 bytes files (<code>nul</code> or <code>/dev/null</code>) were given</li>
 </ul>
-<h1 id="v1111">v1.11.1 <a href="#v1111">.</a></h1>
+<h1 id="v1111">v1.11.1</h1>
 <p>Oct 7, 2024</p>
 <ul>
 <li>Fix: suggestions did not start when the original value of the current cell was empty</li>
 <li>Fix: the search target for suggestions shifted one column to the right when inserting a cell value with <code>a</code>.</li>
 </ul>
-<h1 id="v1110">v1.11.0 <a href="#v1110">.</a></h1>
+<h1 id="v1110">v1.11.0</h1>
 <p>Oct 6, 2024</p>
 <ul>
 <li>While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. <a href="https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0">go-readline-ny v1.5.0</a></li>
 <li>Support the hankaku-kana mode on the SKK input (<code>Ctrl-Q</code> to enter the hankaku-kana mode from SKK kana mode) <a href="https://github.com/nyaosorg/go-readline-skk/releases/tag/v0.4.0">go-readline-skk v0.4.0</a></li>
 </ul>
-<h1 id="v1101">v1.10.1 <a href="#v1101">.</a></h1>
+<h1 id="v1101">v1.10.1</h1>
 <p>Jun 10, 2024</p>
 <ul>
 <li>Modifying package
@@ -1168,7 +1195,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v1100">v1.10.0 <a href="#v1100">.</a></h1>
+<h1 id="v1100">v1.10.0</h1>
 <p>Jun 02, 2024</p>
 <ul>
 <li>When <code>-fixcol</code> is specified
@@ -1187,7 +1214,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v195">v1.9.5 <a href="#v195">.</a></h1>
+<h1 id="v195">v1.9.5</h1>
 <p>May 27, 2024</p>
 <ul>
 <li>Modifying package
@@ -1197,7 +1224,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v194">v1.9.4 <a href="#v194">.</a></h1>
+<h1 id="v194">v1.9.4</h1>
 <p>May 26, 2024</p>
 <ul>
 <li>Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released</li>
@@ -1209,7 +1236,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v193">v1.9.3 <a href="#v193">.</a></h1>
+<h1 id="v193">v1.9.3</h1>
 <p>May.17, 2024</p>
 <ul>
 <li>Modifing pacakge
@@ -1218,7 +1245,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v192">v1.9.2 <a href="#v192">.</a></h1>
+<h1 id="v192">v1.9.2</h1>
 <p>May.12, 2024</p>
 <ul>
 <li>Modifing package
@@ -1228,20 +1255,20 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v191">v1.9.1 <a href="#v191">.</a></h1>
+<h1 id="v191">v1.9.1</h1>
 <p>May.09, 2024</p>
 <ul>
 <li>Fix timing to close the terminal input was incorrect
 (For some reason it hasn't surfaced as a problem)</li>
 </ul>
-<h1 id="v190">v1.9.0 <a href="#v190">.</a></h1>
+<h1 id="v190">v1.9.0</h1>
 <p>May.08, 2024</p>
 <ul>
 <li>Add the option <code>-fixcol</code> that disables keys <code>i</code>,<code>a</code>, and <code>x</code> not to shift columns.</li>
 <li>Move the main function to the sub-package <code>cmd/csvi</code> to be available as a package of Go</li>
 <li>Add the option <code>-readonly</code> that forbide changing the value of cell. When enabled, &quot;q&quot; shutdowns csvi immediately</li>
 </ul>
-<h1 id="v181">v1.8.1 <a href="#v181">.</a></h1>
+<h1 id="v181">v1.8.1</h1>
 <p>Apr.26, 2024</p>
 <ul>
 <li>Fix: crashed on starting <code>csvi</code> with no arguments</li>
@@ -1249,19 +1276,19 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Fix: the foreground color was not black, but gray.</li>
 <li>Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes <code>foo\r\n</code> when executing <code>echo &quot;foo&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; foo.txt</code></li>
 </ul>
-<h1 id="v180">v1.8.0 <a href="#v180">.</a></h1>
+<h1 id="v180">v1.8.0</h1>
 <p>Apr.24, 2024</p>
 <ul>
 <li>Update the read bytes of the status line 4 times per second.</li>
 <li>Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.</li>
 </ul>
-<h1 id="v171">v1.7.1 <a href="#v171">.</a></h1>
+<h1 id="v171">v1.7.1</h1>
 <p>Apr 16 2024</p>
 <ul>
 <li>Set cursor on or off when yes or no is asked.</li>
 <li>Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.</li>
 </ul>
-<h1 id="v170">v1.7.0 <a href="#v170">.</a></h1>
+<h1 id="v170">v1.7.0</h1>
 <p>Apr 15 2024</p>
 <ul>
 <li>Added the <code>-auto</code> option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.</li>
@@ -1271,7 +1298,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Added the <code>-help</code> option to display a list of available options.</li>
 <li>Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.</li>
 </ul>
-<h1 id="v160">v1.6.0 <a href="#v160">.</a></h1>
+<h1 id="v160">v1.6.0</h1>
 <p>Apr 8 2024</p>
 <ul>
 <li>Rename from CSView to CSVI because not a few products that have the same name exist in the same category.</li>
@@ -1283,7 +1310,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Enable to build without <code>env GOEXPERIMENT=rangefunc</code></li>
 <li>Show (CURRENT-COLUMN-POSITION,CURRENT-ROW-POSITION/ALL-READ-ROWS-NUMBER) on the status line.</li>
 </ul>
-<h1 id="v150">v1.5.0 <a href="#v150">.</a></h1>
+<h1 id="v150">v1.5.0</h1>
 <p>Mar 31 2024</p>
 <ul>
 <li>Support UTF16
@@ -1292,7 +1319,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v140">v1.4.0 <a href="#v140">.</a></h1>
+<h1 id="v140">v1.4.0</h1>
 <p>Mar 27 2024</p>
 <ul>
 <li>Fix the problem the cache buffer for drawing did not work on v1.3.0</li>
@@ -1312,14 +1339,14 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v130">v1.3.0 <a href="#v130">.</a></h1>
+<h1 id="v130">v1.3.0</h1>
 <p>Mar 25 2024</p>
 <ul>
 <li><code>[CRLF]</code> or <code>[LF]</code> in the status line now indicates the line feed code of the current line instead of the representative line feed code of the entire file.</li>
 <li>Rename sub-package: <code>csv</code>(<code>unbreakable-csv</code>) to <code>uncsv</code>(<code>uncsv</code>)</li>
 <li>The first few lines can now be fixed as header lines.(<code>-h int</code>)</li>
 </ul>
-<h1 id="v120">v1.2.0 <a href="#v120">.</a></h1>
+<h1 id="v120">v1.2.0</h1>
 <p>Feb 29 2024</p>
 <ul>
 <li><code>a</code>,<code>o</code>,<code>O</code>: make new cell and repaint before getline is called</li>
@@ -1343,23 +1370,23 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Fix: cell width was incorrect when it contained characters whose widths are ambiguous</li>
 <li>Add key assigns: <code>G</code>:Go to EOF, <code>Enter</code>:go to next line, <code>TAB</code>:go to the rightside cell, <code>Shift</code>+<code>TAB</code>:go to the leftside cell</li>
 </ul>
-<h1 id="v113">v1.1.3 <a href="#v113">.</a></h1>
+<h1 id="v113">v1.1.3</h1>
 <p>Feb 16 2024</p>
 <ul>
 <li>Fix: the attributes of text converted by SKK were incorrect on Windows 8.1</li>
 </ul>
-<h1 id="v112">v1.1.2 <a href="#v112">.</a></h1>
+<h1 id="v112">v1.1.2</h1>
 <p>Oct 01 2023</p>
 <ul>
 <li>Strings being converted with SKK are now displayed as reversed or underlined</li>
 <li>Fix: SKK failed to start when user-jisyo file did not exist</li>
 </ul>
-<h1 id="v111">v1.1.1 <a href="#v111">.</a></h1>
+<h1 id="v111">v1.1.1</h1>
 <p>Sep 20 2023</p>
 <ul>
 <li>Use <code>:</code> for the path list separator instead of <code>;</code> from %GOREADLINESKK% on Linux</li>
 </ul>
-<h1 id="v110">v1.1.0 <a href="#v110">.</a></h1>
+<h1 id="v110">v1.1.0</h1>
 <p>Sep 20 2023</p>
 <ul>
 <li>Backport from <a href="https://github.com/hymkor/lispread">lispread</a>
@@ -1372,22 +1399,22 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v100">v1.0.0 <a href="#v100">.</a></h1>
+<h1 id="v100">v1.0.0</h1>
 <p>Sep 11 2023</p>
 <ul>
 <li>Fix for the the imcompatibility between v0.8.3 and v0.14.0 of go-readline-ny</li>
 </ul>
-<h1 id="v062">v0.6.2 <a href="#v062">.</a></h1>
+<h1 id="v062">v0.6.2</h1>
 <p>Nov 23 2022</p>
 <ul>
 <li>Fix: (#3) Too long field breaks the screen layout</li>
 </ul>
-<h1 id="v061">v0.6.1 <a href="#v061">.</a></h1>
+<h1 id="v061">v0.6.1</h1>
 <p>Feb 19 2022</p>
 <ul>
 <li>Display [TSV],[CSV],[LF],[CRLF] on the status line.</li>
 </ul>
-<h1 id="v060">v0.6.0 <a href="#v060">.</a></h1>
+<h1 id="v060">v0.6.0</h1>
 <p>Dec 10 2021</p>
 <ul>
 <li>Change visual:
@@ -1408,14 +1435,14 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Fix: empty lines in the input data were ignored.</li>
 <li><code>x</code>: assign delete cell same as <code>d</code></li>
 </ul>
-<h1 id="v050">v0.5.0 <a href="#v050">.</a></h1>
+<h1 id="v050">v0.5.0</h1>
 <p>Mar 27 2020</p>
 <ul>
 <li><code>o</code> - append a new line after the current line</li>
 <li><code>O</code> - insert a new line before the current line</li>
 <li><code>D</code> - delete the current line</li>
 </ul>
-<h1 id="v040">v0.4.0 <a href="#v040">.</a></h1>
+<h1 id="v040">v0.4.0</h1>
 <p>Nov 4 2019</p>
 <ul>
 <li>Support window resized</li>
@@ -1431,17 +1458,17 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Use stderr for drawing rather than stdout</li>
 <li><code>q</code>: (quit) ask yes/no</li>
 </ul>
-<h1 id="v030">v0.3.0 <a href="#v030">.</a></h1>
+<h1 id="v030">v0.3.0</h1>
 <p>Nov 2 2019</p>
 <ul>
 <li>Support editing and writing to the file.</li>
 </ul>
-<h1 id="v020">v0.2.0 <a href="#v020">.</a></h1>
+<h1 id="v020">v0.2.0</h1>
 <p>Oct 31 2019</p>
 <ul>
 <li>Implement search command <code>/</code>,<code>?</code>,<code>n</code>,<code>N</code></li>
 </ul>
-<h1 id="v010">v0.1.0 <a href="#v010">.</a></h1>
+<h1 id="v010">v0.1.0</h1>
 <p>Oct 27 2019</p>
 <ul>
 <li>first release</li>

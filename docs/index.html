@@ -1106,31 +1106,42 @@
   min-height: 52px;
 }
 
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
 
-	.markdown-body {
-		box-sizing: border-box;
-		max-width: 980px;
-		margin: 0 auto;
-		padding: 45px;
-	}
-	body{
-		display:flex;
-		overflow-y: scroll;
-	}
-	@media screen{
-		div.sidebar{ width:30% }
-		div.main{ width:70% }
-	}
-
-	@media print{
-		div.sidebar,div.footer{ display:none }
-		div.main{ width:100%!}(MISSING)
-	}
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
 
 // -->
-</style></head><body>
+</style>
+</head><body>
 <div class="main markdown-body">
-<h1 id="csvi---terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor <a href="#csvi---terminal-csv-editor">.</a></h1>
+<h1 id="csvi---terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor</h1>
 <p><a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi" alt="GoDev"></a></p>
 <p><strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a></p>
 <blockquote>
@@ -1139,7 +1150,7 @@
 <p><strong>CSVI</strong> is a terminal-based CSV editor for Linux and Windows.<br>
 macOS is also supported experimentally, as the developer does not have direct access to a macOS environment.<br>
 → You can try it from <a href="https://github.com/hymkor/csvi/releases/tag/v1.13.0">v1.13.0</a></p>
-<h3 id="x2728-key-features">✨ Key Features <a href="#x2728-key-features">.</a></h3>
+<h3 id="x2728-key-features">✨ Key Features</h3>
 <ul>
 <li>
 <p><strong>Minimal changes on save</strong><br>
@@ -1179,24 +1190,24 @@ The bottom line of the screen shows technical info: quoting, encoding, field sep
 </ul>
 <p><img src="./csvi.gif" alt="image"></p>
 <p><a href="https://www.youtube.com/watch?v=_cxBQKpfUds">Video</a> by <a href="https://github.com/emisjerry">@emisjerry</a></p>
-<h2 id="install">Install <a href="#install">.</a></h2>
-<h3 id="manual-installation">Manual Installation <a href="#manual-installation">.</a></h3>
+<h2 id="install">Install</h2>
+<h3 id="manual-installation">Manual Installation</h3>
 <p>Download the binary package from <a href="https://github.com/hymkor/csvi/releases">Releases</a> and extract the executable.</p>
 <blockquote>
 <p>⚠️ Note: The macOS build is experimental and not yet tested.
 Please let us know if you encounter any issues!</p>
 </blockquote>
-<h3 id="use-go-install">Use &quot;go install&quot; <a href="#use-go-install">.</a></h3>
+<h3 id="use-go-install">Use &quot;go install&quot;</h3>
 <pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
 </code></pre>
-<h3 id="use-scoop-installer-windows-only">Use scoop-installer (Windows only) <a href="#use-scoop-installer-windows-only">.</a></h3>
+<h3 id="use-scoop-installer-windows-only">Use scoop-installer (Windows only)</h3>
 <pre><code>scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 </code></pre>
 <p>or</p>
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 </code></pre>
-<h2 id="usage">Usage <a href="#usage">.</a></h2>
+<h2 id="usage">Usage</h2>
 <pre><code>$ csvi {options} FILENAME(...)
 </code></pre>
 <p>or</p>
@@ -1219,7 +1230,7 @@ scoop install csvi
 <li><code>-p</code> Protect the header line</li>
 <li><code>-readonly</code> Read Only Mode</li>
 </ul>
-<h2 id="key-binding">Key-binding <a href="#key-binding">.</a></h2>
+<h2 id="key-binding">Key-binding</h2>
 <ul>
 <li>Move Cursor
 <ul>
@@ -1235,10 +1246,12 @@ scoop install csvi
 </li>
 <li>Search
 <ul>
-<li><code>/</code> (search forward)</li>
-<li><code>?</code> (search backward)</li>
-<li><code>n</code> (search next)</li>
-<li><code>N</code> (search next reverse)</li>
+<li><code>/</code> (search forward for a partial match)</li>
+<li><code>?</code> (search backward for a partial match)</li>
+<li><code>n</code> (repeat the previous search forward)</li>
+<li><code>N</code> (repeat the previous search backward)</li>
+<li><code>*</code> (search forward for the next cell that exactly matches the current one)</li>
+<li><code>#</code> (search backward for the previous cell that exactly matches the current one)</li>
 </ul>
 </li>
 <li>Edit
@@ -1257,10 +1270,11 @@ scoop install csvi
 <li><code>p</code> (paste the value of kill-buffer to the current cell)</li>
 </ul>
 </li>
+<li><code>L</code> (reload the file using a specified encoding)</li>
 <li>Repaint: <code>Ctrl</code>-<code>L</code></li>
 <li>Quit: <code>q</code> or <code>ESC</code></li>
 </ul>
-<h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> <a href="#readline-with-skkskk">.</a></h2>
+<h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></h2>
 <p>When the environment variable GOREADLINESKK is defined, <a href="https://github.com/nyaosorg/go-readline-skk">go-readline-skk</a> is used.</p>
 <ul>
 <li>Windows
@@ -1276,7 +1290,7 @@ scoop install csvi
 </li>
 </ul>
 <p>(Note: <code>~</code> is automatically expanded to <code>%USERPROFILE%</code> on Windows, even in <code>cmd.exe</code>.)</p>
-<h2 id="use-as-a-go-package">Use as a Go package <a href="#use-as-a-go-package">.</a></h2>
+<h2 id="use-as-a-go-package">Use as a Go package</h2>
 <pre><code class="language-example.go">package main
 
 import (
@@ -1316,19 +1330,19 @@ func main() {
     })
 }
 </code></pre>
-<h2 id="release-note">Release Note <a href="#release-note">.</a></h2>
+<h2 id="release-note">Release Note</h2>
 <ul>
 <li><a href="./release_note_en.html">English</a></li>
 <li><a href="./release_note_ja.html">Japanese</a></li>
 </ul>
-<h2 id="acknowledgements">Acknowledgements <a href="#acknowledgements">.</a></h2>
+<h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
 <li><a href="https://github.com/sergeevabc">sergeevabc (Aleksandr Sergeev)</a> — <a href="https://github.com/hymkor/csvi/issues/1">Issue #1</a></li>
 <li><a href="https://github.com/kevin-gwyrdh">kevin-gwyrdh (Kevin)</a> — <a href="https://github.com/hymkor/csvi/issues/4">Issue #4</a></li>
 <li><a href="https://github.com/emisjerry">emisjerry (emisjerry)</a> — <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">YouTube video</a></li>
 <li><a href="https://github.com/rinodrops">rinodrops (Rino)</a> — <a href="https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997">Discussion #5</a></li>
 </ul>
-<h2 id="author">Author <a href="#author">.</a></h2>
+<h2 id="author">Author</h2>
 <ul>
 <li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
 </ul>

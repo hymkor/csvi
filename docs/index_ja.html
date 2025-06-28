@@ -1106,31 +1106,42 @@
   min-height: 52px;
 }
 
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
 
-	.markdown-body {
-		box-sizing: border-box;
-		max-width: 980px;
-		margin: 0 auto;
-		padding: 45px;
-	}
-	body{
-		display:flex;
-		overflow-y: scroll;
-	}
-	@media screen{
-		div.sidebar{ width:30% }
-		div.main{ width:70% }
-	}
-
-	@media print{
-		div.sidebar,div.footer{ display:none }
-		div.main{ width:100%!}(MISSING)
-	}
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
 
 // -->
-</style></head><body>
+</style>
+</head><body>
 <div class="main markdown-body">
-<h1 id="csvi---csv">&quot;CSVI&quot; - ターミナル用CSVエディタ <a href="#csvi---csv">.</a></h1>
+<h1 id="csvi---csv">&quot;CSVI&quot; - ターミナル用CSVエディタ</h1>
 <p><a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi" alt="GoDev"></a></p>
 <p><a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong></p>
 <blockquote>
@@ -1138,7 +1149,7 @@
 </blockquote>
 <p><strong>CSVI</strong> は、Linux や Windows のターミナル上で動作する CSV エディタです。
 ( macOS でも動作するはずですが、検証環境が開発側にないため、実験的なサポート状態です →サポートバージョン: <a href="https://github.com/hymkor/csvi/releases/tag/v1.13.0">v1.13.0</a> )</p>
-<h3 id="x2728-">✨ 主な特徴 <a href="#x2728-">.</a></h3>
+<h3 id="x2728-">✨ 主な特徴</h3>
 <ul>
 <li>
 <p><strong>保存時の差分が最小</strong><br>
@@ -1177,24 +1188,24 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 </ul>
 <p><img src="./csvi.gif" alt="image"></p>
 <p><a href="https://github.com/emisjerry">@emisjerry</a> さんによる <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">紹介動画</a></p>
-<h2 id="install">Install <a href="#install">.</a></h2>
-<h3 id="manual-installation">Manual Installation <a href="#manual-installation">.</a></h3>
+<h2 id="install">Install</h2>
+<h3 id="manual-installation">Manual Installation</h3>
 <p><a href="https://github.com/hymkor/csvi/releases">Releases</a> よりバイナリパッケージをダウンロードして、実行ファイルを展開してください</p>
 <blockquote>
 <p>⚠️ Note: macOS用バイナリは実験的ビルドで、検証できていません。
 もし何らかの問題を確認されましたらお知らせください！</p>
 </blockquote>
-<h3 id="go-install-">&quot;go install&quot; を使う場合 <a href="#go-install-">.</a></h3>
+<h3 id="go-install-">&quot;go install&quot; を使う場合</h3>
 <pre><code>go install github.com/hymkor/csvi@latest
 </code></pre>
-<h3 id="scoop--windows">scoop インストーラーを使う場合 (Windowsのみ) <a href="#scoop--windows">.</a></h3>
+<h3 id="scoop--windows">scoop インストーラーを使う場合 (Windowsのみ)</h3>
 <pre><code>scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 </code></pre>
 <p>もしくは</p>
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 </code></pre>
-<h2 id="usage">Usage <a href="#usage">.</a></h2>
+<h2 id="usage">Usage</h2>
 <pre><code>$ csvi {options} FILENAME(...)
 </code></pre>
 <p>or</p>
@@ -1217,7 +1228,7 @@ scoop install csvi
 <li><code>-p</code> ヘッダー行を保護する</li>
 <li><code>-readonly</code> 読み取り専用モード</li>
 </ul>
-<h2 id="heading">キーバインド <a href="#heading">.</a></h2>
+<h2 id="heading">キーバインド</h2>
 <ul>
 <li>カーソル移動
 <ul>
@@ -1233,10 +1244,12 @@ scoop install csvi
 </li>
 <li>検索
 <ul>
-<li><code>/</code> (前方検索)</li>
-<li><code>?</code> (後方検索)</li>
+<li><code>/</code> (キーワードを部分一致で前方検索)</li>
+<li><code>?</code> (キーワードを部分一致で後方検索)</li>
 <li><code>n</code> (次検索)</li>
 <li><code>N</code> (逆検索)</li>
+<li><code>*</code> (現在のセルの内容と完全一致する次のセルを検索)</li>
+<li><code>#</code> (現在のセルの内容と完全一致する前のセルを検索)</li>
 </ul>
 </li>
 <li>編集
@@ -1255,10 +1268,11 @@ scoop install csvi
 <li><code>p</code> (現在のセルに内部クリップボードの値をペースト)</li>
 </ul>
 </li>
+<li><code>L</code> (指定したエンコーディングでファイルを再読み込み)</li>
 <li>再表示: <code>Ctrl</code>-<code>L</code></li>
 <li>終了: <code>q</code> or <code>ESC</code></li>
 </ul>
-<h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> <a href="#readline-with-skkskk">.</a></h2>
+<h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></h2>
 <p>環境変数 GOREADLINESKK に次のように辞書ファイルが指定されている時、<a href="https://github.com/nyaosorg/go-readline-skk">go-readline-skk</a> を使った内蔵SKKが使用できます</p>
 <ul>
 <li>Windows
@@ -1274,7 +1288,7 @@ scoop install csvi
 </li>
 </ul>
 <p>(注: <code>~</code> はWindowsでも<code>cmd.exe</code>内であってもアプリ側で %USERPROFILE% へ自動で展開します)</p>
-<h2 id="use-as-a-package">Use as a package <a href="#use-as-a-package">.</a></h2>
+<h2 id="use-as-a-package">Use as a package</h2>
 <pre><code class="language-example.go">package main
 
 import (
@@ -1314,19 +1328,19 @@ func main() {
     })
 }
 </code></pre>
-<h2 id="release-note">Release Note <a href="#release-note">.</a></h2>
+<h2 id="release-note">Release Note</h2>
 <ul>
 <li><a href="./release_note_en.html">English</a></li>
 <li><a href="./release_note_ja.html">Japanese</a></li>
 </ul>
-<h2 id="acknowledgements">Acknowledgements <a href="#acknowledgements">.</a></h2>
+<h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
 <li><a href="https://github.com/sergeevabc">sergeevabc (Aleksandr Sergeev)</a> — <a href="https://github.com/hymkor/csvi/issues/1">Issue #1</a></li>
 <li><a href="https://github.com/kevin-gwyrdh">kevin-gwyrdh (Kevin)</a> — <a href="https://github.com/hymkor/csvi/issues/4">Issue #4</a></li>
 <li><a href="https://github.com/emisjerry">emisjerry (emisjerry)</a> — <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">YouTube動画</a></li>
 <li><a href="https://github.com/rinodrops">rinodrops (Rino)</a> — <a href="https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997">Discussion #5</a></li>
 </ul>
-<h2 id="author">Author <a href="#author">.</a></h2>
+<h2 id="author">Author</h2>
 <ul>
 <li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
 </ul>
