@@ -1,3 +1,7 @@
+v1.14.0
+=======
+Jun 2, 2025
+
 * Added `L` (Shift-L) command to reload the file using a specified encoding to correct detection errors
    - Encoding name completion is supported.
    - UTF-16LE and UTF-16BE are not supported yet.
