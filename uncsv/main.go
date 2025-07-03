@@ -447,6 +447,17 @@ func NewRow(mode *Mode) Row {
 	}
 }
 
+func NewRowFromStringSlice(mode *Mode, texts []string) Row {
+	cells := []Cell{}
+	for _, t := range texts {
+		cells = append(cells, newCell(t, mode))
+	}
+	return Row{
+		Cell: cells,
+		Term: mode.DefaultTerm,
+	}
+}
+
 func (row *Row) Insert(i int, text string, mode *Mode) {
 	row.Cell = slicesInsert(row.Cell, i, newCell(text, mode))
 }
