@@ -127,7 +127,7 @@
                   (wildcard (string-append NAME "-" VERSION "-*.zip"))))
 
           ((manifest)
-           (sh "make-scoop-manifest *.zip > smake.json"))
+           (sh (string-append "make-scoop-manifest *.zip > " NAME ".json")))
 
           ((readme)
            (sh "example-into-readme"))
