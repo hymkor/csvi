@@ -17,21 +17,7 @@
              (lambda (c) (throw 'notag "v0.0.0"))
              (shell (string-append "git describe --tags 2>" *dev-null*))))))
   (labels
-    ((file-for-each
-       (filename callback)
-       (assure <string> filename)
-       (assure <function> callback)
-       (block func
-         (let ((line nil))
-           (with-open-input-file
-             (fd filename)
-             (while (setq line (read-line fd nil nil))
-               (let ((result (funcall callback line)))
-                 (if result
-                   (return-from func result))))))
-         nil))
-
-     (find-str-file
+    ((find-str-file
        (word filename)
        (file-for-each filename (lambda (line) (string-index word line))))
 
