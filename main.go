@@ -387,6 +387,17 @@ func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
 	}, out)
 }
 
+func (cfg Config) EditFromStringSlice(in func() ([]string, bool), console io.Writer) (*Result, error) {
+	return cfg.edit(func() (*uncsv.Row, error) {
+		slice, ok := in()
+		if !ok {
+			return nil, io.EOF
+		}
+		row := uncsv.NewRowFromStringSlice(cfg.Mode, slice)
+		return &row, nil
+	}, console)
+}
+
 func isEmptyRow(row *uncsv.Row) bool {
 	switch len(row.Cell) {
 	case 0:
