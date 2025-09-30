@@ -255,11 +255,16 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth func(int) i
 	return lfCount + drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
 }
 
-func (app *_Application) YesNo(message string) bool {
+func (app *_Application) MessageAndGetKey(message string) (string, error) {
 	fmt.Fprintf(app, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
 	io.WriteString(app, _ANSI_CURSOR_ON)
 	ch, err := app.GetKey()
 	io.WriteString(app, _ANSI_CURSOR_OFF)
+	return ch, err
+}
+
+func (app *_Application) YesNo(message string) bool {
+	ch, err := app.MessageAndGetKey(message)
 	return err == nil && ch == "y"
 }
 
