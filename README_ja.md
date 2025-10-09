@@ -4,8 +4,6 @@
 
 [\<English\>](./README.md) / **\<Japanese\>**
 
-> *同分野に同名の製品が比較的多いため、バージョン 1.6.0 より CSView は CSVI に改名しました。*
-
 **CSVI** は、Linux や Windows のターミナル上で動作する CSV エディタです。
 ( macOS でも動作するはずですが、検証環境が開発側にないため、実験的なサポート状態です →サポートバージョン: [v1.13.0](https://github.com/hymkor/csvi/releases/tag/v1.13.0) )
 
