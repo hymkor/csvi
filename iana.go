@@ -1,6 +1,10 @@
 package csvi
 
-var ianaNames = Candidate{
+import (
+	"github.com/hymkor/csvi/candidate"
+)
+
+var ianaNames = candidate.Candidate{
 	"437",
 	"850",
 	"851",

@@ -14,9 +14,11 @@ import (
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/keys"
 
+	"github.com/hymkor/csvi/candidate"
+	"github.com/hymkor/csvi/uncsv"
+
 	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/internal/nonblock"
-	"github.com/hymkor/csvi/uncsv"
 )
 
 type colorSet struct {
@@ -332,7 +334,7 @@ type Pilot interface {
 	Size() (int, int, error)
 	Calibrate() error
 	GetKey() (string, error)
-	ReadLine(out io.Writer, prompt, defaultText string, c Candidate) (string, error)
+	ReadLine(out io.Writer, prompt, defaultText string, c candidate.Candidate) (string, error)
 	GetFilename(io.Writer, string, string) (string, error)
 	Close() error
 }

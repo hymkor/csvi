@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/hymkor/csvi"
+	"github.com/hymkor/csvi/candidate"
 )
 
 type _AutoPilot struct {
@@ -30,7 +30,7 @@ func (ap *_AutoPilot) next() (string, error) {
 	return command, nil
 }
 
-func (ap *_AutoPilot) ReadLine(io.Writer, string, string, csvi.Candidate) (string, error) {
+func (ap *_AutoPilot) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
 	return ap.next()
 }
 

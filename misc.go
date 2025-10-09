@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/mattn/go-runewidth"
+
+	"github.com/hymkor/csvi/candidate"
 )
 
 func cutStrInWidth(s string, cellwidth int) (string, int) {
@@ -44,30 +46,8 @@ func cutStrInWidth(s string, cellwidth int) (string, int) {
 	return s, w
 }
 
-type Candidate []string
-
-func (c Candidate) Len() int {
-	return len(c)
-}
-
-func (c Candidate) At(n int) string {
-	return c[len(c)-n-1]
-}
-
-func (c Candidate) Delimiters() string {
-	return ""
-}
-
-func (c Candidate) Enclosures() string {
-	return ""
-}
-
-func (c Candidate) List(field []string) (fullnames, basenames []string) {
-	return c, c
-}
-
-func makeCandidate(row, col int, cursor *RowPtr) Candidate {
-	result := Candidate(make([]string, 0, 100))
+func makeCandidate(row, col int, cursor *RowPtr) candidate.Candidate {
+	result := candidate.Candidate(make([]string, 0, 100))
 	set := make(map[string]struct{})
 	count := 0
 	for ; cursor != nil; cursor = cursor.Prev() {

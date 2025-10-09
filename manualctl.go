@@ -18,6 +18,8 @@ import (
 
 	"github.com/hymkor/go-cursorposition"
 
+	"github.com/hymkor/csvi/candidate"
+
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
@@ -73,7 +75,7 @@ func skkInit() {
 	})
 }
 
-func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candidate) (string, error) {
+func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate.Candidate) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,
