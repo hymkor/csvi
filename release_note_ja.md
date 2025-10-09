@@ -1,3 +1,7 @@
+- 現在カーソルがあるカラムの幅を広げるキー `]` と、逆に狭める `[` を実装
+- API関数: `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice`, `(*_Application) MessageAndGetKey` を追加
+- 白背景の端末でも色が不自然にならないよう、`-rv` オプションを追加
+
 v1.14.0
 =======
 Jun 2, 2025

@@ -1,3 +1,7 @@
+* Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
+* Added API functions `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice` and and `(*_Application) MessageAndGetKey`.
+* Added `-rv` option to prevent unnatural colors on terminals with a white background
+
 v1.14.0
 =======
 Jun 2, 2025
