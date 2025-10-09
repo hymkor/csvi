@@ -31,6 +31,7 @@ var (
 	flagReadOnly      = flag.Bool("readonly", false, "Read Only Mode")
 	flagProtectHeader = flag.Bool("p", false, "Protect the header line")
 	flagTitle         = flag.String("title", "", "Set title string")
+	flagReverseVideo  = flag.Bool("rv", false, "Enable reverse-video display (invert foreground and background colors)")
 )
 
 const (
@@ -47,6 +48,10 @@ func mains() error {
 	disable := colorable.EnableColorsStdout(nil)
 	if disable != nil {
 		defer disable()
+	}
+
+	if *flagReverseVideo {
+		csvi.RevertColor()
 	}
 
 	var pilot csvi.Pilot

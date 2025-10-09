@@ -79,7 +79,7 @@ func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candida
 		History: c,
 		Cursor:  65535,
 		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, _ANSI_ERASE_LINE)
+			return fmt.Fprintf(w, "\r%s%s%s", _ANSI_YELLOW, prompt, _ANSI_ERASE_LINE)
 		},
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil

@@ -21,7 +21,7 @@ import (
 const (
 	_ANSI_CURSOR_OFF = "\x1B[?25l"
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
-	_ANSI_YELLOW     = "\x1B[0;33;1m"
+	_ANSI_YELLOW     = "\x1B[0;33m"
 	_ANSI_RESET      = "\x1B[0m"
 
 	_ANSI_ERASE_LINE       = "\x1B[0m\x1B[0K"
@@ -31,22 +31,45 @@ const (
 	_ANSI_UNDERLINE_OFF = "\x1B[24m"
 )
 
+type colorSet struct {
+	On  string
+	Off string
+	Rev string
+}
+
+func (c *colorSet) Revert() {
+	if c.Rev != "" {
+		tmp := c.On
+		c.On = c.Rev
+		c.Rev = tmp
+	}
+}
+
 type _ColorStyle struct {
-	Cursor [2]string
-	Even   [2]string
-	Odd    [2]string
+	Cursor, Even, Odd colorSet
+}
+
+func (v *_ColorStyle) Revert() {
+	v.Cursor.Revert()
+	v.Even.Revert()
+	v.Odd.Revert()
 }
 
 var bodyColorStyle = _ColorStyle{
-	Cursor: [...]string{"\x1B[107;30;22m", "\x1B[40;37m"},
-	Even:   [...]string{"\x1B[48;5;235;37;1m", "\x1B[22;40m"},
-	Odd:    [...]string{"\x1B[40;37;1m", "\x1B[22m"},
+	Cursor: colorSet{On: "\x1B[107;30;22m", Off: "\x1B[49;39m", Rev: "\x1B[40;37m"},
+	Even:   colorSet{On: "\x1B[48;5;235;39;1m", Off: "\x1B[22;49m", Rev: "\x1B[48;5;252;39m"},
+	Odd:    colorSet{On: "\x1B[49;39;1m", Off: "\x1B[22m"},
 }
 
 var headColorStyle = _ColorStyle{
-	Cursor: [...]string{"\x1B[107;30;22m", "\x1B[40;36m"},
-	Even:   [...]string{"\x1B[48;5;235;36;1m", "\x1B[22;40m"},
-	Odd:    [...]string{"\x1B[40;36;1m", "\x1B[22m"},
+	Cursor: colorSet{On: "\x1B[107;30;22m", Off: "\x1B[49;36m", Rev: "\x1B[40;36m"},
+	Even:   colorSet{On: "\x1B[48;5;235;36;1m", Off: "\x1B[22;49m", Rev: "\x1B[48;5;252;36m"},
+	Odd:    colorSet{On: "\x1B[49;36;1m", Off: "\x1B[22m"},
+}
+
+func RevertColor() {
+	bodyColorStyle.Revert()
+	headColorStyle.Revert()
 }
 
 var replaceTable = strings.NewReplacer(
@@ -75,19 +98,19 @@ func drawLine(
 	out io.Writer) {
 
 	if len(csvs) <= 0 && cursorPos >= 0 {
-		io.WriteString(out, style.Cursor[0])
+		io.WriteString(out, style.Cursor.On)
 		io.WriteString(out, "\x1B[K")
-		io.WriteString(out, style.Cursor[1])
+		io.WriteString(out, style.Cursor.Off)
 		return
 	}
 	i := 0
 
 	if reverse {
-		io.WriteString(out, style.Odd[0])
-		defer io.WriteString(out, style.Odd[1])
+		io.WriteString(out, style.Odd.On)
+		defer io.WriteString(out, style.Odd.Off)
 	} else {
-		io.WriteString(out, style.Even[0])
-		defer io.WriteString(out, style.Even[1])
+		io.WriteString(out, style.Even.On)
+		defer io.WriteString(out, style.Even.Off)
 	}
 	io.WriteString(out, "\x1B[K")
 
@@ -109,7 +132,7 @@ func drawLine(
 		text = replaceTable.Replace(text)
 		ss, _ := cutStrInWidth(text, cw)
 		if i == cursorPos {
-			io.WriteString(out, style.Cursor[0])
+			io.WriteString(out, style.Cursor.On)
 		}
 		if cursor.Modified() {
 			io.WriteString(out, _ANSI_UNDERLINE_ON)
@@ -121,9 +144,9 @@ func drawLine(
 		if i == cursorPos {
 			io.WriteString(out, "\x1B[K")
 			if reverse {
-				io.WriteString(out, style.Odd[0])
+				io.WriteString(out, style.Odd.On)
 			} else {
-				io.WriteString(out, style.Even[0])
+				io.WriteString(out, style.Even.On)
 			}
 		}
 		screenWidth -= cw
