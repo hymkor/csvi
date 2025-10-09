@@ -133,8 +133,11 @@ Key-binding
     * `u` (restore the original value of the current cell)
     * `y` (copy the value of the current cell to kill-buffer)
     * `p` (paste the value of kill-buffer to the current cell)
-* `L` (reload the file using a specified encoding)
-* Repaint: `Ctrl`-`L`
+* Display settings
+    * `L` (reload the file using a specified encoding)
+    * `Ctrl`-`L` (Repaint)
+    * `]` (widen the column at the cursor)
+    * `[` (narrow the column at the cursor)
 * Quit: `q` or `ESC`
 
 Readline with SKK[^SKK]
