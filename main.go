@@ -887,6 +887,16 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					message = err.Error()
 				}
 				view.clearCache()
+			case "]":
+				if w := cellWidth.Get(cursorCol); w < 40 {
+					cellWidth.Set(cursorCol, w+1)
+				}
+				view.clearCache()
+			case "[":
+				if w := cellWidth.Get(cursorCol) - 1; w > 3 {
+					cellWidth.Set(cursorCol, w)
+				}
+				view.clearCache()
 			}
 		}
 		if L := len(cursorRow.Cell); L <= 0 {
