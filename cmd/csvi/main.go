@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -11,6 +12,8 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 	"github.com/mattn/go-runewidth"
+
+	"github.com/hymkor/go-cursorposition"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/legacy"
@@ -145,7 +148,11 @@ func main() {
 
 	flag.Parse()
 	if err := mains(); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
+		if errors.Is(err, cursorposition.ErrAnsiEscapeSequenceNotSupported) {
+			fmt.Fprintln(os.Stderr, `Unable to read cursor position (ESC[6n). Ambiguous-width characters cannot be calibrated. Use -aw or -an to specify the width manually.`)
+		} else {
+			fmt.Fprintln(os.Stderr, err.Error())
+		}
 		os.Exit(1)
 	}
 }
