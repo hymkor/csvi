@@ -3,6 +3,7 @@
 * At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence `ESC[6n`, this could cause a hang followed by an error. To address this:
     * `-aw` (treat ambiguous-width characters as 2 cells) and `-an` (treat ambiguous-width characters as 1 cell) options were added to skip the measurement and explicitly specify the character width.
     * If `ESC[6n` is not supported, the program now continues without aborting.
+* Added support for FreeBSD/amd64
 * Added API functions `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice` and and `(*_Application) MessageAndGetKey`.
 * Split the `"csvi"` package into subpackages such as `"internal/ansi"`, `"internal/manualctl"`, `"legacy"`, and `"candidate"`.
 
