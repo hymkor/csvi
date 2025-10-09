@@ -493,7 +493,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	pilot := cfg.Pilot
 	if pilot == nil {
 		var err error
-		pilot, err = newManualCtl()
+		pilot, err = NewManualCtl()
 		if err != nil {
 			return nil, err
 		}

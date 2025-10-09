@@ -23,7 +23,7 @@ type _ManualCtl struct {
 	*tty.TTY
 }
 
-func newManualCtl() (_ManualCtl, error) {
+func NewManualCtl() (_ManualCtl, error) {
 	var rc _ManualCtl
 	var err error
 

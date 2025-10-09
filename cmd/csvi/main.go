@@ -10,6 +10,7 @@ import (
 
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
+	"github.com/mattn/go-runewidth"
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/uncsv"
@@ -32,12 +33,28 @@ var (
 	flagProtectHeader = flag.Bool("p", false, "Protect the header line")
 	flagTitle         = flag.String("title", "", "Set title string")
 	flagReverseVideo  = flag.Bool("rv", false, "Enable reverse-video display (invert foreground and background colors)")
+	flagAmbWide       = flag.Bool("aw", false, "Bypass width detection; assume ambiguous-width chars are wide (2 cells)")
+	flagAmbNallow     = flag.Bool("an", false, "Bypass width detection; assume ambiguous-width chars are narrow (1 cell)")
 )
 
 const (
 	_ANSI_CURSOR_OFF = "\x1B[?25l"
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
+
+// legacyTerminal is the terminal object not supporting `ESC[6n`
+type legacyTerminal struct {
+	csvi.Pilot
+}
+
+func newLegacyTerminal() (legacyTerminal, error) {
+	p, err := csvi.NewManualCtl()
+	return legacyTerminal{Pilot: p}, err
+}
+
+func (L legacyTerminal) Calibrate() error {
+	return nil
+}
 
 func mains() error {
 	if *flagHelp {
@@ -58,7 +75,16 @@ func mains() error {
 	if *flagAuto != "" {
 		pilot = &_AutoPilot{script: *flagAuto}
 		defer pilot.Close()
+	} else if *flagAmbWide || *flagAmbNallow {
+		runewidth.DefaultCondition.EastAsianWidth = *flagAmbWide
+		var err error
+		pilot, err = newLegacyTerminal()
+		if err != nil {
+			return err
+		}
+		defer pilot.Close()
 	}
+
 	mode := &uncsv.Mode{}
 	if *flagIana != "" {
 		if err := mode.SetEncoding(*flagIana); err != nil {
