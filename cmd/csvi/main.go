@@ -13,6 +13,7 @@ import (
 	"github.com/mattn/go-runewidth"
 
 	"github.com/hymkor/csvi"
+	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -35,11 +36,6 @@ var (
 	flagReverseVideo  = flag.Bool("rv", false, "Enable reverse-video display (invert foreground and background colors)")
 	flagAmbWide       = flag.Bool("aw", false, "Bypass width detection; assume ambiguous-width chars are wide (2 cells)")
 	flagAmbNallow     = flag.Bool("an", false, "Bypass width detection; assume ambiguous-width chars are narrow (1 cell)")
-)
-
-const (
-	_ANSI_CURSOR_OFF = "\x1B[?25l"
-	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
 
 // legacyTerminal is the terminal object not supporting `ESC[6n`
@@ -128,8 +124,8 @@ func mains() error {
 		}
 		reader = multiFileReader(args...)
 	}
-	io.WriteString(out, _ANSI_CURSOR_OFF)
-	defer io.WriteString(out, _ANSI_CURSOR_ON)
+	io.WriteString(out, ansi.CURSOR_OFF)
+	defer io.WriteString(out, ansi.CURSOR_ON)
 
 	cw := csvi.NewCellWidth()
 	if err := cw.Parse(*flagCellWidth); err != nil {

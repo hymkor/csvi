@@ -14,21 +14,9 @@ import (
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/keys"
 
+	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/internal/nonblock"
 	"github.com/hymkor/csvi/uncsv"
-)
-
-const (
-	_ANSI_CURSOR_OFF = "\x1B[?25l"
-	_ANSI_CURSOR_ON  = "\x1B[?25h"
-	_ANSI_YELLOW     = "\x1B[0;33m"
-	_ANSI_RESET      = "\x1B[0m"
-
-	_ANSI_ERASE_LINE       = "\x1B[0m\x1B[0K"
-	_ANSI_ERASE_SCRN_AFTER = "\x1B[0m\x1B[0J"
-
-	_ANSI_UNDERLINE_ON  = "\x1B[4m"
-	_ANSI_UNDERLINE_OFF = "\x1B[24m"
 )
 
 type colorSet struct {
@@ -135,11 +123,11 @@ func drawLine(
 			io.WriteString(out, style.Cursor.On)
 		}
 		if cursor.Modified() {
-			io.WriteString(out, _ANSI_UNDERLINE_ON)
+			io.WriteString(out, ansi.UNDERLINE_ON)
 		}
 		io.WriteString(out, ss)
 		if cursor.Modified() {
-			io.WriteString(out, _ANSI_UNDERLINE_OFF)
+			io.WriteString(out, ansi.UNDERLINE_OFF)
 		}
 		if i == cursorPos {
 			io.WriteString(out, "\x1B[K")
@@ -279,10 +267,10 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 }
 
 func (app *_Application) MessageAndGetKey(message string) (string, error) {
-	fmt.Fprintf(app, "%s\r%s%s", _ANSI_YELLOW, message, _ANSI_ERASE_LINE)
-	io.WriteString(app, _ANSI_CURSOR_ON)
+	fmt.Fprintf(app, "%s\r%s%s", ansi.YELLOW, message, ansi.ERASE_LINE)
+	io.WriteString(app, ansi.CURSOR_ON)
 	ch, err := app.GetKey()
-	io.WriteString(app, _ANSI_CURSOR_OFF)
+	io.WriteString(app, ansi.CURSOR_OFF)
 	return ch, err
 }
 
@@ -568,7 +556,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			view.clearCache()
 			lastWidth = screenWidth
 			lastHeight = screenHeight
-			io.WriteString(out, _ANSI_CURSOR_OFF)
+			io.WriteString(out, ansi.CURSOR_OFF)
 		}
 
 		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
@@ -577,14 +565,14 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			lfCount = view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
 		}
 
-		io.WriteString(out, _ANSI_YELLOW)
+		io.WriteString(out, ansi.YELLOW)
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 		} else if 0 <= cursorRow.lnum && cursorRow.lnum < app.Len() {
 			printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
 		}
-		io.WriteString(out, _ANSI_RESET)
-		io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
+		io.WriteString(out, ansi.RESET)
+		io.WriteString(out, ansi.ERASE_SCRN_AFTER)
 
 		const interval = 4
 		displayUpdateTime := time.Now().Add(time.Second / interval)
@@ -602,10 +590,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			}
 			app.Push(row)
 			if message == "" && (err == io.EOF || time.Now().After(displayUpdateTime)) {
-				io.WriteString(out, "\r"+_ANSI_YELLOW)
+				io.WriteString(out, "\r"+ansi.YELLOW)
 				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
-				io.WriteString(out, _ANSI_RESET)
-				io.WriteString(out, _ANSI_ERASE_SCRN_AFTER)
+				io.WriteString(out, ansi.RESET)
+				io.WriteString(out, ansi.ERASE_SCRN_AFTER)
 				displayUpdateTime = time.Now().Add(time.Second / interval)
 			}
 			return err != io.EOF
@@ -905,7 +893,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 			case "w":
 				if fetch != nil {
-					io.WriteString(out, _ANSI_YELLOW+"\rw: Wait a moment for reading all data..."+_ANSI_ERASE_LINE)
+					io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
 					for {
 						row, err := fetch()
 						if err != nil && err != io.EOF {

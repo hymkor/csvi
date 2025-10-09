@@ -17,6 +17,8 @@ import (
 	"github.com/nyaosorg/go-readline-skk"
 
 	"github.com/hymkor/go-cursorposition"
+
+	"github.com/hymkor/csvi/internal/ansi"
 )
 
 type _ManualCtl struct {
@@ -79,7 +81,7 @@ func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candida
 		History: c,
 		Cursor:  65535,
 		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r%s%s%s", _ANSI_YELLOW, prompt, _ANSI_ERASE_LINE)
+			return fmt.Fprintf(w, "\r%s%s%s", ansi.YELLOW, prompt, ansi.ERASE_LINE)
 		},
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
@@ -93,7 +95,7 @@ func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c Candida
 		})
 	}
 
-	defer io.WriteString(out, _ANSI_CURSOR_OFF)
+	defer io.WriteString(out, ansi.CURSOR_OFF)
 	editor.BindKey(keys.Escape, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }
@@ -105,7 +107,7 @@ func (m _ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (strin
 		Default: defaultStr,
 		Cursor:  len(defaultStr) - len(filepath.Ext(defaultStr)),
 		PromptWriter: func(w io.Writer) (int, error) {
-			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, _ANSI_ERASE_LINE)
+			return fmt.Fprintf(w, "\r\x1B[0;33;40;1m%s%s", prompt, ansi.ERASE_LINE)
 		},
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
@@ -117,7 +119,7 @@ func (m _ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (strin
 		Completion: completion.File{},
 	})
 
-	defer io.WriteString(out, _ANSI_CURSOR_OFF)
+	defer io.WriteString(out, ansi.CURSOR_OFF)
 	editor.BindKey(keys.Escape, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }
