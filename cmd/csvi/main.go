@@ -14,6 +14,7 @@ import (
 
 	"github.com/hymkor/csvi"
 	"github.com/hymkor/csvi/internal/ansi"
+	"github.com/hymkor/csvi/internal/manualctl"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -44,7 +45,7 @@ type legacyTerminal struct {
 }
 
 func newLegacyTerminal() (legacyTerminal, error) {
-	p, err := csvi.NewManualCtl()
+	p, err := manualctl.New()
 	return legacyTerminal{Pilot: p}, err
 }
 

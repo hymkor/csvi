@@ -1,4 +1,4 @@
-package csvi
+package manualctl
 
 import (
 	"context"
@@ -23,19 +23,19 @@ import (
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
-type _ManualCtl struct {
+type ManualCtl struct {
 	*tty.TTY
 }
 
-func NewManualCtl() (_ManualCtl, error) {
-	var rc _ManualCtl
+func New() (ManualCtl, error) {
+	var rc ManualCtl
 	var err error
 
 	rc.TTY, err = tty.Open()
 	return rc, err
 }
 
-func (m _ManualCtl) Calibrate() error {
+func (m ManualCtl) Calibrate() error {
 	// Measure how far the cursor moves while the `▽` is printed
 	w, err := cursorposition.AmbiguousWidthGoTty(m.TTY, os.Stderr)
 	if err != nil {
@@ -45,15 +45,15 @@ func (m _ManualCtl) Calibrate() error {
 	return nil
 }
 
-func (m _ManualCtl) Close() error {
+func (m ManualCtl) Close() error {
 	return m.TTY.Close()
 }
 
-func (m _ManualCtl) Size() (int, int, error) {
+func (m ManualCtl) Size() (int, int, error) {
 	return m.TTY.Size()
 }
 
-func (m _ManualCtl) GetKey() (string, error) {
+func (m ManualCtl) GetKey() (string, error) {
 	return readline.GetKey(m.TTY)
 }
 
@@ -75,7 +75,7 @@ func skkInit() {
 	})
 }
 
-func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate.Candidate) (string, error) {
+func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate.Candidate) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,
@@ -102,7 +102,7 @@ func (m _ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candida
 	return editor.ReadLine(context.Background())
 }
 
-func (m _ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string, error) {
+func (m ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,

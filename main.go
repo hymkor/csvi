@@ -18,6 +18,7 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 
 	"github.com/hymkor/csvi/internal/ansi"
+	"github.com/hymkor/csvi/internal/manualctl"
 	"github.com/hymkor/csvi/internal/nonblock"
 )
 
@@ -483,7 +484,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	pilot := cfg.Pilot
 	if pilot == nil {
 		var err error
-		pilot, err = NewManualCtl()
+		pilot, err = manualctl.New()
 		if err != nil {
 			return nil, err
 		}
