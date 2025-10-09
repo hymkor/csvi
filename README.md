@@ -99,6 +99,8 @@ Options
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
 * `-rv` Enable reverse-video display (invert foreground and background colors)
+* `-an` Bypass width detection; assume ambiguous-width chars are narrow (1 cell)
+* `-aw` Bypass width detection; assume ambiguous-width chars are wide (2 cells)
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
