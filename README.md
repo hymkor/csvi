@@ -4,8 +4,6 @@
 
 **\<English\>** / [\<Japanese\>](./README_ja.md)
 
-macOS is also supported experimentally, as the developer does not have direct access to a macOS environment.  
-→ You can try it from [v1.13.0](https://github.com/hymkor/csvi/releases/tag/v1.13.0)
 **CSVI** is a terminal-based CSV editor for UNIX-like systems and Windows.
 
 ### &#10024; Key Features

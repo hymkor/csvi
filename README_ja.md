@@ -4,7 +4,6 @@
 
 [\<English\>](./README.md) / **\<Japanese\>**
 
-( macOS でも動作するはずですが、検証環境が開発側にないため、実験的なサポート状態です →サポートバージョン: [v1.13.0](https://github.com/hymkor/csvi/releases/tag/v1.13.0) )
 **CSVI** は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。
 
 ### &#10024; 主な特徴
