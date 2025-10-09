@@ -98,6 +98,7 @@ Options
 * `-fixcol` forbid insertion or deletion of cells (disables `i`, `a`, and `x`)
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
+* `-rv` Enable reverse-video display (invert foreground and background colors)
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 

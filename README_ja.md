@@ -97,6 +97,7 @@ Options
 * `-fixcol` セルの挿入削除を禁止する (`i`, `a`, `x` を無効化)
 * `-p` ヘッダー行を保護する
 * `-readonly` 読み取り専用モード
+* `-rv` 反転表示を有効にする（文字色と背景色を反転）
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
