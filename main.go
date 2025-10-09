@@ -492,9 +492,8 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		cfg.Pilot = pilot
 	}
 	if _, ok := out.(*os.File); ok {
-		if err := pilot.Calibrate(); err != nil {
-			return nil, err
-		}
+		fmt.Print("\r   Calibrating terminal... (press any key to skip)\r")
+		_ = pilot.Calibrate()
 	}
 	app := &_Application{
 		Config:   cfg,
