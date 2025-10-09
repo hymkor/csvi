@@ -13,9 +13,10 @@ import (
 	"github.com/mattn/go-runewidth"
 
 	"github.com/hymkor/csvi"
-	"github.com/hymkor/csvi/internal/ansi"
-	"github.com/hymkor/csvi/internal/manualctl"
+	"github.com/hymkor/csvi/legacy"
 	"github.com/hymkor/csvi/uncsv"
+
+	"github.com/hymkor/csvi/internal/ansi"
 )
 
 var (
@@ -39,20 +40,6 @@ var (
 	flagAmbNallow     = flag.Bool("an", false, "Bypass width detection; assume ambiguous-width chars are narrow (1 cell)")
 )
 
-// legacyTerminal is the terminal object not supporting `ESC[6n`
-type legacyTerminal struct {
-	csvi.Pilot
-}
-
-func newLegacyTerminal() (legacyTerminal, error) {
-	p, err := manualctl.New()
-	return legacyTerminal{Pilot: p}, err
-}
-
-func (L legacyTerminal) Calibrate() error {
-	return nil
-}
-
 func mains() error {
 	if *flagHelp {
 		flag.Usage()
@@ -75,7 +62,7 @@ func mains() error {
 	} else if *flagAmbWide || *flagAmbNallow {
 		runewidth.DefaultCondition.EastAsianWidth = *flagAmbWide
 		var err error
-		pilot, err = newLegacyTerminal()
+		pilot, err = legacy.New()
 		if err != nil {
 			return err
 		}
