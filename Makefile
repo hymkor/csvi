@@ -42,7 +42,7 @@ clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
 release:
-	gh release create -d --notes "" -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
+	pwsh latest-notes.ps1 | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
 	make-scoop-manifest *-windows-*.zip > $(NAME).json
