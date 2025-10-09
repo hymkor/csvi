@@ -1,6 +1,8 @@
 * Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
-* Added API functions `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice` and and `(*_Application) MessageAndGetKey`.
 * Added `-rv` option to prevent unnatural colors on terminals with a white background
+* At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence `ESC[6n`, this could cause a hang followed by an error. To address this, `-aw` (treat ambiguous-width characters as 2 cells) and `-an` (treat ambiguous-width characters as 1 cell) options were added to skip the measurement and explicitly specify the character width.
+* Added API functions `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice` and and `(*_Application) MessageAndGetKey`.
+* Split the `"csvi"` package into subpackages such as `"internal/ansi"`, `"internal/manualctl"`, `"legacy"`, and `"candidate"`.
 
 v1.14.0
 =======
