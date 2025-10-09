@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -38,53 +37,6 @@ const (
 	_ANSI_CURSOR_OFF = "\x1B[?25l"
 	_ANSI_CURSOR_ON  = "\x1B[?25h"
 )
-
-type CellWidth struct {
-	Default int
-	Option  map[int]int
-}
-
-func NewCellWidth() *CellWidth {
-	cw := &CellWidth{
-		Default: 14,
-		Option:  map[int]int{},
-	}
-	return cw
-}
-
-func (cw *CellWidth) Get(n int) int {
-	if val, ok := cw.Option[n]; ok {
-		return val
-	}
-	return cw.Default
-}
-
-func (cw *CellWidth) Parse(s string) error {
-	var p string
-	cont := true
-	for cont {
-		p, s, cont = strings.Cut(s, ",")
-		left, right, ok := strings.Cut(p, ":")
-		if ok {
-			leftN, err := strconv.ParseUint(left, 10, 64)
-			if err != nil {
-				return err
-			}
-			rightN, err := strconv.ParseUint(right, 10, 64)
-			if err != nil {
-				return err
-			}
-			cw.Option[int(leftN)] = int(rightN)
-		} else {
-			value, err := strconv.ParseUint(p, 10, 64)
-			if err != nil {
-				return err
-			}
-			cw.Default = int(value)
-		}
-	}
-	return nil
-}
 
 func mains() error {
 	if *flagHelp {
@@ -148,7 +100,7 @@ func mains() error {
 	io.WriteString(out, _ANSI_CURSOR_OFF)
 	defer io.WriteString(out, _ANSI_CURSOR_ON)
 
-	cw := NewCellWidth()
+	cw := csvi.NewCellWidth()
 	if err := cw.Parse(*flagCellWidth); err != nil {
 		return err
 	}
@@ -159,7 +111,7 @@ func mains() error {
 	_, err := csvi.Config{
 		Mode:          mode,
 		Pilot:         pilot,
-		CellWidth:     cw.Get,
+		CellWidth:     cw,
 		HeaderLines:   int(*flagHeader),
 		FixColumn:     *flagFixColumn,
 		ReadOnly:      *flagReadOnly,

@@ -209,11 +209,11 @@ func (v *_View) clearCache() {
 	}
 }
 
-func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth func(int) int, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
 	cellWidth := func(n int) int {
-		return _cellWidth(n + startCol)
+		return _cellWidth.Get(n + startCol)
 	}
 	if h := headerLines; h > 0 {
 		enum := func(callback func([]uncsv.Cell) bool) {
@@ -345,7 +345,7 @@ type KeyEventArgs struct {
 
 type Config struct {
 	*uncsv.Mode
-	CellWidth       func(int) int
+	CellWidth       *CellWidth
 	HeaderLines     int
 	Pilot           Pilot
 	FixColumn       bool
@@ -453,9 +453,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 
 	cellWidth := cfg.CellWidth
 	if cellWidth == nil {
-		cellWidth = func(int) int {
-			return 14
-		}
+		cellWidth = NewCellWidth()
 	}
 
 	pilot := cfg.Pilot
@@ -909,12 +907,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		} else {
 			cellWidth := cfg.CellWidth
 			if cellWidth == nil {
-				cellWidth = func(int) int {
-					return 14
-				}
+				cellWidth = NewCellWidth()
 			}
 			for {
-				w := sum(cellWidth, startCol, cursorCol+1)
+				w := sum(cellWidth.Get, startCol, cursorCol+1)
 				if w <= screenWidth {
 					break
 				}
