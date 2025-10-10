@@ -34,6 +34,10 @@
   - Current Windows code page (auto-detected)  
   - Any encoding from the [IANA registry] using `-iana NAME`
 
+- **Color scheme options**
+  - Default colors assume a dark background.
+  - Use `-rv` for light backgrounds, or set `NO_COLOR` to disable color output (https://no-color.org/ )
+
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
 ![image](./csvi.gif)

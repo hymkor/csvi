@@ -33,6 +33,11 @@
   - Windows の現在のコードページ（自動検出）  
   - [IANA registry] に登録された任意のエンコーディング（`-iana NAME` で指定）
 
+- **配色設定**
+  - 既定では黒背景向けの配色です。
+  - `-rv` オプションで白背景向け配色に切り替えられます。
+  - 環境変数 `NO_COLOR` が定義されている場合はカラー表示を抑制します( https://no-color.org/ )
+
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
 ![image](./csvi.gif)
