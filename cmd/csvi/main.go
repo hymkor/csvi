@@ -54,6 +54,9 @@ func mains() error {
 	if *flagReverseVideo {
 		csvi.RevertColor()
 	}
+	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
+		csvi.MonoChrome()
+	}
 
 	var pilot csvi.Pilot
 	if *flagAuto != "" {

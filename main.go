@@ -58,9 +58,21 @@ var headColorStyle = _ColorStyle{
 	Odd:    colorSet{On: "\x1B[49;36;1m", Off: "\x1B[22m"},
 }
 
+var monoChromeStyle = _ColorStyle{
+	Cursor: colorSet{On: "\x1B[7m", Off: "\x1B[0m"},
+	Even:   colorSet{On: "\x1B[0m", Off: "\x1B[0m"},
+	Odd:    colorSet{On: "\x1B[0m", Off: "\x1B[0m"},
+}
+
 func RevertColor() {
 	bodyColorStyle.Revert()
 	headColorStyle.Revert()
+}
+
+func MonoChrome() {
+	bodyColorStyle = monoChromeStyle
+	headColorStyle = monoChromeStyle
+	ansi.YELLOW = ""
 }
 
 var replaceTable = strings.NewReplacer(
