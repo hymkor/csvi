@@ -38,6 +38,9 @@ func New() (ManualCtl, error) {
 }
 
 func (m ManualCtl) Calibrate() error {
+	if v := os.Getenv("RUNEWIDTH_EASTASIAN"); len(v) > 0 {
+		return nil
+	}
 	DebugBell.Write([]byte{'\a'})
 
 	// Measure how far the cursor moves while the `▽` is printed
