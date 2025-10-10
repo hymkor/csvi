@@ -1,16 +1,16 @@
 {
-    "version": "1.14.0",
+    "version": "1.15.0",
     "description": "Terminal CSV Editor",
     "homepage": "https://github.com/hymkor/csvi",
     "license": "MIT License",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/hymkor/csvi/releases/download/v1.14.0/csvi-v1.14.0-windows-386.zip",
-            "hash": "63b6e242c8285ed6a7a97baf231cab54a79d1ded47d4f99ae1c8f54300ea2794"
+            "url": "https://github.com/hymkor/csvi/releases/download/v1.15.0/csvi-v1.15.0-windows-386.zip",
+            "hash": "807d68aabcb7bfa4afb43aa8ba4dbfea8a8fd82582f2ed567e2464feaeca5710"
         },
         "64bit": {
-            "url": "https://github.com/hymkor/csvi/releases/download/v1.14.0/csvi-v1.14.0-windows-amd64.zip",
-            "hash": "7a8c9dc4245d46e6d483312f5119e3d9e1e8fc348ffa2b6aa17269fb703fd0f4"
+            "url": "https://github.com/hymkor/csvi/releases/download/v1.15.0/csvi-v1.15.0-windows-amd64.zip",
+            "hash": "dd814e3bd787bab8e075af4ca192c17655e7e46f968c4f3ec7e530d6b7352f87"
         }
     },
     "bin": "csvi.exe",
