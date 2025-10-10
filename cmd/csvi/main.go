@@ -38,6 +38,7 @@ var (
 	flagReverseVideo  = flag.Bool("rv", false, "Enable reverse-video display (invert foreground and background colors)")
 	flagAmbWide       = flag.Bool("aw", false, "Bypass width detection; assume ambiguous-width chars are wide (2 cells)")
 	flagAmbNallow     = flag.Bool("an", false, "Bypass width detection; assume ambiguous-width chars are narrow (1 cell)")
+	flagDebugBell     = flag.Bool("debug-bell", false, "Enable Debug Bell")
 )
 
 func mains() error {
@@ -57,7 +58,9 @@ func mains() error {
 	if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
 		csvi.MonoChrome()
 	}
-
+	if *flagDebugBell {
+		csvi.EnableDebugBell(os.Stderr)
+	}
 	var pilot csvi.Pilot
 	if *flagAuto != "" {
 		pilot = &_AutoPilot{script: *flagAuto}

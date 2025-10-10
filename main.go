@@ -966,3 +966,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		up(lfCount, out)
 	}
 }
+
+func EnableDebugBell(w io.Writer) {
+	manualctl.DebugBell = w
+}

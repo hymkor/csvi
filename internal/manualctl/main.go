@@ -23,6 +23,8 @@ import (
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
+var DebugBell = io.Discard
+
 type ManualCtl struct {
 	*tty.TTY
 }
@@ -36,6 +38,8 @@ func New() (ManualCtl, error) {
 }
 
 func (m ManualCtl) Calibrate() error {
+	DebugBell.Write([]byte{'\a'})
+
 	// Measure how far the cursor moves while the `▽` is printed
 	w, err := cursorposition.AmbiguousWidthGoTty(m.TTY, os.Stderr)
 	if err != nil {
