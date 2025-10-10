@@ -3,6 +3,7 @@
 - 起動時に曖昧幅の Unicode 文字の表示幅を計測していたが、カーソル位置を取得するシーケンス `ESC[6n` をサポートしない端末では、入力待ちのままエラー終了してしまう問題があった。そのため：
     - 幅を明示的に指定して計測をスキップできる `-aw`（曖昧幅を2セルとして扱う）および `-an`（曖昧幅を1セルとして扱う）オプションを追加した。
     - `ESC[6n` が無効な場合でもエラーとせず、編集を継続できるようにした。
+- 環境変数 `NO_COLOR` が定義されている場合、カラー表示を抑制するようにした ( https://no-color.org/ に準拠 )
 - FreeBSD/amd64 をサポート
 - API関数: `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice`, `(*_Application) MessageAndGetKey` を追加
 - `"csvi"` パッケージを `"internal/ansi"`, `"internal/manualctl"`, `"legacy"`, `"candidate"` などのサブパッケージに分解した
