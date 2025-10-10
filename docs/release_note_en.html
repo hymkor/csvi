@@ -1,6 +1,6 @@
 <!DOCTYPE html><html><head>
 <title>&#34;CSVI&#34; Release notes</title>
-<style type="text/css"><!--
+<style type="text/css">
 /* light */
 .markdown-body {
   color-scheme: light;
@@ -1137,10 +1137,25 @@ a.permalink:hover{
   text-decoration: underline;
 }
 
-// -->
 </style>
 </head><body>
 <div class="main markdown-body">
+<h1 id="v1150">v1.15.0</h1>
+<p>Oct 10, 2025</p>
+<ul>
+<li>Added key bindings <code>]</code> and <code>[</code> to adjust the width of the current column (widen and narrow, respectively).</li>
+<li>Added <code>-rv</code> option to prevent unnatural colors on terminals with a white background</li>
+<li>At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence <code>ESC[6n</code>, this could cause a hang followed by an error. To address this:
+<ul>
+<li><code>-aw</code> (treat ambiguous-width characters as 2 cells) and <code>-an</code> (treat ambiguous-width characters as 1 cell) options were added to skip the measurement and explicitly specify the character width.</li>
+<li>If <code>ESC[6n</code> is not supported, the program now continues without aborting.</li>
+</ul>
+</li>
+<li>Suppress color output if the <code>NO_COLOR</code> environment variable is set (following <a href="https://no-color.org/">https://no-color.org/</a> )</li>
+<li>Added support for FreeBSD/amd64</li>
+<li>Added API functions <code>(Config) EditFromStringSlice</code>, <code>uncsv.NewRowFromStringSlice</code> and and <code>(*_Application) MessageAndGetKey</code>.</li>
+<li>Split the <code>&quot;csvi&quot;</code> package into subpackages such as <code>&quot;internal/ansi&quot;</code>, <code>&quot;internal/manualctl&quot;</code>, <code>&quot;legacy&quot;</code>, and <code>&quot;candidate&quot;</code>.</li>
+</ul>
 <h1 id="v1140">v1.14.0</h1>
 <p>Jun 2, 2025</p>
 <ul>
@@ -1159,7 +1174,7 @@ a.permalink:hover{
 </ul>
 <h1 id="v1130">v1.13.0</h1>
 <p>May 14, 2025</p>
-<h2 id="-experimental-release-for-macos-users">🚀 Experimental Release for macOS Users</h2>
+<h2 id="%F0%9F%9A%80-experimental-release-for-macos-users">🚀 Experimental Release for macOS Users</h2>
 <p>This release includes a <strong>macOS build for the first time</strong>!</p>
 <p>We don't have access to a macOS environment, so we can't test it ourselves.
 If you're a macOS user and willing to help, <strong>please try it and report back</strong> through GitHub Issues or Discussions.</p>
@@ -1474,4 +1489,50 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>first release</li>
 </ul>
 </div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#v1150">v1.15.0</a></li>
+<li><a href="#v1140">v1.14.0</a></li>
+<li><a href="#v1131">v1.13.1</a></li>
+<li><a href="#v1130">v1.13.0</a>
+<ul>
+<li><a href="#experimental-release-for-macos-users">🚀 Experimental Release for macOS Users</a></li>
+<li><a href="#other-changes">Other changes</a></li>
+</ul>
+</li>
+<li><a href="#v1120">v1.12.0</a></li>
+<li><a href="#v1111">v1.11.1</a></li>
+<li><a href="#v1110">v1.11.0</a></li>
+<li><a href="#v1101">v1.10.1</a></li>
+<li><a href="#v1100">v1.10.0</a></li>
+<li><a href="#v195">v1.9.5</a></li>
+<li><a href="#v194">v1.9.4</a></li>
+<li><a href="#v193">v1.9.3</a></li>
+<li><a href="#v192">v1.9.2</a></li>
+<li><a href="#v191">v1.9.1</a></li>
+<li><a href="#v190">v1.9.0</a></li>
+<li><a href="#v181">v1.8.1</a></li>
+<li><a href="#v180">v1.8.0</a></li>
+<li><a href="#v171">v1.7.1</a></li>
+<li><a href="#v170">v1.7.0</a></li>
+<li><a href="#v160">v1.6.0</a></li>
+<li><a href="#v150">v1.5.0</a></li>
+<li><a href="#v140">v1.4.0</a></li>
+<li><a href="#v130">v1.3.0</a></li>
+<li><a href="#v120">v1.2.0</a></li>
+<li><a href="#v113">v1.1.3</a></li>
+<li><a href="#v112">v1.1.2</a></li>
+<li><a href="#v111">v1.1.1</a></li>
+<li><a href="#v110">v1.1.0</a></li>
+<li><a href="#v100">v1.0.0</a></li>
+<li><a href="#v062">v0.6.2</a></li>
+<li><a href="#v061">v0.6.1</a></li>
+<li><a href="#v060">v0.6.0</a></li>
+<li><a href="#v050">v0.5.0</a></li>
+<li><a href="#v040">v0.4.0</a></li>
+<li><a href="#v030">v0.3.0</a></li>
+<li><a href="#v020">v0.2.0</a></li>
+<li><a href="#v010">v0.1.0</a></li>
+</ul>
+</div><!-- "sidebar" -->
 </body></html>

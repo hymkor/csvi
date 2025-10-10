@@ -1,6 +1,6 @@
 <!DOCTYPE html><html><head>
 <title>&#34;CSVI&#34; Terminal CSV Editor</title>
-<style type="text/css"><!--
+<style type="text/css">
 /* light */
 .markdown-body {
   color-scheme: light;
@@ -1137,45 +1137,39 @@ a.permalink:hover{
   text-decoration: underline;
 }
 
-// -->
 </style>
 </head><body>
 <div class="main markdown-body">
 <h1 id="csvi---terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor</h1>
-<p><a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi" alt="GoDev"></a></p>
+<p><a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi" alt="GoDev" /></a></p>
 <p><strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a></p>
-<blockquote>
-<p><em>As of version 1.6.0, CSView has been renamed to CSVI to avoid conflicts with other tools using the same name.</em></p>
-</blockquote>
-<p><strong>CSVI</strong> is a terminal-based CSV editor for Linux and Windows.<br>
-macOS is also supported experimentally, as the developer does not have direct access to a macOS environment.<br>
-→ You can try it from <a href="https://github.com/hymkor/csvi/releases/tag/v1.13.0">v1.13.0</a></p>
-<h3 id="x2728-key-features">✨ Key Features</h3>
+<p><strong>CSVI</strong> is a terminal-based CSV editor for UNIX-like systems and Windows.</p>
+<h3 id="10024-key-features">✨ Key Features</h3>
 <ul>
 <li>
-<p><strong>Minimal changes on save</strong><br>
-CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.<br>
+<p><strong>Minimal changes on save</strong><br />
+CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.<br />
 Only actual edits are saved—making it ideal for clean diffs and safe edits to production data.</p>
 </li>
 <li>
-<p><strong>vi-style and Emacs-style keybindings</strong><br>
+<p><strong>vi-style and Emacs-style keybindings</strong><br />
 Move the cursor like in vi, and edit cells like in Emacs.</p>
 </li>
 <li>
-<p><strong>Reads from both file and standard input</strong><br>
+<p><strong>Reads from both file and standard input</strong><br />
 You can pipe CSV data into CSVI or open a file directly.</p>
 </li>
 <li>
-<p><strong>Fast startup and background loading</strong><br>
+<p><strong>Fast startup and background loading</strong><br />
 Opens large files quickly without blocking the interface.</p>
 </li>
 <li>
-<p><strong>Visual feedback for edits</strong><br>
-Modified cells are underlined.<br>
+<p><strong>Visual feedback for edits</strong><br />
+Modified cells are underlined.<br />
 Press <code>u</code> to undo a cell's change and restore its original value.</p>
 </li>
 <li>
-<p><strong>Shows original format details</strong><br>
+<p><strong>Shows original format details</strong><br />
 The bottom line of the screen shows technical info: quoting, encoding, field separators, and more—just as they appeared in the original file.</p>
 </li>
 <li>
@@ -1187,8 +1181,15 @@ The bottom line of the screen shows technical info: quoting, encoding, field sep
 <li>Any encoding from the <a href="http://www.iana.org/assignments/character-sets/character-sets.xhtml">IANA registry</a> using <code>-iana NAME</code></li>
 </ul>
 </li>
+<li>
+<p><strong>Color scheme options</strong></p>
+<ul>
+<li>Default colors assume a dark background.</li>
+<li>Use <code>-rv</code> for light backgrounds, or set <code>NO_COLOR</code> to disable color output (<a href="https://no-color.org/">https://no-color.org/</a> )</li>
 </ul>
-<p><img src="./csvi.gif" alt="image"></p>
+</li>
+</ul>
+<p><img src="./csvi.gif" alt="image" /></p>
 <p><a href="https://www.youtube.com/watch?v=_cxBQKpfUds">Video</a> by <a href="https://github.com/emisjerry">@emisjerry</a></p>
 <h2 id="install">Install</h2>
 <h3 id="manual-installation">Manual Installation</h3>
@@ -1229,6 +1230,9 @@ scoop install csvi
 <li><code>-fixcol</code> forbid insertion or deletion of cells (disables <code>i</code>, <code>a</code>, and <code>x</code>)</li>
 <li><code>-p</code> Protect the header line</li>
 <li><code>-readonly</code> Read Only Mode</li>
+<li><code>-rv</code> Enable reverse-video display (invert foreground and background colors)</li>
+<li><code>-an</code> Bypass width detection; assume ambiguous-width chars are narrow (1 cell)</li>
+<li><code>-aw</code> Bypass width detection; assume ambiguous-width chars are wide (2 cells)</li>
 </ul>
 <h2 id="key-binding">Key-binding</h2>
 <ul>
@@ -1270,8 +1274,14 @@ scoop install csvi
 <li><code>p</code> (paste the value of kill-buffer to the current cell)</li>
 </ul>
 </li>
+<li>Display settings
+<ul>
 <li><code>L</code> (reload the file using a specified encoding)</li>
-<li>Repaint: <code>Ctrl</code>-<code>L</code></li>
+<li><code>Ctrl</code>-<code>L</code> (Repaint)</li>
+<li><code>]</code> (widen the column at the cursor)</li>
+<li><code>[</code> (narrow the column at the cursor)</li>
+</ul>
+</li>
 <li>Quit: <code>q</code> or <code>ESC</code></li>
 </ul>
 <h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></h2>
@@ -1347,7 +1357,7 @@ func main() {
 <li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
 </ul>
 <div class="footnotes" role="doc-endnotes">
-<hr>
+<hr />
 <ol>
 <li id="fn:1">
 <p>Simple Kana to Kanji conversion program. One of the Japanese input method editor.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
@@ -1355,4 +1365,27 @@ func main() {
 </ol>
 </div>
 </div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#csvi-terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor</a>
+- <a href="#10024-key-features">✨ Key Features</a>
+<ul>
+<li><a href="#install">Install</a>
+<ul>
+<li><a href="#manual-installation">Manual Installation</a></li>
+<li><a href="#use-go-install">Use &quot;go install&quot;</a></li>
+<li><a href="#use-scoop-installer-windows-only">Use scoop-installer (Windows only)</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#key-binding">Key-binding</a></li>
+<li><a href="#readline-with-skkskk">Readline with SKK[^SKK]</a></li>
+<li><a href="#use-as-a-go-package">Use as a Go package</a></li>
+<li><a href="#release-note">Release Note</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#author">Author</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- "sidebar" -->
 </body></html>

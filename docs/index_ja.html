@@ -1,6 +1,6 @@
 <!DOCTYPE html><html><head>
 <title>&#34;CSVI&#34; Terminal CSV Editor</title>
-<style type="text/css"><!--
+<style type="text/css">
 /* light */
 .markdown-body {
   color-scheme: light;
@@ -1137,43 +1137,38 @@ a.permalink:hover{
   text-decoration: underline;
 }
 
-// -->
 </style>
 </head><body>
 <div class="main markdown-body">
-<h1 id="csvi---csv">&quot;CSVI&quot; - ターミナル用CSVエディタ</h1>
-<p><a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi" alt="GoDev"></a></p>
+<h1 id="csvi---%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8csv%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">&quot;CSVI&quot; - ターミナル用CSVエディタ</h1>
+<p><a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi" alt="GoDev" /></a></p>
 <p><a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong></p>
-<blockquote>
-<p><em>同分野に同名の製品が比較的多いため、バージョン 1.6.0 より CSView は CSVI に改名しました。</em></p>
-</blockquote>
-<p><strong>CSVI</strong> は、Linux や Windows のターミナル上で動作する CSV エディタです。
-( macOS でも動作するはずですが、検証環境が開発側にないため、実験的なサポート状態です →サポートバージョン: <a href="https://github.com/hymkor/csvi/releases/tag/v1.13.0">v1.13.0</a> )</p>
-<h3 id="x2728-">✨ 主な特徴</h3>
+<p><strong>CSVI</strong> は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。</p>
+<h3 id="10024-%E4%B8%BB%E3%81%AA%E7%89%B9%E5%BE%B4">✨ 主な特徴</h3>
 <ul>
 <li>
-<p><strong>保存時の差分が最小</strong><br>
-編集していないセルは、元のテキストの表現（改行コード、二重引用符、BOM、エンコーディング、区切り文字など）を極力維持します。<br>
+<p><strong>保存時の差分が最小</strong><br />
+編集していないセルは、元のテキストの表現（改行コード、二重引用符、BOM、エンコーディング、区切り文字など）を極力維持します。<br />
 そのため、本当に加えた変更だけが差分として現れます。実データを安全に編集したい場合に最適です。</p>
 </li>
 <li>
-<p><strong>vi風のカーソル移動、Emacs風のセル編集</strong><br>
+<p><strong>vi風のカーソル移動、Emacs風のセル編集</strong><br />
 <code>h/j/k/l</code> などで移動、<code>Ctrl</code> 系のキーで編集できます。</p>
 </li>
 <li>
-<p><strong>ファイル／標準入力の両方に対応</strong><br>
+<p><strong>ファイル／標準入力の両方に対応</strong><br />
 CSVファイルを直接開くだけでなく、パイプ経由のデータも読み込めます。</p>
 </li>
 <li>
-<p><strong>高速な起動とバックグラウンド読込</strong><br>
+<p><strong>高速な起動とバックグラウンド読込</strong><br />
 ファイルをすばやく開きつつ、読み込み処理は裏で進行します。</p>
 </li>
 <li>
-<p><strong>変更の視覚的な表示</strong><br>
+<p><strong>変更の視覚的な表示</strong><br />
 編集したセルには下線が表示され、<code>u</code>キーで変更前の状態に戻せます。</p>
 </li>
 <li>
-<p><strong>元データの構文情報を表示</strong><br>
+<p><strong>元データの構文情報を表示</strong><br />
 引用符の有無、区切り文字、文字コードなどの詳細を、画面最下行に表示します。</p>
 </li>
 <li>
@@ -1185,8 +1180,16 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 <li><a href="http://www.iana.org/assignments/character-sets/character-sets.xhtml">IANA registry</a> に登録された任意のエンコーディング（<code>-iana NAME</code> で指定）</li>
 </ul>
 </li>
+<li>
+<p><strong>配色設定</strong></p>
+<ul>
+<li>既定では黒背景向けの配色です。</li>
+<li><code>-rv</code> オプションで白背景向け配色に切り替えられます。</li>
+<li>環境変数 <code>NO_COLOR</code> が定義されている場合はカラー表示を抑制します( <a href="https://no-color.org/">https://no-color.org/</a> )</li>
 </ul>
-<p><img src="./csvi.gif" alt="image"></p>
+</li>
+</ul>
+<p><img src="./csvi.gif" alt="image" /></p>
 <p><a href="https://github.com/emisjerry">@emisjerry</a> さんによる <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">紹介動画</a></p>
 <h2 id="install">Install</h2>
 <h3 id="manual-installation">Manual Installation</h3>
@@ -1195,10 +1198,10 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 <p>⚠️ Note: macOS用バイナリは実験的ビルドで、検証できていません。
 もし何らかの問題を確認されましたらお知らせください！</p>
 </blockquote>
-<h3 id="go-install-">&quot;go install&quot; を使う場合</h3>
+<h3 id="go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88">&quot;go install&quot; を使う場合</h3>
 <pre><code>go install github.com/hymkor/csvi@latest
 </code></pre>
-<h3 id="scoop--windows">scoop インストーラーを使う場合 (Windowsのみ)</h3>
+<h3 id="scoop-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-windows%E3%81%AE%E3%81%BF">scoop インストーラーを使う場合 (Windowsのみ)</h3>
 <pre><code>scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 </code></pre>
 <p>もしくは</p>
@@ -1227,8 +1230,11 @@ scoop install csvi
 <li><code>-fixcol</code> セルの挿入削除を禁止する (<code>i</code>, <code>a</code>, <code>x</code> を無効化)</li>
 <li><code>-p</code> ヘッダー行を保護する</li>
 <li><code>-readonly</code> 読み取り専用モード</li>
+<li><code>-rv</code> 反転表示を有効にする（文字色と背景色を反転）</li>
+<li><code>-an</code> Unicode文字のあいまい幅の自動検出をとばし、1セルと仮定する</li>
+<li><code>-aw</code> Unicode文字のあいまい幅の自動検出をとばし、2セルと仮定する</li>
 </ul>
-<h2 id="heading">キーバインド</h2>
+<h2 id="%E3%82%AD%E3%83%BC%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89">キーバインド</h2>
 <ul>
 <li>カーソル移動
 <ul>
@@ -1268,8 +1274,14 @@ scoop install csvi
 <li><code>p</code> (現在のセルに内部クリップボードの値をペースト)</li>
 </ul>
 </li>
+<li>表示設定
+<ul>
 <li><code>L</code> (指定したエンコーディングでファイルを再読み込み)</li>
-<li>再表示: <code>Ctrl</code>-<code>L</code></li>
+<li><code>Ctrl</code>-<code>L</code>: (再表示)</li>
+<li><code>]</code> (カーソルのある列の幅を広げる)</li>
+<li><code>[</code> (カーソルのある列の幅を縮める)</li>
+</ul>
+</li>
 <li>終了: <code>q</code> or <code>ESC</code></li>
 </ul>
 <h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></h2>
@@ -1345,7 +1357,7 @@ func main() {
 <li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
 </ul>
 <div class="footnotes" role="doc-endnotes">
-<hr>
+<hr />
 <ol>
 <li id="fn:1">
 <p>Simple Kana to Kanji conversion program. One of the Japanese input method editor.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
@@ -1353,4 +1365,27 @@ func main() {
 </ol>
 </div>
 </div><!-- "main" -->
+<div class="sidebar markdown-body">
+<ul>
+<li><a href="#csvi-%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8csv%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">&quot;CSVI&quot; - ターミナル用CSVエディタ</a>
+- <a href="#10024-%E4%B8%BB%E3%81%AA%E7%89%B9%E5%BE%B4">✨ 主な特徴</a>
+<ul>
+<li><a href="#install">Install</a>
+<ul>
+<li><a href="#manual-installation">Manual Installation</a></li>
+<li><a href="#go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88">&quot;go install&quot; を使う場合</a></li>
+<li><a href="#scoop-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-windows%E3%81%AE%E3%81%BF">scoop インストーラーを使う場合 (Windowsのみ)</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#%E3%82%AD%E3%83%BC%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89">キーバインド</a></li>
+<li><a href="#readline-with-skkskk">Readline with SKK[^SKK]</a></li>
+<li><a href="#use-as-a-package">Use as a package</a></li>
+<li><a href="#release-note">Release Note</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#author">Author</a></li>
+</ul>
+</li>
+</ul>
+</div><!-- "sidebar" -->
 </body></html>
