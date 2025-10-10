@@ -1,3 +1,7 @@
+v1.15.0
+=======
+Oct 10, 2025
+
 * Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
 * Added `-rv` option to prevent unnatural colors on terminals with a white background
 * At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence `ESC[6n`, this could cause a hang followed by an error. To address this:
