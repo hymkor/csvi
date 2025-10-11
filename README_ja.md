@@ -103,8 +103,6 @@ Options
 * `-p` ヘッダー行を保護する
 * `-readonly` 読み取り専用モード
 * `-rv` 反転表示を有効にする（文字色と背景色を反転）
-* `-an` Unicode文字のあいまい幅の自動検出をとばし、1セルと仮定する
-* `-aw` Unicode文字のあいまい幅の自動検出をとばし、2セルと仮定する
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
