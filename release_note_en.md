@@ -1,3 +1,6 @@
+* Skipped the measurement of ambiguous-width Unicode characters when the environment variable `RUNEWIDTH_EASTASIAN` is defined. Accordingly, the `-aw` option (equivalent to `RUNEWIDTH_EASTASIAN=1`) and the `-an` option (equivalent to `RUNEWIDTH_EASTASIAN=0`) have been removed.
+* When the environment variable `COLORFGBG` is defined in the form `(FG);(BG)` and `(FG)` is less than `(BG)`, the program now uses color settings designed for light backgrounds (equivalent to `-rv`).
+
 v1.15.0
 =======
 Oct 10, 2025
