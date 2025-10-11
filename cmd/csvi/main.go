@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -42,26 +41,6 @@ var (
 	flagDebugBell     = flag.Bool("debug-bell", false, "Enable Debug Bell")
 )
 
-func isRevertVideoWithEnv() bool {
-	colorFgBg, ok := os.LookupEnv("COLORFGBG")
-	if !ok {
-		return false
-	}
-	fgStr, bgStr, ok := strings.Cut(colorFgBg, ";")
-	if !ok {
-		return false
-	}
-	fgInt, err := strconv.ParseInt(fgStr, 10, 64)
-	if err != nil {
-		return false
-	}
-	bgInt, err := strconv.ParseInt(bgStr, 10, 64)
-	if err != nil {
-		return false
-	}
-	return fgInt < bgInt
-}
-
 func mains() error {
 	if *flagHelp {
 		flag.Usage()
@@ -72,7 +51,7 @@ func mains() error {
 	if disable != nil {
 		defer disable()
 	}
-	if *flagReverseVideo || isRevertVideoWithEnv() {
+	if *flagReverseVideo || csvi.IsRevertVideoWithEnv() {
 		csvi.RevertColor()
 	} else if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
 		csvi.MonoChrome()

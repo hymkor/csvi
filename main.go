@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -969,4 +970,24 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 
 func EnableDebugBell(w io.Writer) {
 	manualctl.DebugBell = w
+}
+
+func IsRevertVideoWithEnv() bool {
+	colorFgBg, ok := os.LookupEnv("COLORFGBG")
+	if !ok {
+		return false
+	}
+	fgStr, bgStr, ok := strings.Cut(colorFgBg, ";")
+	if !ok {
+		return false
+	}
+	fgInt, err := strconv.ParseInt(fgStr, 10, 64)
+	if err != nil {
+		return false
+	}
+	bgInt, err := strconv.ParseInt(bgStr, 10, 64)
+	if err != nil {
+		return false
+	}
+	return fgInt < bgInt
 }
