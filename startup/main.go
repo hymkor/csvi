@@ -9,12 +9,11 @@ import (
 
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
-	"github.com/mattn/go-runewidth"
 
 	"github.com/hymkor/struct2flag"
 
 	"github.com/hymkor/csvi"
-	"github.com/hymkor/csvi/legacy"
+
 	"github.com/hymkor/csvi/uncsv"
 
 	"github.com/hymkor/csvi/internal/ansi"
@@ -37,8 +36,6 @@ type Flag struct {
 	ProtectHeader bool   `flag:"p,Protect the header line"`
 	Title         string `flag:"title,Set title string"`
 	ReverseVideo  bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
-	AmbWide       bool   `flag:"aw,Bypass width detection; assume ambiguous-width chars are wide (2 cells)"`
-	AmbNallow     bool   `flag:"an,Bypass width detection; assume ambiguous-width chars are narrow (1 cell)"`
 	DebugBell     bool   `flag:"debug-bell,Enable Debug Bell"`
 }
 
@@ -74,14 +71,6 @@ func (f *Flag) Run() error {
 	var pilot csvi.Pilot
 	if f.Auto != "" {
 		pilot = &_AutoPilot{script: f.Auto}
-		defer pilot.Close()
-	} else if f.AmbWide || f.AmbNallow {
-		runewidth.DefaultCondition.EastAsianWidth = f.AmbWide
-		var err error
-		pilot, err = legacy.New()
-		if err != nil {
-			return err
-		}
 		defer pilot.Close()
 	}
 
