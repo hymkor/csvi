@@ -20,8 +20,8 @@ import (
 )
 
 type Flag struct {
-	CellWidth     string `flag:"w,set the 'widths' of cells like '-w DefaultWidth,COL0:WIDTH0,COL1:WIDTH1,...'. COLn is the index starting from 0"`
-	Header        int    `flag:"1,the number of row-header"`
+	CellWidth     string `flag:"w,set the \x60widths\x60 of cells like '-w DefaultWidth,COL0:WIDTH0,COL1:WIDTH1,...'. COLn is the index starting from 0"`
+	Header        uint   `flag:"h,the number of row-header"`
 	Tsv           bool   `flag:"t,use TAB as field-separator"`
 	Csv           bool   `flag:"c,use Comma as field-separator"`
 	Semicolon     bool   `flag:"semicolon,use Semicolon as field-separator"`
