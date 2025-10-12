@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/hymkor/go-cursorposition v0.0.3
+	github.com/hymkor/struct2flag v0.0.0-20251012080816-90d3100bdfc9
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-runewidth v0.0.16

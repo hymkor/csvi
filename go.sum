@@ -2,6 +2,8 @@ github.com/hymkor/go-cursorposition v0.0.3 h1:XzZpoNexvSZbWxzgvCsJKH7py/npcZEDvI
 github.com/hymkor/go-cursorposition v0.0.3/go.mod h1:h3M3Z39RBzNKKaUkSmhvCUUF4xRA5ueeEVUFQT8qBKw=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0 h1:UIMMK09QSLCdM9Up4ny6qmBOrrn3rozxIRPfEUhxmTo=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0/go.mod h1:M/X0FJL+4wQtrm03JnL9gVyvhyscJk3t+ItZ29sla2g=
+github.com/hymkor/struct2flag v0.0.0-20251012080816-90d3100bdfc9 h1:KBZgaFym9Cw80wwiaj8mAtwqliUdZadCtj5nHsx4qms=
+github.com/hymkor/struct2flag v0.0.0-20251012080816-90d3100bdfc9/go.mod h1:Je1TEampOZlaARtEv1LFIuw1dVT1BZmIa1swu8NZh2M=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
 github.com/mattn/go-colorable v0.1.14/go.mod h1:6LmQG8QLFO4G5z1gPvYEzlUgJ2wF+stgPZH1UqBm1s8=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
