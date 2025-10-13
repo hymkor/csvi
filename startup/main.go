@@ -15,6 +15,44 @@ import (
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
+func (f *Flag) mode() (*uncsv.Mode, error) {
+	mode := &uncsv.Mode{}
+	if f.Iana != "" {
+		if err := mode.SetEncoding(f.Iana); err != nil {
+			return nil, fmt.Errorf("-iana %w", err)
+		}
+	}
+	if f.NonUTF8 {
+		mode.NonUTF8 = true
+	}
+	if f.Utf16le {
+		mode.SetUTF16LE()
+	}
+	if f.Utf16be {
+		mode.SetUTF16BE()
+	}
+	if len(f.flagSet.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
+		// Start with one empty line
+		mode.Comma = '\t'
+	} else {
+		mode.Comma = ','
+		args := f.flagSet.Args()
+		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
+			mode.Comma = '\t'
+		}
+		if f.Tsv {
+			mode.Comma = '\t'
+		}
+		if f.Csv {
+			mode.Comma = ','
+		}
+		if f.Semicolon {
+			mode.Comma = ';'
+		}
+	}
+	return mode, nil
+}
+
 func (f *Flag) Run() error {
 	if f.Help {
 		f.flagSet.Usage()
@@ -37,52 +75,22 @@ func (f *Flag) Run() error {
 		pilot = &_AutoPilot{script: f.Auto}
 		defer pilot.Close()
 	}
-
-	mode := &uncsv.Mode{}
-	if f.Iana != "" {
-		if err := mode.SetEncoding(f.Iana); err != nil {
-			return fmt.Errorf("-iana %w", err)
-		}
-	}
-	if f.NonUTF8 {
-		mode.NonUTF8 = true
-	}
-	if f.Utf16le {
-		mode.SetUTF16LE()
-	}
-	if f.Utf16be {
-		mode.SetUTF16BE()
-	}
-
 	var out io.Writer
 	var reader io.Reader
 	if len(f.flagSet.Args()) <= 0 {
 		out = colorable.NewColorableStderr()
+		reader = os.Stdin
 	} else {
 		out = colorable.NewColorableStdout()
-	}
-	if len(f.flagSet.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
-		// Start with one empty line
-		mode.Comma = '\t'
-	} else {
-		mode.Comma = ','
-		args := f.flagSet.Args()
-		if len(args) >= 1 && !strings.HasSuffix(strings.ToLower(args[0]), ".csv") {
-			mode.Comma = '\t'
-		}
-		if f.Tsv {
-			mode.Comma = '\t'
-		}
-		if f.Csv {
-			mode.Comma = ','
-		}
-		if f.Semicolon {
-			mode.Comma = ';'
-		}
-		reader = multiFileReader(args...)
+		reader = multiFileReader(f.flagSet.Args()...)
 	}
 	io.WriteString(out, ansi.CURSOR_OFF)
 	defer io.WriteString(out, ansi.CURSOR_ON)
+
+	mode, err := f.mode()
+	if err != nil {
+		return err
+	}
 
 	cw := csvi.NewCellWidth()
 	if err := cw.Parse(f.CellWidth); err != nil {
@@ -92,7 +100,7 @@ func (f *Flag) Run() error {
 	if f.Title != "" {
 		titles = []string{f.Title}
 	}
-	_, err := csvi.Config{
+	_, err = csvi.Config{
 		Mode:          mode,
 		Pilot:         pilot,
 		CellWidth:     cw,
