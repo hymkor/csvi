@@ -372,9 +372,9 @@ type KeyEventArgs struct {
 
 type Config struct {
 	*uncsv.Mode
-	CellWidth       *CellWidth
-	HeaderLines     int
-	Pilot           Pilot
+	CellWidth   *CellWidth
+	HeaderLines int
+	Pilot
 	FixColumn       bool
 	ReadOnly        bool
 	ProtectHeader   bool
@@ -512,7 +512,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		Config:   cfg,
 		csvLines: list.New(),
 		out:      out,
-		Pilot:    pilot,
 	}
 	if fetch != nil {
 		for i := 0; i < 100; i++ {

@@ -70,7 +70,6 @@ type _Application struct {
 	csvLines    *list.List
 	removedRows []*uncsv.Row
 	out         io.Writer
-	Pilot
 	*Config
 }
 
