@@ -64,6 +64,18 @@ func (f *Flag) setGlobalColor() {
 	}
 }
 
+func (f *Flag) dataSourceAndTtyOut() (io.Reader, io.Writer) {
+	if len(f.flagSet.Args()) <= 0 {
+		ttyOut := colorable.NewColorableStderr()
+		if isatty.IsTerminal(os.Stdin.Fd()) {
+			return nil, ttyOut
+		}
+		return os.Stdin, ttyOut
+	}
+	return multiFileReader(f.flagSet.Args()...),
+		colorable.NewColorableStdout()
+}
+
 func (f *Flag) Run() error {
 	if f.Help {
 		f.flagSet.Usage()
@@ -80,17 +92,10 @@ func (f *Flag) Run() error {
 		pilot = &_AutoPilot{script: f.Auto}
 		defer pilot.Close()
 	}
-	var out io.Writer
-	var reader io.Reader
-	if len(f.flagSet.Args()) <= 0 {
-		out = colorable.NewColorableStderr()
-		reader = os.Stdin
-	} else {
-		out = colorable.NewColorableStdout()
-		reader = multiFileReader(f.flagSet.Args()...)
-	}
-	io.WriteString(out, ansi.CURSOR_OFF)
-	defer io.WriteString(out, ansi.CURSOR_ON)
+	dataSource, ttyOut := f.dataSourceAndTtyOut()
+
+	io.WriteString(ttyOut, ansi.CURSOR_OFF)
+	defer io.WriteString(ttyOut, ansi.CURSOR_ON)
 
 	mode, err := f.mode()
 	if err != nil {
@@ -114,7 +119,7 @@ func (f *Flag) Run() error {
 		ReadOnly:      f.ReadOnly,
 		ProtectHeader: f.ProtectHeader,
 		Titles:        titles,
-	}.Edit(reader, out)
+	}.Edit(dataSource, ttyOut)
 
 	return err
 }
