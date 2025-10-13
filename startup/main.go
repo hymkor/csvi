@@ -53,6 +53,17 @@ func (f *Flag) mode() (*uncsv.Mode, error) {
 	return mode, nil
 }
 
+func (f *Flag) setGlobalColor() {
+	if f.ReverseVideo || csvi.IsRevertVideoWithEnv() {
+		csvi.RevertColor()
+	} else if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
+		csvi.MonoChrome()
+	}
+	if f.DebugBell {
+		csvi.EnableDebugBell(os.Stderr)
+	}
+}
+
 func (f *Flag) Run() error {
 	if f.Help {
 		f.flagSet.Usage()
@@ -62,14 +73,8 @@ func (f *Flag) Run() error {
 	if disable != nil {
 		defer disable()
 	}
-	if f.ReverseVideo || csvi.IsRevertVideoWithEnv() {
-		csvi.RevertColor()
-	} else if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
-		csvi.MonoChrome()
-	}
-	if f.DebugBell {
-		csvi.EnableDebugBell(os.Stderr)
-	}
+	f.setGlobalColor()
+
 	var pilot csvi.Pilot
 	if f.Auto != "" {
 		pilot = &_AutoPilot{script: f.Auto}
