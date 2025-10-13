@@ -402,28 +402,28 @@ func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Result, 
 	return cfg.Edit(in, out)
 }
 
-func (cfg Config) Edit(in io.Reader, out io.Writer) (*Result, error) {
-	if in == nil {
-		return cfg.edit(nil, out)
+func (cfg Config) Edit(dataSource io.Reader, ttyOut io.Writer) (*Result, error) {
+	if dataSource == nil {
+		return cfg.edit(nil, ttyOut)
 	}
-	reader, ok := in.(*bufio.Reader)
+	bufDataSource, ok := dataSource.(*bufio.Reader)
 	if !ok {
-		reader = bufio.NewReader(in)
+		bufDataSource = bufio.NewReader(dataSource)
 	}
 	return cfg.edit(func() (*uncsv.Row, error) {
-		return uncsv.ReadLine(reader, cfg.Mode)
-	}, out)
+		return uncsv.ReadLine(bufDataSource, cfg.Mode)
+	}, ttyOut)
 }
 
-func (cfg Config) EditFromStringSlice(in func() ([]string, bool), console io.Writer) (*Result, error) {
+func (cfg Config) EditFromStringSlice(fetch func() ([]string, bool), ttyOut io.Writer) (*Result, error) {
 	return cfg.edit(func() (*uncsv.Row, error) {
-		slice, ok := in()
+		slice, ok := fetch()
 		if !ok {
 			return nil, io.EOF
 		}
 		row := uncsv.NewRowFromStringSlice(cfg.Mode, slice)
 		return &row, nil
-	}, console)
+	}, ttyOut)
 }
 
 func isEmptyRow(row *uncsv.Row) bool {
