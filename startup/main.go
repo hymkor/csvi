@@ -80,7 +80,7 @@ func (f *Flag) pilot() csvi.Pilot {
 	if f.Auto == "" {
 		return nil
 	}
-	return &_AutoPilot{script: f.Auto}
+	return &autoPilot{script: f.Auto}
 }
 
 func (f *Flag) Run() error {
@@ -96,7 +96,7 @@ func (f *Flag) Run() error {
 
 	var pilot csvi.Pilot
 	if f.Auto != "" {
-		pilot = &_AutoPilot{script: f.Auto}
+		pilot = &autoPilot{script: f.Auto}
 		defer pilot.Close()
 	}
 	dataSource, ttyOut := f.dataSourceAndTtyOut()

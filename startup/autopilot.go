@@ -9,19 +9,19 @@ import (
 	"github.com/hymkor/csvi/candidate"
 )
 
-type _AutoPilot struct {
+type autoPilot struct {
 	script string
 }
 
-func (ap *_AutoPilot) Size() (int, int, error) {
+func (ap *autoPilot) Size() (int, int, error) {
 	return 80, 25, nil
 }
 
-func (ap *_AutoPilot) Calibrate() error {
+func (ap *autoPilot) Calibrate() error {
 	return nil
 }
 
-func (ap *_AutoPilot) next() (string, error) {
+func (ap *autoPilot) next() (string, error) {
 	if ap.script == "" {
 		return "", io.EOF
 	}
@@ -30,11 +30,11 @@ func (ap *_AutoPilot) next() (string, error) {
 	return command, nil
 }
 
-func (ap *_AutoPilot) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
+func (ap *autoPilot) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
 	return ap.next()
 }
 
-func (ap *_AutoPilot) GetKey() (string, error) {
+func (ap *autoPilot) GetKey() (string, error) {
 	key, err := ap.next()
 	if err != nil || len(key) <= 1 || key[0] == '\x1B' {
 		return key, err
@@ -45,10 +45,10 @@ func (ap *_AutoPilot) GetKey() (string, error) {
 	return key, nil
 }
 
-func (ap *_AutoPilot) GetFilename(out io.Writer, prompt string, defaultName string) (string, error) {
+func (ap *autoPilot) GetFilename(out io.Writer, prompt string, defaultName string) (string, error) {
 	return ap.next()
 }
 
-func (ap *_AutoPilot) Close() error {
+func (ap *autoPilot) Close() error {
 	return nil
 }
