@@ -3,7 +3,7 @@ module github.com/hymkor/csvi
 go 1.20
 
 require (
-	github.com/hymkor/go-cursorposition v0.0.3
+	github.com/hymkor/go-cursorposition v0.0.4
 	github.com/hymkor/struct2flag v0.0.3
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20

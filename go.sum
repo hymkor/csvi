@@ -1,5 +1,5 @@
-github.com/hymkor/go-cursorposition v0.0.3 h1:XzZpoNexvSZbWxzgvCsJKH7py/npcZEDvIh28VcWDhc=
-github.com/hymkor/go-cursorposition v0.0.3/go.mod h1:h3M3Z39RBzNKKaUkSmhvCUUF4xRA5ueeEVUFQT8qBKw=
+github.com/hymkor/go-cursorposition v0.0.4 h1:41e3GRgRqeCBIjSzGQlx+1AwbWl6FPMALyyfYHhEGsw=
+github.com/hymkor/go-cursorposition v0.0.4/go.mod h1:ZoUAy4/JaFW9UhwisMWPyBvhNmtfixsRc9d1scaafBg=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0 h1:UIMMK09QSLCdM9Up4ny6qmBOrrn3rozxIRPfEUhxmTo=
 github.com/hymkor/go-windows1x-virtualterminal v0.5.0/go.mod h1:M/X0FJL+4wQtrm03JnL9gVyvhyscJk3t+ItZ29sla2g=
 github.com/hymkor/struct2flag v0.0.3 h1:11HtV5NN2f4wMM8DYyJWkzZqyH8E+9YFM78+PyxpvAE=
