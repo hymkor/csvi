@@ -396,12 +396,6 @@ func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
 	})
 }
 
-// Deprecated: use Config.Edit
-func (cfg Config) Main(mode *uncsv.Mode, in io.Reader, out io.Writer) (*Result, error) {
-	cfg.Mode = mode
-	return cfg.Edit(in, out)
-}
-
 func (cfg Config) Edit(dataSource io.Reader, ttyOut io.Writer) (*Result, error) {
 	if dataSource == nil {
 		return cfg.edit(nil, ttyOut)
