@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mattn/go-isatty"
 	"github.com/mattn/go-runewidth"
 
 	"github.com/nyaosorg/go-readline-ny"
@@ -504,7 +505,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		defer pilot.Close()
 		cfg.Pilot = pilot
 	}
-	if _, ok := out.(*os.File); ok {
+	if _, ok := out.(*os.File); ok && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
 		fmt.Print("\r   Calibrating terminal... (press any key to skip)\r")
 		_ = pilot.Calibrate()
 	}
