@@ -76,6 +76,13 @@ func (f *Flag) dataSourceAndTtyOut() (io.Reader, io.Writer) {
 		colorable.NewColorableStdout()
 }
 
+func (f *Flag) pilot() csvi.Pilot {
+	if f.Auto == "" {
+		return nil
+	}
+	return &_AutoPilot{script: f.Auto}
+}
+
 func (f *Flag) Run() error {
 	if f.Help {
 		f.flagSet.Usage()
@@ -112,7 +119,7 @@ func (f *Flag) Run() error {
 	}
 	_, err = csvi.Config{
 		Mode:          mode,
-		Pilot:         pilot,
+		Pilot:         f.pilot(),
 		CellWidth:     cw,
 		HeaderLines:   int(f.Header),
 		FixColumn:     f.FixColumn,
