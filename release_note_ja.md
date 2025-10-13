@@ -1,6 +1,8 @@
 - 環境変数 `RUNEWIDTH_EASTASIAN` が定義されていたら、曖昧幅の Unicode 文字の幅計測を省くようにした。それに伴い、`RUNEWIDTH_EASTASIAN=1` と等価な `-aw` オプション、`RUNEWIDTH_EASTASIAN=0` と等価な `-an` オプションを廃止した
 - 環境変数 `COLORFGBG` が `(FG);(BG)` 形式で定義されており、(FG) が (BG) より小さい整数の時、白背景を想定した色使いをするようにした (`-rv`と等価)
 - コマンドラインオプションを解析するコードを `"cmd/csvi"` のメインパッケージから、サブパッケージ `"startup"` へ移動
+- `echo "ihihi" | csvi -auto "w|-|q|y" > file` と実行すると、file の内容が `"ihihi"` ではなく、`\r   Calibrating terminal... (press any key to skip)\r"ihihi"` となってしまう問題を修正
+- 非推奨としていた関数 `(Config) Main` を削除
 
 v1.15.0
 =======
