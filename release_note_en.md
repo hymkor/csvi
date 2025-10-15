@@ -1,4 +1,6 @@
-* Skipped the measurement of ambiguous-width Unicode characters when the environment variable `RUNEWIDTH_EASTASIAN` is defined. Accordingly, the `-aw` option (equivalent to `RUNEWIDTH_EASTASIAN=1`) and the `-an` option (equivalent to `RUNEWIDTH_EASTASIAN=0`) have been removed.
+* Removed measurement of display width for Unicode characters of ambiguous width
+  * Removed the `-aw`, `-an`, and `-debug-bell` options
+  * To treat ambiguous-width characters as double-width, set the environment variable `RUNEWIDTH_EASTASIAN=1`; to treat them as single-width, unset or remove the `RUNEWIDTH_EASTASIAN` variable
 * When the environment variable `COLORFGBG` is defined in the form `(FG);(BG)` and `(FG)` is less than `(BG)`, the program now uses color settings designed for light backgrounds (equivalent to `-rv`).
 * Moved the code for parsing the command line options from the main package at `cmd/csvi` to the subpackage `startup`
 * Fixed an issue where executing `echo "ihihi" | csvi -auto "w|-|q|y" > file` resulted in the contents of `file` being `\r   Calibrating terminal... (press any key to skip)\r"ihihi"` instead of just `"ihihi"`.
