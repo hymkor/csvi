@@ -94,11 +94,6 @@ func (f *Flag) Run() error {
 	}
 	f.setGlobalColor()
 
-	var pilot csvi.Pilot
-	if f.Auto != "" {
-		pilot = &autoPilot{script: f.Auto}
-		defer pilot.Close()
-	}
 	dataSource, ttyOut := f.dataSourceAndTtyOut()
 
 	io.WriteString(ttyOut, ansi.CURSOR_OFF)
