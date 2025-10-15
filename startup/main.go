@@ -59,9 +59,6 @@ func (f *Flag) setGlobalColor() {
 	} else if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
 		csvi.MonoChrome()
 	}
-	if f.DebugBell {
-		csvi.EnableDebugBell(os.Stderr)
-	}
 }
 
 func (f *Flag) dataSourceAndTtyOut() (io.Reader, io.Writer) {

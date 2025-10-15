@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mattn/go-isatty"
 	"github.com/mattn/go-runewidth"
 
 	"github.com/nyaosorg/go-readline-ny"
@@ -347,7 +346,6 @@ func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *RowPtr, cursorC
 
 type Pilot interface {
 	Size() (int, int, error)
-	Calibrate() error
 	GetKey() (string, error)
 	ReadLine(out io.Writer, prompt, defaultText string, c candidate.Candidate) (string, error)
 	GetFilename(io.Writer, string, string) (string, error)
@@ -498,10 +496,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		}
 		defer pilot.Close()
 		cfg.Pilot = pilot
-	}
-	if _, ok := out.(*os.File); ok && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
-		fmt.Print("\r   Calibrating terminal... (press any key to skip)\r")
-		_ = pilot.Calibrate()
 	}
 	app := &_Application{
 		Config:   cfg,
@@ -960,10 +954,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		}
 		up(lfCount, out)
 	}
-}
-
-func EnableDebugBell(w io.Writer) {
-	manualctl.DebugBell = w
 }
 
 func IsRevertVideoWithEnv() bool {

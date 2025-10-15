@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/mattn/go-runewidth"
 	"github.com/mattn/go-tty"
 
 	"github.com/nyaosorg/go-readline-ny"
@@ -16,14 +15,10 @@ import (
 	"github.com/nyaosorg/go-readline-ny/keys"
 	"github.com/nyaosorg/go-readline-skk"
 
-	"github.com/hymkor/go-cursorposition"
-
 	"github.com/hymkor/csvi/candidate"
 
 	"github.com/hymkor/csvi/internal/ansi"
 )
-
-var DebugBell = io.Discard
 
 type ManualCtl struct {
 	*tty.TTY
@@ -35,29 +30,6 @@ func New() (ManualCtl, error) {
 
 	rc.TTY, err = tty.Open()
 	return rc, err
-}
-
-func (m ManualCtl) Calibrate() error {
-	if v := os.Getenv("RUNEWIDTH_EASTASIAN"); len(v) > 0 {
-		return nil
-	}
-	DebugBell.Write([]byte{'\a'})
-
-	// Measure how far the cursor moves while the `▽` is printed
-	w, err := cursorposition.AmbiguousWidthGoTty(m.TTY, os.Stderr)
-	if err != nil {
-		return err
-	}
-	runewidth.DefaultCondition.EastAsianWidth = w >= 2
-	return nil
-}
-
-func (m ManualCtl) Close() error {
-	return m.TTY.Close()
-}
-
-func (m ManualCtl) Size() (int, int, error) {
-	return m.TTY.Size()
 }
 
 func (m ManualCtl) GetKey() (string, error) {

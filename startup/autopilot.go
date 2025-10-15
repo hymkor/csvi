@@ -17,10 +17,6 @@ func (ap *autoPilot) Size() (int, int, error) {
 	return 80, 25, nil
 }
 
-func (ap *autoPilot) Calibrate() error {
-	return nil
-}
-
 func (ap *autoPilot) next() (string, error) {
 	if ap.script == "" {
 		return "", io.EOF
