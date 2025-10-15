@@ -3,7 +3,6 @@ module github.com/hymkor/csvi
 go 1.20
 
 require (
-	github.com/hymkor/go-cursorposition v0.0.4
 	github.com/hymkor/struct2flag v0.0.3
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
@@ -16,9 +15,7 @@ require (
 )
 
 require (
-	github.com/hymkor/go-windows1x-virtualterminal v0.5.0 // indirect
 	github.com/nyaosorg/go-box/v2 v2.2.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/term v0.29.0 // indirect
 )
