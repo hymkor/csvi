@@ -8,7 +8,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-runewidth v0.0.19
 	github.com/mattn/go-tty v0.0.7
-	github.com/nyaosorg/go-readline-ny v1.9.1
+	github.com/nyaosorg/go-readline-ny v1.10.0
 	github.com/nyaosorg/go-readline-skk v0.5.0
 	github.com/nyaosorg/go-windows-mbcs v0.4.4
 	golang.org/x/text v0.22.0
