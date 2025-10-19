@@ -1,10 +1,33 @@
-- 曖昧幅の Unicode 文字の表示幅の計測を廃止
-    - `-aw`, `-an`, `-debug-bell` オプションを廃止
-    - 曖昧幅を2桁とする場合は`RUNEWIDTH_EASTASIAN=1`、1桁とする場合は `RUNEWIDTH_EASTASIAN` と環境変数を設定してください。
-- 環境変数 `COLORFGBG` が `(FG);(BG)` 形式で定義されており、(FG) が (BG) より小さい整数の時、白背景を想定した色使いをするようにした (`-rv`と等価)
-- コマンドラインオプションを解析するコードを `"cmd/csvi"` のメインパッケージから、サブパッケージ `"startup"` へ移動
-- `echo "ihihi" | csvi -auto "w|-|q|y" > file` と実行すると、file の内容が `"ihihi"` ではなく、`\r   Calibrating terminal... (press any key to skip)\r"ihihi"` となってしまう問題を修正
-- 非推奨としていた関数 `(Config) Main` を削除
+( [English](release_note_en.md) / **Japanese** )
+
+## 仕様変更
+
+* **曖昧幅の Unicode 文字の実測による幅判定を廃止**
+  曖昧幅（Ambiguous Width）文字（例：`∇`）の表示幅を `ESC[6n` により実測して自動判定していましたが、古い端末で動作しないなどの問題があったため、この方式を廃止しました。
+  今後は [mattn/go-runewidth] による自動判断を使用します。ほとんどの環境では正しく動作しますが、まれに誤判定する場合は環境変数 `RUNEWIDTH_EASTASIAN` で指定してください。
+
+  * 2桁幅にする場合：`set RUNEWIDTH_EASTASIAN=1`
+  * 1桁幅にする場合：`set RUNEWIDTH_EASTASIAN=0`（`1` 以外なら任意の1文字以上で可）
+
+  これに伴い、オプション `-aw`, `-an`, `-debug-bell` を削除しました。
+
+  [mattn/go-runewidth]: https://github.com/mattn/go-runewidth
+
+* **白背景向け配色の自動判定を追加**
+  環境変数 `COLORFGBG` が `(FG);(BG)` 形式で定義されており、前景色が背景色より小さい数値の場合、白背景を想定した配色（`-rv` 相当）を自動適用するようにしました。
+
+### 不具合修正
+
+* `echo "ihihi" | csvi -auto "w|-|q|y" > file` 実行時に、出力の先頭へ
+  ```
+  \r   Calibrating terminal... (press any key to skip)\r
+  ```
+  が混入する問題を修正しました。原因は、曖昧幅実測が失敗した際のフォロー処理によるもので、この機構の廃止により再発しません。
+
+### 内部的変更
+
+* コマンドラインオプション解析処理を `"cmd/csvi"` から `"startup"` パッケージへ移動。
+* 非推奨の関数 `(Config) Main` を削除。
 
 v1.15.0
 =======

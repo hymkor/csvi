@@ -1,10 +1,45 @@
-* Removed measurement of display width for Unicode characters of ambiguous width
-  * Removed the `-aw`, `-an`, and `-debug-bell` options
-  * To treat ambiguous-width characters as double-width, set the environment variable `RUNEWIDTH_EASTASIAN=1`; to treat them as single-width, unset or remove the `RUNEWIDTH_EASTASIAN` variable
-* When the environment variable `COLORFGBG` is defined in the form `(FG);(BG)` and `(FG)` is less than `(BG)`, the program now uses color settings designed for light backgrounds (equivalent to `-rv`).
-* Moved the code for parsing the command line options from the main package at `cmd/csvi` to the subpackage `startup`
-* Fixed an issue where executing `echo "ihihi" | csvi -auto "w|-|q|y" > file` resulted in the contents of `file` being `\r   Calibrating terminal... (press any key to skip)\r"ihihi"` instead of just `"ihihi"`.
-* Removed the deprecated function `(Config) Main`
+( **English** / [Japanese](release_note_ja.md) )
+
+### Specification Changes
+
+* **Removed runtime measurement for ambiguous-width Unicode characters**
+  Previously, `csvi` determined the display width of ambiguous-width characters (e.g., `∇`) by printing them and reading the cursor position using `ESC[6n]`.
+  This caused issues on some older terminals and added unnecessary complexity, so the feature has been removed.
+  The program now relies solely on [mattn/go-runewidth] for width determination.
+  In most cases it works correctly, but if the width is misdetected, you can control it with the environment variable `RUNEWIDTH_EASTASIAN`:
+
+  * Double-width: `set RUNEWIDTH_EASTASIAN=1`
+  * Single-width: `set RUNEWIDTH_EASTASIAN=0` (any non-`1` value with at least one character is also valid)
+
+  The options `-aw`, `-an`, and `-debug-bell` have been removed accordingly.
+
+  [mattn/go-runewidth]: https://github.com/mattn/go-runewidth
+
+* **Added automatic light-background detection**
+  When the environment variable `COLORFGBG` is defined as `(FG);(BG)` and the foreground value `(FG)` is smaller than `(BG)`,
+  `csvi` now automatically uses color settings for light backgrounds (equivalent to `-rv`).
+
+### Bug Fixes
+
+* Fixed an issue where executing
+
+  ```
+  echo "ihihi" | csvi -auto "w|-|q|y" > file
+  ```
+
+  resulted in unwanted text
+
+  ```
+  \r   Calibrating terminal... (press any key to skip)\r
+  ```
+
+  appearing at the beginning of the output file.
+  This was caused by fallback handling in the old width-measurement logic, which has now been removed, so the problem no longer occurs.
+
+### Internal Changes
+
+* Moved command-line option parsing from the main package `cmd/csvi` to the subpackage `startup`.
+* Removed the deprecated function `(Config) Main`.
 
 v1.15.0
 =======
