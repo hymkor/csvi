@@ -1295,7 +1295,7 @@ scoop install csvi
 <p><code>(FG);(BG)</code> 形式で色が定義されている場合、前景色の値が背景色より小さいとき、白背景を前提とした配色（<code>-rv</code> オプション相当）を自動的に使用します。</p>
 <p>なお、csvi は通常、端末のデフォルト色を示すエスケープコード <code>ESC[39m</code> および <code>ESC[49m</code> を使用します。そのため、<code>(FG);(BG)</code> で指定された色そのものを直接採用するわけではありません。この設定は主に、灰色背景行の濃淡を白寄り・黒寄りのどちらにするかの判定に用いられます。</p>
 <h3 id="goreadlineskk">GOREADLINESKK</h3>
-<p>環境変数 <code>GOREADLINESKK</code> に辞書ファイルを指定すると、[go-readline-skk] を利用した内蔵 SKK かな漢字変換が有効になります。</p>
+<p>環境変数 <code>GOREADLINESKK</code> に辞書ファイルを指定すると、<a href="https://github.com/nyaosorg/go-readline-skk">go-readline-skk</a> を利用した内蔵 SKK かな漢字変換<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>が有効になります。</p>
 <ul>
 <li><strong>Windows</strong>
 <ul>
@@ -1367,6 +1367,14 @@ func main() {
 <ul>
 <li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
 </ul>
+<div class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Simple Kana to Kanji conversion program. One of the Japanese input method editors.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
