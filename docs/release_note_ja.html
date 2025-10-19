@@ -1140,6 +1140,38 @@ a.permalink:hover{
 </style>
 </head><body>
 <div class="main markdown-body">
+<p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h1 id="v1151">v1.15.1</h1>
+<p>Oct 19, 2025</p>
+<h2 id="%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</h2>
+<ul>
+<li>
+<p><strong>曖昧幅の Unicode 文字の実測による幅判定を廃止</strong>
+曖昧幅（Ambiguous Width）文字（例：<code>∇</code>）の表示幅を <code>ESC[6n</code> により実測して自動判定していましたが、古い端末で動作しないなどの問題があったため、この方式を廃止しました。
+今後は <a href="https://github.com/mattn/go-runewidth">mattn/go-runewidth</a> による自動判断を使用します。ほとんどの環境では正しく動作しますが、まれに誤判定する場合は環境変数 <code>RUNEWIDTH_EASTASIAN</code> で指定してください。</p>
+<ul>
+<li>2桁幅にする場合：<code>set RUNEWIDTH_EASTASIAN=1</code></li>
+<li>1桁幅にする場合：<code>set RUNEWIDTH_EASTASIAN=0</code>（<code>1</code> 以外なら任意の1文字以上で可）</li>
+</ul>
+<p>これに伴い、オプション <code>-aw</code>, <code>-an</code>, <code>-debug-bell</code> を削除しました。</p>
+</li>
+<li>
+<p><strong>白背景向け配色の自動判定を追加</strong>
+環境変数 <code>COLORFGBG</code> が <code>(FG);(BG)</code> 形式で定義されており、前景色が背景色より小さい数値の場合、白背景を想定した配色（<code>-rv</code> 相当）を自動適用するようにしました。</p>
+</li>
+</ul>
+<h3 id="%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3">不具合修正</h3>
+<ul>
+<li><code>echo &quot;ihihi&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; file</code> 実行時に、出力の先頭へ
+<pre><code>\r   Calibrating terminal... (press any key to skip)\r
+</code></pre>
+が混入する問題を修正しました。原因は、曖昧幅実測が失敗した際のフォロー処理によるもので、この機構の廃止により再発しません。</li>
+</ul>
+<h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</h3>
+<ul>
+<li>コマンドラインオプション解析処理を <code>&quot;cmd/csvi&quot;</code> から <code>&quot;startup&quot;</code> パッケージへ移動。</li>
+<li>非推奨の関数 <code>(Config) Main</code> を削除。</li>
+</ul>
 <h1 id="v1150">v1.15.0</h1>
 <p>Oct 10, 2025</p>
 <ul>
@@ -1495,6 +1527,16 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
+<li><a href="#v1151">v1.15.1</a>
+<ul>
+<li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</a>
+<ul>
+<li><a href="#%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3">不具合修正</a></li>
+<li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#v1150">v1.15.0</a></li>
 <li><a href="#v1140">v1.14.0</a></li>
 <li><a href="#v1131">v1.13.1</a></li>

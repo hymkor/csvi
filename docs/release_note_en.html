@@ -1140,6 +1140,47 @@ a.permalink:hover{
 </style>
 </head><body>
 <div class="main markdown-body">
+<p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
+<h1 id="v1151">v1.15.1</h1>
+<p>Oct 19, 2025</p>
+<h3 id="specification-changes">Specification Changes</h3>
+<ul>
+<li>
+<p><strong>Removed runtime measurement for ambiguous-width Unicode characters</strong>
+Previously, <code>csvi</code> determined the display width of ambiguous-width characters (e.g., <code>∇</code>) by printing them and reading the cursor position using <code>ESC[6n]</code>.
+This caused issues on some older terminals and added unnecessary complexity, so the feature has been removed.
+The program now relies solely on <a href="https://github.com/mattn/go-runewidth">mattn/go-runewidth</a> for width determination.
+In most cases it works correctly, but if the width is misdetected, you can control it with the environment variable <code>RUNEWIDTH_EASTASIAN</code>:</p>
+<ul>
+<li>Double-width: <code>set RUNEWIDTH_EASTASIAN=1</code></li>
+<li>Single-width: <code>set RUNEWIDTH_EASTASIAN=0</code> (any non-<code>1</code> value with at least one character is also valid)</li>
+</ul>
+<p>The options <code>-aw</code>, <code>-an</code>, and <code>-debug-bell</code> have been removed accordingly.</p>
+</li>
+<li>
+<p><strong>Added automatic light-background detection</strong>
+When the environment variable <code>COLORFGBG</code> is defined as <code>(FG);(BG)</code> and the foreground value <code>(FG)</code> is smaller than <code>(BG)</code>,
+<code>csvi</code> now automatically uses color settings for light backgrounds (equivalent to <code>-rv</code>).</p>
+</li>
+</ul>
+<h3 id="bug-fixes">Bug Fixes</h3>
+<ul>
+<li>
+<p>Fixed an issue where executing</p>
+<pre><code>echo &quot;ihihi&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; file
+</code></pre>
+<p>resulted in unwanted text</p>
+<pre><code>\r   Calibrating terminal... (press any key to skip)\r
+</code></pre>
+<p>appearing at the beginning of the output file.
+This was caused by fallback handling in the old width-measurement logic, which has now been removed, so the problem no longer occurs.</p>
+</li>
+</ul>
+<h3 id="internal-changes">Internal Changes</h3>
+<ul>
+<li>Moved command-line option parsing from the main package <code>cmd/csvi</code> to the subpackage <code>startup</code>.</li>
+<li>Removed the deprecated function <code>(Config) Main</code>.</li>
+</ul>
 <h1 id="v1150">v1.15.0</h1>
 <p>Oct 10, 2025</p>
 <ul>
@@ -1491,6 +1532,13 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
+<li><a href="#v1151">v1.15.1</a>
+<ul>
+<li><a href="#specification-changes">Specification Changes</a></li>
+<li><a href="#bug-fixes">Bug Fixes</a></li>
+<li><a href="#internal-changes">Internal Changes</a></li>
+</ul>
+</li>
 <li><a href="#v1150">v1.15.0</a></li>
 <li><a href="#v1140">v1.14.0</a></li>
 <li><a href="#v1131">v1.13.1</a></li>

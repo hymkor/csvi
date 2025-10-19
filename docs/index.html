@@ -1282,18 +1282,38 @@ scoop install csvi
 </li>
 <li>Quit: <code>q</code> or <code>ESC</code></li>
 </ul>
-<h2 id="readline-with-skkskk">Readline with SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></h2>
-<p>When the environment variable GOREADLINESKK is defined, <a href="https://github.com/nyaosorg/go-readline-skk">go-readline-skk</a> is used.</p>
+<h2 id="environment-variables">Environment Variables</h2>
+<h3 id="no-color">NO_COLOR</h3>
+<p>If the environment variable <code>NO_COLOR</code> is set to any value with at least one character,
+csvi disables colored output.
+This follows the standard proposed by <a href="https://no-color.org">NO_COLOR</a>.</p>
+<h3 id="runewidth-eastasian">RUNEWIDTH_EASTASIAN</h3>
+<p>Specifies the display width for Unicode characters classified as ambiguous width.</p>
 <ul>
-<li>Windows
+<li>Double-width: <code>set RUNEWIDTH_EASTASIAN=1</code></li>
+<li>Single-width: <code>set RUNEWIDTH_EASTASIAN=0</code> (any non-<code>1</code> value with at least one character is also valid)</li>
+</ul>
+<h3 id="colorfgbg">COLORFGBG</h3>
+<p>When the environment variable is defined in the form <code>(FG);(BG)</code> and the foreground <code>(FG)</code> is less than the background <code>(BG)</code>,
+csvi automatically uses color settings suitable for light backgrounds (equivalent to the <code>-rv</code> option).</p>
+<p>csvi normally uses the terminal's default colors via the escape sequences <code>ESC[39m</code> and <code>ESC[49m</code>.
+Thus, the <code>(FG);(BG)</code> values are <strong>not</strong> directly applied; they are only used to determine whether gray background lines should be adjusted toward light or dark shades.</p>
+<h3 id="goreadlineskk">GOREADLINESKK</h3>
+<p>When the environment variable <code>GOREADLINESKK</code> specifies dictionary files,
+the built-in SKK Kana-to-Kanji conversion via [go-readline-skk] is enabled.</p>
+<ul>
+<li>
+<p><strong>Windows</strong></p>
 <ul>
 <li><code>set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH</code></li>
-<li>(example) <code>set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo</code></li>
+<li>Example:
+<code>set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo</code></li>
 </ul>
 </li>
-<li>Linux
+<li>
+<p><strong>Linux</strong></p>
 <ul>
-<li><code>export GOREADLINE=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH</code></li>
+<li><code>export GOREADLINESKK=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH</code></li>
 </ul>
 </li>
 </ul>
@@ -1354,20 +1374,12 @@ func main() {
 <ul>
 <li><a href="https://github.com/hymkor">hymkor (HAYAMA Kaoru)</a></li>
 </ul>
-<div class="footnotes" role="doc-endnotes">
-<hr />
-<ol>
-<li id="fn:1">
-<p>Simple Kana to Kanji conversion program. One of the Japanese input method editor.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-</ol>
-</div>
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
 <li><a href="#csvi-terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor</a>
-- <a href="#10024-key-features">✨ Key Features</a>
 <ul>
+<li><a href="#10024-key-features">✨ Key Features</a></li>
 <li><a href="#install">Install</a>
 <ul>
 <li><a href="#manual-installation">Manual Installation</a></li>
@@ -1377,7 +1389,14 @@ func main() {
 </li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#key-binding">Key-binding</a></li>
-<li><a href="#readline-with-skkskk">Readline with SKK[^SKK]</a></li>
+<li><a href="#environment-variables">Environment Variables</a>
+<ul>
+<li><a href="#no_color">NO_COLOR</a></li>
+<li><a href="#runewidth_eastasian">RUNEWIDTH_EASTASIAN</a></li>
+<li><a href="#colorfgbg">COLORFGBG</a></li>
+<li><a href="#goreadlineskk">GOREADLINESKK</a></li>
+</ul>
+</li>
 <li><a href="#use-as-a-go-package">Use as a Go package</a></li>
 <li><a href="#release-note">Release Note</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
