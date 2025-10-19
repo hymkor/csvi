@@ -23,7 +23,7 @@ Get-ChildItem "release_note*" | Sort-Object { Format-Hex -InputObject $_.Name } 
             if ( $_ -eq "" ){
                 $section++
             }
-            if ( $section % 2 -eq 1 ){
+            if ( $section -ge 1 ){
                 Write-Host $_
             }
         }
