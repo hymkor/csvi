@@ -172,7 +172,7 @@ Thus, the `(FG);(BG)` values are **not** directly applied; they are only used to
 ### GOREADLINESKK
 
 When the environment variable `GOREADLINESKK` specifies dictionary files,
-the built-in SKK Kana-to-Kanji conversion via [go-readline-skk] is enabled.
+the built-in SKK[^SKK] Kana-to-Kanji conversion via [go-readline-skk] is enabled.
 
 * **Windows**
 
@@ -186,6 +186,7 @@ the built-in SKK Kana-to-Kanji conversion via [go-readline-skk] is enabled.
 (Note: `~` is automatically expanded to `%USERPROFILE%` on Windows, even in `cmd.exe`.)
 
 [^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editors.
+
 [go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 Use as a Go package

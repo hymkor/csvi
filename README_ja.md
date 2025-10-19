@@ -167,7 +167,7 @@ Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定
 
 ### GOREADLINESKK
 
-環境変数 `GOREADLINESKK` に辞書ファイルを指定すると、[go-readline-skk] を利用した内蔵 SKK かな漢字変換が有効になります。
+環境変数 `GOREADLINESKK` に辞書ファイルを指定すると、[go-readline-skk] を利用した内蔵 SKK かな漢字変換[^SKK]が有効になります。
 
 - **Windows**
   - `set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
@@ -179,6 +179,7 @@ Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定
 （注）`~` は Windows の `cmd.exe` 上でもアプリ側で `%USERPROFILE%` に自動展開されます。
 
 [^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editors.
+
 [go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 Use as a package
