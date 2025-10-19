@@ -145,22 +145,40 @@ Options
     * `[` (カーソルのある列の幅を縮める)
 * 終了: `q` or `ESC`
 
-Readline with SKK[^SKK]
------------------------
+環境変数
+--------
 
-環境変数 GOREADLINESKK に次のように辞書ファイルが指定されている時、[go-readline-skk] を使った内蔵SKKが使用できます
+### NO\_COLOR
 
-- Windows
-    - `set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
-    - (example) `set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo`
-- Linux
-    - `export GOREADLINE=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH`
+環境変数 `NO_COLOR` が 1 文字以上設定されている場合、csvi の色付け出力を無効化します。これは [NO\_COLOR](https://no-color.org) で提唱されている標準仕様に従った挙動です。
 
-(注: `~` はWindowsでも`cmd.exe`内であってもアプリ側で %USERPROFILE% へ自動で展開します)
+### RUNEWIDTH\_EASTASIAN
 
+Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定します。
 
-[^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editor.
+- 2桁幅にする場合：`set RUNEWIDTH_EASTASIAN=1`
+- 1桁幅にする場合：`set RUNEWIDTH_EASTASIAN=0`（`1` 以外の任意の1文字以上で可）
 
+### COLORFGBG
+
+`(FG);(BG)` 形式で色が定義されている場合、前景色の値が背景色より小さいとき、白背景を前提とした配色（`-rv` オプション相当）を自動的に使用します。
+
+なお、csvi は通常、端末のデフォルト色を示すエスケープコード `ESC[39m` および `ESC[49m` を使用します。そのため、`(FG);(BG)` で指定された色そのものを直接採用するわけではありません。この設定は主に、灰色背景行の濃淡を白寄り・黒寄りのどちらにするかの判定に用いられます。
+
+### GOREADLINESKK
+
+環境変数 `GOREADLINESKK` に辞書ファイルを指定すると、[go-readline-skk] を利用した内蔵 SKK かな漢字変換が有効になります。
+
+- **Windows**
+  - `set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
+  - 例:
+    `set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo`
+- **Linux**
+  - `export GOREADLINESKK=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH`
+
+（注）`~` は Windows の `cmd.exe` 上でもアプリ側で `%USERPROFILE%` に自動展開されます。
+
+[^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editors.
 [go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 Use as a package

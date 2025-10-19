@@ -145,21 +145,47 @@ Key-binding
     * `[` (narrow the column at the cursor)
 * Quit: `q` or `ESC`
 
-Readline with SKK[^SKK]
------------------------
+Environment Variables
+---------------------
 
-When the environment variable GOREADLINESKK is defined, [go-readline-skk] is used.
+### NO\_COLOR
 
-- Windows
-    - `set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
-    - (example) `set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo`
-- Linux
-    - `export GOREADLINE=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH`
+If the environment variable `NO_COLOR` is set to any value with at least one character,
+csvi disables colored output.
+This follows the standard proposed by [NO\_COLOR](https://no-color.org).
+
+### RUNEWIDTH\_EASTASIAN
+
+Specifies the display width for Unicode characters classified as ambiguous width.
+
+* Double-width: `set RUNEWIDTH_EASTASIAN=1`
+* Single-width: `set RUNEWIDTH_EASTASIAN=0` (any non-`1` value with at least one character is also valid)
+
+### COLORFGBG
+
+When the environment variable is defined in the form `(FG);(BG)` and the foreground `(FG)` is less than the background `(BG)`,
+csvi automatically uses color settings suitable for light backgrounds (equivalent to the `-rv` option).
+
+csvi normally uses the terminal's default colors via the escape sequences `ESC[39m` and `ESC[49m`.
+Thus, the `(FG);(BG)` values are **not** directly applied; they are only used to determine whether gray background lines should be adjusted toward light or dark shades.
+
+### GOREADLINESKK
+
+When the environment variable `GOREADLINESKK` specifies dictionary files,
+the built-in SKK Kana-to-Kanji conversion via [go-readline-skk] is enabled.
+
+* **Windows**
+
+  * `set GOREADLINESKK=SYSTEMJISYOPATH1;SYSTEMJISYOPATH2...;user=USERJISYOPATH`
+  * Example:
+    `set GOREADLINESKK=~/Share/Etc/SKK-JISYO.L;~/Share/Etc/SKK-JISYO.emoji;user=~/.go-skk-jisyo`
+* **Linux**
+
+  * `export GOREADLINESKK=SYSTEMJISYOPATH1:SYSTEMJISYOPATH2...:user=USERJISYOPATH`
 
 (Note: `~` is automatically expanded to `%USERPROFILE%` on Windows, even in `cmd.exe`.)
 
-[^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editor.
-
+[^SKK]: Simple Kana to Kanji conversion program. One of the Japanese input method editors.
 [go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 Use as a Go package
