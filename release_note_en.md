@@ -1,5 +1,10 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.15.1
+=======
+Oct 19, 2025
+
+
 ### Specification Changes
 
 * **Removed runtime measurement for ambiguous-width Unicode characters**

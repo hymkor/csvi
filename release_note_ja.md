@@ -1,5 +1,9 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.15.1
+=======
+Oct 19, 2025
+
 ## 仕様変更
 
 * **曖昧幅の Unicode 文字の実測による幅判定を廃止**
