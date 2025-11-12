@@ -15,7 +15,7 @@ func New(getter func() (string, error)) *NonBlock {
 	chRes := make(chan _Response)
 
 	go func() {
-		for _ = range chReq {
+		for range chReq {
 			data, err := getter()
 			chRes <- _Response{data: data, err: err}
 		}
