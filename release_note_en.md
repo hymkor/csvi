@@ -1,9 +1,12 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+### Internal Changes
+
+* Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)
+
 v1.15.1
 =======
 Oct 19, 2025
-
 
 ### Specification Changes
 

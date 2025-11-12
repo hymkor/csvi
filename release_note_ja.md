@@ -1,5 +1,9 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+### 内部的変更
+
+* 依存モジュールの更新とstaticcheck 警告の解消 (#6)
+
 v1.15.1
 =======
 Oct 19, 2025

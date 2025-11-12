@@ -33,10 +33,10 @@ func NewFlag() *Flag {
 	}
 }
 
-func (this *Flag) Bind(fs *flag.FlagSet) *Flag {
-	this.flagSet = fs
-	struct2flag.Bind(fs, this)
-	return this
+func (f *Flag) Bind(fs *flag.FlagSet) *Flag {
+	f.flagSet = fs
+	struct2flag.Bind(fs, f)
+	return f
 }
 
 func Run() error {

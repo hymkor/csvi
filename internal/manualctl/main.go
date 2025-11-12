@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/mattn/go-tty"
+	"github.com/nyaosorg/go-ttyadapter/tty8"
 
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/completion"
@@ -21,19 +21,12 @@ import (
 )
 
 type ManualCtl struct {
-	*tty.TTY
+	*tty8.Tty
 }
 
 func New() (ManualCtl, error) {
-	var rc ManualCtl
-	var err error
-
-	rc.TTY, err = tty.Open()
-	return rc, err
-}
-
-func (m ManualCtl) GetKey() (string, error) {
-	return readline.GetKey(m.TTY)
+	mc := ManualCtl{Tty: &tty8.Tty{}}
+	return mc, mc.Open(nil)
 }
 
 var predictColor = [...]string{"\x1B[3;22;34m", "\x1B[23;39m"}
@@ -67,12 +60,19 @@ func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidat
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
-		Coloring:     &skk.Coloring{},
+		Highlight: []readline.Highlight{
+			skk.WhiteMarkerHighlight,
+			skk.BlackMarkerHighlight,
+		},
+		ResetColor:   "\x1B[0m",
+		DefaultColor: "\x1B[0m",
 		PredictColor: predictColor,
 	}
 	if len(c) > 0 {
-		editor.BindKey(keys.CtrlI, completion.CmdCompletion{
-			Completion: c,
+		editor.BindKey(keys.CtrlI, &completion.CmdCompletion2{
+			Candidates: func([]string) ([]string, []string) {
+				return []string(c), []string(c)
+			},
 		})
 	}
 
@@ -93,11 +93,16 @@ func (m ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
-		Coloring:     &skk.Coloring{},
+		Highlight: []readline.Highlight{
+			skk.WhiteMarkerHighlight,
+			skk.BlackMarkerHighlight,
+		},
+		ResetColor:   "\x1B[0m",
+		DefaultColor: "\x1B[0m",
 		PredictColor: predictColor,
 	}
-	editor.BindKey(keys.CtrlI, completion.CmdCompletionOrList{
-		Completion: completion.File{},
+	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList2{
+		Candidates: completion.PathComplete,
 	})
 
 	defer io.WriteString(out, ansi.CURSOR_OFF)
