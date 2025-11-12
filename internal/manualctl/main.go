@@ -93,7 +93,12 @@ func (m ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
-		Coloring:     &skk.Coloring{},
+		Highlight: []readline.Highlight{
+			skk.WhiteMarkerHighlight,
+			skk.BlackMarkerHighlight,
+		},
+		ResetColor:   "\x1B[0m",
+		DefaultColor: "\x1B[0m",
 		PredictColor: predictColor,
 	}
 	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList2{
