@@ -91,8 +91,8 @@ func (m ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string
 		Coloring:     &skk.Coloring{},
 		PredictColor: predictColor,
 	}
-	editor.BindKey(keys.CtrlI, completion.CmdCompletionOrList{
-		Completion: completion.File{},
+	editor.BindKey(keys.CtrlI, &completion.CmdCompletionOrList2{
+		Candidates: completion.PathComplete,
 	})
 
 	defer io.WriteString(out, ansi.CURSOR_OFF)
