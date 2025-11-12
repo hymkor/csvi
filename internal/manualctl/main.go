@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/mattn/go-tty"
+	"github.com/nyaosorg/go-ttyadapter/tty8"
 
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/completion"
@@ -21,19 +21,12 @@ import (
 )
 
 type ManualCtl struct {
-	*tty.TTY
+	*tty8.Tty
 }
 
 func New() (ManualCtl, error) {
-	var rc ManualCtl
-	var err error
-
-	rc.TTY, err = tty.Open()
-	return rc, err
-}
-
-func (m ManualCtl) GetKey() (string, error) {
-	return readline.GetKey(m.TTY)
+	mc := ManualCtl{Tty: &tty8.Tty{}}
+	return mc, mc.Open(nil)
 }
 
 var predictColor = [...]string{"\x1B[3;22;34m", "\x1B[23;39m"}
