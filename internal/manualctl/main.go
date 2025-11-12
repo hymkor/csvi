@@ -64,8 +64,10 @@ func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidat
 		PredictColor: predictColor,
 	}
 	if len(c) > 0 {
-		editor.BindKey(keys.CtrlI, completion.CmdCompletion{
-			Completion: c,
+		editor.BindKey(keys.CtrlI, &completion.CmdCompletion2{
+			Candidates: func([]string) ([]string, []string) {
+				return []string(c), []string(c)
+			},
 		})
 	}
 
