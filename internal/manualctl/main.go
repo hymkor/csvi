@@ -60,7 +60,12 @@ func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidat
 		LineFeedWriter: func(readline.Result, io.Writer) (int, error) {
 			return 0, nil
 		},
-		Coloring:     &skk.Coloring{},
+		Highlight: []readline.Highlight{
+			skk.WhiteMarkerHighlight,
+			skk.BlackMarkerHighlight,
+		},
+		ResetColor:   "\x1B[0m",
+		DefaultColor: "\x1B[0m",
 		PredictColor: predictColor,
 	}
 	if len(c) > 0 {
