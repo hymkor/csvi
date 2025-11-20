@@ -551,7 +551,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		fmt.Fprintln(out, s)
 	}
 	message := cfg.Message
-	var killbuffer string
+	var killbuffer pasteFunc
 	for {
 		screenHeight := _screenHeight - len(cfg.Titles)
 		screenHeight -= cfg.HeaderLines
@@ -793,26 +793,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					message = m
 					break
 				}
-				if app.Len() <= 1 {
-					break
-				}
-				startPrevP := startRow.Prev()
-				prevP := cursorRow.Prev()
-				removedRow := cursorRow.Remove()
-				app.removedRows = append(app.removedRows, removedRow)
-				if prevP == nil {
-					cursorRow = app.Front()
-				} else if next := prevP.Next(); next != nil {
-					cursorRow = next
-				} else {
-					cursorRow = prevP
-					cursorRow.Term = removedRow.Term
-				}
-				if startPrevP == nil {
-					startRow = app.Front()
-				} else {
-					startRow = startPrevP.Next()
-				}
+				killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
+				repaint()
+				view.clearCache()
 			case "i":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m
@@ -867,26 +850,54 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 			case "u":
 				cursorRow.Cell[cursorCol].Restore(mode)
+			case "Y":
+				killbuffer = app.yankCurrentRow(cursorRow)
 			case "y":
-				killbuffer = cursorRow.Cell[cursorCol].Text()
-				message = "yanked the current cell: " + killbuffer
-			case "p":
-				if m := cfg.checkWriteProtect(cursorRow); m != "" {
-					message = m
-					break
+				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row] `)
+				if err != nil {
+					message = err.Error()
+				} else {
+					switch ch {
+					case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
+						killbuffer = app.yankCurrentCell(cursorRow, cursorCol)
+					case "y", "r":
+						killbuffer = app.yankCurrentRow(cursorRow)
+					}
 				}
-				cursorRow.Replace(cursorCol, killbuffer, mode)
-				message = "pasted: " + killbuffer
-			case "d", "x":
+			case "d":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m
 					break
 				}
-				if len(cursorRow.Cell) <= 1 {
-					cursorRow.Replace(0, "", mode)
+				ch, err := app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row] `)
+				if err != nil {
+					message = err.Error()
 				} else {
-					cursorRow.Delete(cursorCol)
+					switch ch {
+					case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
+						killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
+					case "d", "r":
+						killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
+						repaint()
+						view.clearCache()
+					}
 				}
+			case "p", "P":
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
+					message = m
+					break
+				}
+				if killbuffer != nil {
+					killbuffer(&startRow, &cursorRow, &cursorCol, ch == "p")
+					repaint()
+					view.clearCache()
+				}
+			case "x":
+				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+					message = m
+					break
+				}
+				killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
 			case "\"":
 				cursor := &cursorRow.Cell[cursorCol]
 				if cursor.IsQuoted() {
