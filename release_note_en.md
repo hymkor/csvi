@@ -1,5 +1,17 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+### Specification Changes
+
+* Add key bindings: (#7 and #8, Thanks to @toolleeo)
+    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
+    * `dd`, `dr`, `D` (delete the current line)
+    * `dc`, `d|` (delete the current column)
+    * `yl`, `y`+`SPACE`, `y`+`TAB`, `yv` (copy the values of the current cell to kill-buffer)
+    * `yy`, `yr`, `Y` (copy the values of the current row to kill-buffer)
+    * `yc`, `y|` (copy the values of the current column to kill-buffer)
+    * `p` (paste the values of kill-buffer after the current cell, row or column)
+    * `P` (paste the values of kill-buffer before the current cell, row or column)
+
 ### Internal Changes
 
 * Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)
