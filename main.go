@@ -853,7 +853,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			case "Y":
 				killbuffer = app.yankCurrentRow(cursorRow)
 			case "y":
-				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row] `)
+				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
 				if err != nil {
 					message = err.Error()
 				} else {
@@ -862,6 +862,8 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						killbuffer = app.yankCurrentCell(cursorRow, cursorCol)
 					case "y", "r":
 						killbuffer = app.yankCurrentRow(cursorRow)
+					case "|", "c":
+						killbuffer = app.yankCurrentColumn(cursorCol)
 					}
 				}
 			case "d":
@@ -869,7 +871,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					message = m
 					break
 				}
-				ch, err := app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row] `)
+				ch, err := app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
 				if err != nil {
 					message = err.Error()
 				} else {
@@ -878,6 +880,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
 					case "d", "r":
 						killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
+						repaint()
+						view.clearCache()
+					case "|", "c":
+						killbuffer = app.removeCurrentColumn(cursorCol)
 						repaint()
 						view.clearCache()
 					}

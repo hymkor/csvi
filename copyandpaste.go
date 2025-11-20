@@ -83,3 +83,40 @@ func (app *_Application) removeCurrentRow(head, src **RowPtr) pasteFunc {
 	}
 	return paste
 }
+
+func (app *_Application) yankCurrentColumn(col int) pasteFunc {
+	dup := []uncsv.Cell{}
+	for p := app.Front(); p != nil; p = p.Next() {
+		var newCell uncsv.Cell
+		if col < len(p.Cell) {
+			newCell = p.Cell[col]
+		}
+		dup = append(dup, newCell)
+	}
+	return func(head, dst **RowPtr, col *int, offset bool) {
+		pos := *col
+		if offset {
+			pos++
+		}
+		i := 0
+		for p := app.Front(); p != nil; p = p.Next() {
+			var newCell uncsv.Cell
+			if i < len(dup) {
+				newCell = dup[i]
+			}
+			i++
+			p.InsertCell(pos, newCell, app.Config.Mode)
+		}
+	}
+}
+
+func (app *_Application) removeCurrentColumn(col int) pasteFunc {
+	paste := app.yankCurrentColumn(col)
+	for p := app.Front(); p != nil; p = p.Next() {
+		if len(p.Cell) > 1 && col < len(p.Cell) {
+			copy(p.Cell[col:], p.Cell[col+1:])
+			p.Cell = p.Cell[:len(p.Cell)-1]
+		}
+	}
+	return paste
+}
