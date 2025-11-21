@@ -1,5 +1,9 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+### Bug Fixes
+
+- Fix: Kill buffer of readline was cleared between sessions (#11)
+
 ### Specification Changes
 
 * Add key bindings: (#7 and #8, Thanks to @toolleeo)

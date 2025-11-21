@@ -1,5 +1,9 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+## 不具合修正
+
+* readline の kill buffer の内容が、セッションとセッションの間で引き継がれていなかった問題を修正 (#11)
+
 ## 仕様変更
 
 * キーバインドを追加: (#7 and #8, Thanks to @toolleeo)
