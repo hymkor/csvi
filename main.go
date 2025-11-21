@@ -3,6 +3,7 @@ package csvi
 import (
 	"bufio"
 	"container/list"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -506,7 +507,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		for i := 0; i < 100; i++ {
 			row, err := fetch()
 			if err != nil {
-				if err != io.EOF {
+				if !errors.Is(err, io.EOF) {
 					return nil, err
 				}
 				fetch = nil
@@ -515,7 +516,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 			}
 			app.Push(row)
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				break
 			}
 		}
@@ -587,19 +588,19 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			row, err := fetch()
 			if err != nil {
 				fetch = nil
-				if err != io.EOF || isEmptyRow(row) {
+				if !errors.Is(err, io.EOF) || isEmptyRow(row) {
 					return false
 				}
 			}
 			app.Push(row)
-			if message == "" && (err == io.EOF || time.Now().After(displayUpdateTime)) {
+			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				io.WriteString(out, "\r"+ansi.YELLOW)
 				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
 				io.WriteString(out, ansi.RESET)
 				io.WriteString(out, ansi.ERASE_SCRN_AFTER)
 				displayUpdateTime = time.Now().Add(time.Second / interval)
 			}
-			return err != io.EOF
+			return !errors.Is(err, io.EOF)
 		})
 		if err != nil {
 			return nil, err
@@ -928,11 +929,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
 					for {
 						row, err := fetch()
-						if err != nil && err != io.EOF {
+						if err != nil && !errors.Is(err, io.EOF) {
 							return nil, err
 						}
 						app.Push(row)
-						if err == io.EOF {
+						if errors.Is(err, io.EOF) {
 							break
 						}
 					}
