@@ -7,12 +7,15 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/mattn/go-colorable"
 
 	"github.com/hymkor/csvi/startup"
 )
 
-func testRun(t *testing.T, args ...string) {
+func testRun(t *testing.T, dataSource io.Reader, args ...string) {
 	t.Helper()
 	fs := flag.NewFlagSet("test", flag.ContinueOnError)
 	instance := startup.NewFlag().Bind(fs)
@@ -20,20 +23,18 @@ func testRun(t *testing.T, args ...string) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	err = instance.Run()
+	var ttyOut io.Writer = io.Discard
+	if testing.Verbose() {
+		disable := colorable.EnableColorsStdout(nil)
+		if disable != nil {
+			defer disable()
+		}
+		ttyOut = colorable.NewColorableStdout()
+	}
+	err = instance.RunInOut(dataSource, ttyOut)
 	if err != nil && !errors.Is(err, io.EOF) {
 		t.Fatal(err.Error())
 	}
-}
-
-func makeSource(t *testing.T, text string) string {
-	t.Helper()
-	path := filepath.Join(t.TempDir(), "test.csv")
-	err := os.WriteFile(path, []byte(text), 0666)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return path
 }
 
 func checkResult(t *testing.T, path, expect string) {
@@ -50,13 +51,12 @@ func checkResult(t *testing.T, path, expect string) {
 
 func testCase(t *testing.T, source, process, result string, options ...string) {
 	t.Helper()
-	path := makeSource(t, source)
+	path := filepath.Join(t.TempDir(), "test.csv")
 	args := make([]string, 0, len(options)+3)
 	args = append(args, options...)
 	args = append(args, "-auto")
-	args = append(args, fmt.Sprintf("%s|w|%s|y|q|y", process, path))
-	args = append(args, path)
-	testRun(t, args...)
+	args = append(args, fmt.Sprintf("%s|w|%s|q|y", process, path))
+	testRun(t, strings.NewReader(source), args...)
 	checkResult(t, path, result)
 }
 
