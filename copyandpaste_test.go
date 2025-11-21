@@ -1,0 +1,150 @@
+package csvi_test
+
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/hymkor/csvi/startup"
+)
+
+func testRun(t *testing.T, args ...string) {
+	t.Helper()
+	fs := flag.NewFlagSet("test", flag.ContinueOnError)
+	instance := startup.NewFlag().Bind(fs)
+	err := fs.Parse(args)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	err = instance.Run()
+	if err != nil && !errors.Is(err, io.EOF) {
+		t.Fatal(err.Error())
+	}
+}
+
+func makeSource(t *testing.T, text string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "test.csv")
+	err := os.WriteFile(path, []byte(text), 0666)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	return path
+}
+
+func checkResult(t *testing.T, path, expect string) {
+	t.Helper()
+	bin, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	result := string(bin)
+	if expect != result {
+		t.Fatalf("Expect %#v, but %#v", expect, result)
+	}
+}
+
+func testCase(t *testing.T, source, process, result string, options ...string) {
+	t.Helper()
+	path := makeSource(t, source)
+	args := make([]string, 0, len(options)+3)
+	args = append(args, options...)
+	args = append(args, "-auto")
+	args = append(args, fmt.Sprintf("%s|w|%s|y|q|y", process, path))
+	args = append(args, path)
+	testRun(t, args...)
+	checkResult(t, path, result)
+}
+
+func TestDeleteCell(t *testing.T) { // `x`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|x"
+	exp := "い,う,え,お\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestDeleteRow(t *testing.T) { // `D`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|D"
+	exp := "か,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+func TestDeleteColumn(t *testing.T) { // `dc`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|d|c"
+	exp := "い,う,え,お\nき,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteCell(t *testing.T) { // `yl` and `p`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|l|l|p"
+	exp := "あ,い,あ,う,え,お\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteCellB(t *testing.T) { // `yl` and `P`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|l|$|P"
+	exp := "あ,い,う,え,あ,お\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteRow(t *testing.T) { // `yy` and `p`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|y|>|p"
+	exp := "あ,い,う,え,お\nか,き,く,け,こ\nあ,い,う,え,お\n"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteRowB(t *testing.T) { // `yy` and `P`
+	src := "あ,い,う,え,お\r\nか,き,く,け,こ"
+	op := "<|y|y|P"
+	exp := "あ,い,う,え,お\r\nあ,い,う,え,お\r\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteColumn(t *testing.T) { // `yc` and `p`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|c|$|p"
+	exp := "あ,い,う,え,お,あ\nか,き,く,け,こ,か"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteColumnB(t *testing.T) { // `yc` and `P`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|c|$|P"
+	exp := "あ,い,う,え,あ,お\nか,き,く,け,か,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
+}
