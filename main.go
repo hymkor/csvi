@@ -856,48 +856,60 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
 				if err != nil {
 					message = err.Error()
-				} else {
-					switch ch {
-					case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
-						killbuffer = app.yankCurrentCell(cursorRow, cursorCol)
-					case "y", "r":
-						killbuffer = app.yankCurrentRow(cursorRow)
-					case "|", "c":
-						killbuffer = app.yankCurrentColumn(cursorCol)
-					}
-				}
-			case "d":
-				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
-					message = m
 					break
 				}
-				ch, err := app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
-				if err != nil {
-					message = err.Error()
-				} else {
-					switch ch {
-					case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
-						killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
-					case "d", "r":
-						killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
-						repaint()
-						view.clearCache()
-					case "|", "c":
-						killbuffer = app.removeCurrentColumn(cursorCol)
-						repaint()
-						view.clearCache()
-					}
+				switch ch {
+				case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
+					killbuffer = app.yankCurrentCell(cursorRow, cursorCol)
+				case "y", "r":
+					killbuffer = app.yankCurrentRow(cursorRow)
+				case "|", "c":
+					killbuffer = app.yankCurrentColumn(cursorCol)
 				}
-			case "p", "P":
+			case "d":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
-				if killbuffer != nil {
-					killbuffer(&startRow, &cursorRow, &cursorCol, ch == "p")
+				if cfg.FixColumn {
+					ch, err = app.MessageAndGetKey(`Delete ? ["d"/"r": row] `)
+				} else {
+					ch, err = app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "d"/"r": row, "|"/"c": column] `)
+				}
+				if err != nil {
+					message = err.Error()
+					break
+				}
+				switch ch {
+				case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
+					if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+						message = m
+						break
+					}
+					killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
+				case "d", "r":
+					killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
+					repaint()
+					view.clearCache()
+				case "|", "c":
+					if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+						message = m
+						break
+					}
+					killbuffer = app.removeCurrentColumn(cursorCol)
 					repaint()
 					view.clearCache()
 				}
+			case "p", "P":
+				if killbuffer == nil {
+					break
+				}
+				if err := killbuffer(&startRow, &cursorRow, &cursorCol, ch == "p"); err != nil {
+					message = err.Error()
+					break
+				}
+				repaint()
+				view.clearCache()
 			case "x":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m

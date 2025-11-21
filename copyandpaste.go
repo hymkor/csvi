@@ -1,20 +1,26 @@
 package csvi
 
 import (
+	"errors"
+
 	"github.com/hymkor/csvi/uncsv"
 )
 
-type pasteFunc func(head, dst **RowPtr, col *int, offset bool)
+type pasteFunc func(head, dst **RowPtr, col *int, offset bool) error
 
-func noPaste(head, dst **RowPtr, col *int, offset bool) {}
+func noPaste(head, dst **RowPtr, col *int, offset bool) error { return nil }
 
 func (app *_Application) yankCurrentCell(src *RowPtr, col int) pasteFunc {
 	dup := src.Cell[col].Clone()
-	paste := func(head, dst **RowPtr, dcol *int, offset bool) {
+	paste := func(head, dst **RowPtr, dcol *int, offset bool) error {
+		if m := app.checkWriteProtectAndColumn(*dst); m != "" {
+			return errors.New(m)
+		}
 		if offset {
 			(*dcol)++
 		}
 		(*dst).InsertCell(*dcol, dup, app.Config.Mode)
+		return nil
 	}
 	return paste
 }
@@ -30,7 +36,10 @@ func (app *_Application) removeCurrentCell(src *RowPtr, col int) pasteFunc {
 }
 
 func (app *_Application) makeRowPaster(dup *uncsv.Row) pasteFunc {
-	paste := func(head, dst **RowPtr, _ *int, offset bool) {
+	paste := func(head, dst **RowPtr, _ *int, offset bool) error {
+		if m := app.checkWriteProtect(*dst); m != "" {
+			return errors.New(m)
+		}
 		if offset {
 			(*dst).InsertAfter(dup)
 			if (*dst).Term == "" {
@@ -44,6 +53,7 @@ func (app *_Application) makeRowPaster(dup *uncsv.Row) pasteFunc {
 			}
 			*dst = (*dst).InsertBefore(dup)
 		}
+		return nil
 	}
 	return paste
 }
@@ -93,7 +103,10 @@ func (app *_Application) yankCurrentColumn(col int) pasteFunc {
 		}
 		dup = append(dup, newCell)
 	}
-	return func(head, dst **RowPtr, col *int, offset bool) {
+	return func(head, dst **RowPtr, col *int, offset bool) error {
+		if m := app.checkWriteProtectAndColumn(*dst); m != "" {
+			return errors.New(m)
+		}
 		pos := *col
 		if offset {
 			pos++
@@ -107,6 +120,7 @@ func (app *_Application) yankCurrentColumn(col int) pasteFunc {
 			i++
 			p.InsertCell(pos, newCell, app.Config.Mode)
 		}
+		return nil
 	}
 }
 
