@@ -48,71 +48,103 @@ func checkResult(t *testing.T, path, expect string) {
 	}
 }
 
-func testCase(t *testing.T, source, process, result string) {
+func testCase(t *testing.T, source, process, result string, options ...string) {
 	t.Helper()
 	path := makeSource(t, source)
-	testRun(t, "-auto", fmt.Sprintf("%s|w|%s|y|q|y", process, path), path)
+	args := make([]string, 0, len(options)+3)
+	args = append(args, options...)
+	args = append(args, "-auto")
+	args = append(args, fmt.Sprintf("%s|w|%s|y|q|y", process, path))
+	args = append(args, path)
+	testRun(t, args...)
 	checkResult(t, path, result)
 }
 
 func TestDeleteCell(t *testing.T) { // `x`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|x",
-		"い,う,え,お\nか,き,く,け,こ")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|x"
+	exp := "い,う,え,お\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestDeleteRow(t *testing.T) { // `D`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|D",
-		"か,き,く,け,こ")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|D"
+	exp := "か,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 func TestDeleteColumn(t *testing.T) { // `dc`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|d|c",
-		"い,う,え,お\nき,く,け,こ")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|d|c"
+	exp := "い,う,え,お\nき,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestCopyPasteCell(t *testing.T) { // `yl` and `p`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|y|l|l|p",
-		"あ,い,あ,う,え,お\nか,き,く,け,こ")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|l|l|p"
+	exp := "あ,い,あ,う,え,お\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestCopyPasteCellB(t *testing.T) { // `yl` and `P`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|y|l|$|P",
-		"あ,い,う,え,あ,お\nか,き,く,け,こ")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|l|$|P"
+	exp := "あ,い,う,え,あ,お\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestCopyPasteRow(t *testing.T) { // `yy` and `p`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|y|y|>|p",
-		"あ,い,う,え,お\nか,き,く,け,こ\nあ,い,う,え,お\n")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|y|>|p"
+	exp := "あ,い,う,え,お\nか,き,く,け,こ\nあ,い,う,え,お\n"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestCopyPasteRowB(t *testing.T) { // `yy` and `P`
-	testCase(t,
-		"あ,い,う,え,お\r\nか,き,く,け,こ",
-		"<|y|y|P",
-		"あ,い,う,え,お\r\nあ,い,う,え,お\r\nか,き,く,け,こ")
+	src := "あ,い,う,え,お\r\nか,き,く,け,こ"
+	op := "<|y|y|P"
+	exp := "あ,い,う,え,お\r\nあ,い,う,え,お\r\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestCopyPasteColumn(t *testing.T) { // `yc` and `p`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|y|c|$|p",
-		"あ,い,う,え,お,あ\nか,き,く,け,こ,か")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|c|$|p"
+	exp := "あ,い,う,え,お,あ\nか,き,く,け,こ,か"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
 }
 
 func TestCopyPasteColumnB(t *testing.T) { // `yc` and `P`
-	testCase(t,
-		"あ,い,う,え,お\nか,き,く,け,こ",
-		"<|y|c|$|P",
-		"あ,い,う,え,あ,お\nか,き,く,け,か,こ")
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|c|$|P"
+	exp := "あ,い,う,え,あ,お\nか,き,く,け,か,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, src, "-fixcol")   // can not update
+	testCase(t, src, op, src, "-readonly") // can not update
 }
