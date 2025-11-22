@@ -110,14 +110,14 @@ Key-binding
 -----------
 
 * Move Cursor
-    * `h`,`Ctrl`-`B`,`←`,`Shift`-`TAB` (move cursor left)
-    * `j`,`Ctrl`-`N`,`↓`,`Enter` (move cursor down)
-    * `k`,`Ctrl`-`P`,`↑` (move cursor up)
-    * `l`,`Ctrl`-`F`,`→`,`TAB` (move cursor right)
+    * `h`, `Ctrl`+`B`, `←`, `Shift`+`TAB` (move cursor left)
+    * `j`, `Ctrl`+`N`, `↓`, `Enter` (move cursor down)
+    * `k`, `Ctrl`+`P`, `↑` (move cursor up)
+    * `l`, `Ctrl`+`F`, `→`, `TAB` (move cursor right)
     * `<` (move the beginning of file)
     * `>`,`G` (move the end of file)
-    * `0`,`^`,`Ctrl`-`A` (move the beginning of the current line)
-    * `$`,`Ctrl`-`E` (move the end of the current line)
+    * `0`, `^`, `Ctrl`+`A` (move the beginning of the current line)
+    * `$`,`Ctrl`+`E` (move the end of the current line)
 * Search
     * `/` (search forward for a partial match)
     * `?` (search backward for a partial match)
@@ -142,12 +142,13 @@ Key-binding
     * `yc`, `y|` (copy the values of the current column to kill-buffer)
     * `p` (paste the values of kill-buffer after the current cell, row or column)
     * `P` (paste the values of kill-buffer before the current cell, row or column)
+    * `ALT`+`p`, `ESC`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
 * Display settings
     * `L` (reload the file using a specified encoding)
-    * `Ctrl`-`L` (Repaint)
+    * `Ctrl`+`L` (Repaint)
     * `]` (widen the column at the cursor)
     * `[` (narrow the column at the cursor)
-* Quit: `q` or `ESC`
+* Quit: `q` or `ESC`+`q`
 
 Environment Variables
 ---------------------
