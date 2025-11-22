@@ -142,14 +142,18 @@ func (app *_Application) yankCurrentColumn(col int) pasteFunc {
 		}
 		i := 0
 		for p := app.Front(); p != nil; p = p.Next() {
-			var newCell uncsv.Cell
+			var newSrc []byte
 			if i < len(dup) {
-				newCell = dup[i]
+				newSrc = dup[i].Source()
+			} else {
+				newSrc = []byte{}
 			}
 			i++
 			if pt == pasteOver {
-				p.Cell[pos].SetSource(newCell.Source(), app.Config.Mode)
+				p.Cell[pos].SetSource(newSrc, app.Config.Mode)
 			} else {
+				var newCell uncsv.Cell
+				newCell.SetSource(newSrc, app.Config.Mode)
 				p.InsertCell(pos, newCell, app.Config.Mode)
 			}
 		}
