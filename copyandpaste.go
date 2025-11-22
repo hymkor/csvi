@@ -6,20 +6,35 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 )
 
-type pasteFunc func(head, dst **RowPtr, col *int, offset bool) error
+type pasteType int
 
-func noPaste(head, dst **RowPtr, col *int, offset bool) error { return nil }
+const (
+	pasteAfter pasteType = iota
+	pasteBefore
+	pasteOver
+)
+
+type pasteFunc func(head, dst **RowPtr, col *int, pt pasteType) error
+
+func noPaste(head, dst **RowPtr, col *int, pt pasteType) error { return nil }
 
 func (app *_Application) yankCurrentCell(src *RowPtr, col int) pasteFunc {
 	dup := src.Cell[col].Clone()
-	paste := func(head, dst **RowPtr, dcol *int, offset bool) error {
-		if m := app.checkWriteProtectAndColumn(*dst); m != "" {
-			return errors.New(m)
+	paste := func(head, dst **RowPtr, dcol *int, pt pasteType) error {
+		if pt == pasteOver {
+			if m := app.checkWriteProtect(*dst); m != "" {
+				return errors.New(m)
+			}
+			(*dst).Cell[*dcol].SetSource(dup.Source(), app.Config.Mode)
+		} else {
+			if m := app.checkWriteProtectAndColumn(*dst); m != "" {
+				return errors.New(m)
+			}
+			if pt == pasteAfter {
+				(*dcol)++
+			}
+			(*dst).InsertCell(*dcol, dup, app.Config.Mode)
 		}
-		if offset {
-			(*dcol)++
-		}
-		(*dst).InsertCell(*dcol, dup, app.Config.Mode)
 		return nil
 	}
 	return paste
@@ -36,11 +51,19 @@ func (app *_Application) removeCurrentCell(src *RowPtr, col int) pasteFunc {
 }
 
 func (app *_Application) makeRowPaster(dup *uncsv.Row) pasteFunc {
-	paste := func(head, dst **RowPtr, _ *int, offset bool) error {
+	paste := func(head, dst **RowPtr, _ *int, pt pasteType) error {
 		if m := app.checkWriteProtect(*dst); m != "" {
 			return errors.New(m)
 		}
-		if offset {
+		if pt == pasteOver {
+			for i := 0; i < len(dup.Cell); i++ {
+				if i >= len((*dst).Cell) {
+					(*dst).Cell = append((*dst).Cell, dup.Cell[i])
+				} else {
+					(*dst).Cell[i].SetSource(dup.Cell[i].Source(), app.Config.Mode)
+				}
+			}
+		} else if pt == pasteAfter {
 			(*dst).InsertAfter(dup)
 			if (*dst).Term == "" {
 				(*dst).Term = app.Config.Mode.DefaultTerm
@@ -103,12 +126,18 @@ func (app *_Application) yankCurrentColumn(col int) pasteFunc {
 		}
 		dup = append(dup, newCell)
 	}
-	return func(head, dst **RowPtr, col *int, offset bool) error {
-		if m := app.checkWriteProtectAndColumn(*dst); m != "" {
+	return func(head, dst **RowPtr, col *int, pt pasteType) error {
+		var m string
+		if pt == pasteOver {
+			m = app.checkWriteProtect(*dst)
+		} else {
+			m = app.checkWriteProtectAndColumn(*dst)
+		}
+		if m != "" {
 			return errors.New(m)
 		}
 		pos := *col
-		if offset {
+		if pt == pasteAfter {
 			pos++
 		}
 		i := 0
@@ -118,7 +147,11 @@ func (app *_Application) yankCurrentColumn(col int) pasteFunc {
 				newCell = dup[i]
 			}
 			i++
-			p.InsertCell(pos, newCell, app.Config.Mode)
+			if pt == pasteOver {
+				p.Cell[pos].SetSource(newCell.Source(), app.Config.Mode)
+			} else {
+				p.InsertCell(pos, newCell, app.Config.Mode)
+			}
 		}
 		return nil
 	}

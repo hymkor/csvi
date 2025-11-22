@@ -638,7 +638,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					p.Restore(mode)
 				}
 				view.clearCache()
-			case "q", keys.Escape:
+			case "q":
 				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
 					io.WriteString(out, "\n")
 					return &Result{_Application: app}, nil
@@ -901,11 +901,17 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					repaint()
 					view.clearCache()
 				}
-			case "p", "P":
+			case "p", "P", keys.AltP:
 				if killbuffer == nil {
 					break
 				}
-				if err := killbuffer(&startRow, &cursorRow, &cursorCol, ch == "p"); err != nil {
+				pt := pasteAfter
+				if ch == "P" {
+					pt = pasteBefore
+				} else if ch == keys.AltP {
+					pt = pasteOver
+				}
+				if err := killbuffer(&startRow, &cursorRow, &cursorCol, pt); err != nil {
 					message = err.Error()
 					break
 				}
@@ -952,6 +958,29 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					cellWidth.Set(cursorCol, w)
 				}
 				view.clearCache()
+			case keys.Escape:
+				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste] `)
+				if err != nil {
+					message = err.Error()
+					break
+				}
+				switch ch {
+				case "q", "Q":
+					if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
+						io.WriteString(out, "\n")
+						return &Result{_Application: app}, nil
+					}
+				case "p", "P":
+					if killbuffer == nil {
+						break
+					}
+					if err := killbuffer(&startRow, &cursorRow, &cursorCol, pasteOver); err != nil {
+						message = err.Error()
+						break
+					}
+					repaint()
+					view.clearCache()
+				}
 			}
 		}
 		if L := len(cursorRow.Cell); L <= 0 {

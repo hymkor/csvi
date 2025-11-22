@@ -175,6 +175,11 @@ func (c Cell) IsQuoted() bool {
 		(len(s) > 0 && s[0] == '"')
 }
 
+func (c *Cell) SetSource(newSource []byte, mode *Mode) {
+	c.source = newSource
+	c.text = dequote(mode.decode(newSource))
+}
+
 func (c *Cell) Restore(mode *Mode) {
 	c.source = c.original
 	c.text = dequote(mode.decode(c.original))
