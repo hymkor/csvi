@@ -109,6 +109,19 @@ func TestCopyPasteCellB(t *testing.T) { // `yl` and `P`
 	testCase(t, src, op, src, "-readonly") // can not update
 }
 
+func TestCopyPasteCellOver(t *testing.T) { // `yl` and `ALT`|`ESC`+`p`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|l|$|\x1B|p" // ESC-p
+	exp := "あ,い,う,え,あ\nか,き,く,け,こ"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
+
+	op = "<|y|l|$|\x1Bp" // ALT-p
+	testCase(t, src, op, exp)
+}
+
 func TestCopyPasteRow(t *testing.T) { // `yy` and `p`
 	src := "あ,い,う,え,お\nか,き,く,け,こ"
 	op := "<|y|y|>|p"
@@ -129,6 +142,19 @@ func TestCopyPasteRowB(t *testing.T) { // `yy` and `P`
 	testCase(t, src, op, src, "-readonly") // can not update
 }
 
+func TestCopyPasteRowOver(t *testing.T) { // `yy` and `ALT`/`ESC`+`p`
+	src := "あ,い,う,え,お\r\nか,き,く,け,こ"
+	op := "<|y|y|\r|\x1B|p" // ESC-p
+	exp := "あ,い,う,え,お\r\nあ,い,う,え,お"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
+
+	op = "<|y|y|\r|\x1Bp" // ALT-p
+	testCase(t, src, op, exp)
+}
+
 func TestCopyPasteColumn(t *testing.T) { // `yc` and `p`
 	src := "あ,い,う,え,お\nか,き,く,け,こ"
 	op := "<|y|c|$|p"
@@ -147,4 +173,17 @@ func TestCopyPasteColumnB(t *testing.T) { // `yc` and `P`
 	testCase(t, src, op, exp)
 	testCase(t, src, op, src, "-fixcol")   // can not update
 	testCase(t, src, op, src, "-readonly") // can not update
+}
+
+func TestCopyPasteColumnOver(t *testing.T) { // `yc` and `ALT`/`Esc`+`p`
+	src := "あ,い,う,え,お\nか,き,く,け,こ"
+	op := "<|y|c|$|\x1B|p" // Esc-p
+	exp := "あ,い,う,え,あ\nか,き,く,け,か"
+
+	testCase(t, src, op, exp)
+	testCase(t, src, op, exp, "-fixcol")
+	testCase(t, src, op, src, "-readonly") // can not update
+
+	op = "<|y|c|$|\x1Bp" // Alt-P
+	testCase(t, src, op, exp)
 }

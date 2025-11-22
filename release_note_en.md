@@ -6,7 +6,7 @@
 
 ### Specification Changes
 
-* Add key bindings: (#7 and #8, Thanks to @toolleeo)
+* Add key bindings: (#7, #8 and #12, Thanks to @toolleeo)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
     * `dd`, `dr`, `D` (delete the current line)
     * `dc`, `d|` (delete the current column)
@@ -15,6 +15,8 @@
     * `yc`, `y|` (copy the values of the current column to kill-buffer)
     * `p` (paste the values of kill-buffer after the current cell, row or column)
     * `P` (paste the values of kill-buffer before the current cell, row or column)
+    * `ALT`-`p`, `ESC`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
+* Assigned `ESC`+`q` as quitting because `ESC` had been assigned for quitting before, but is now used as a prefix key for 2-stroke commands (`q` still works as before). (#12)
 
 ### Internal Changes
 
