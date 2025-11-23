@@ -1,5 +1,9 @@
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.16.0
+=======
+Nov 24, 2025
+
 ### Bug Fixes
 
 - Fix: Kill buffer of readline was cleared between sessions (#11)

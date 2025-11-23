@@ -1,5 +1,9 @@
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.16.0
+=======
+Nov 24, 2025
+
 ## 不具合修正
 
 - readline の kill buffer の内容が、セッションとセッションの間で引き継がれていなかった問題を修正 (#11)
