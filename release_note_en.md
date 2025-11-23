@@ -6,21 +6,21 @@
 
 ### Specification Changes
 
-* Add key bindings: (#7, #8 and #12, Thanks to @toolleeo)
-    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
-    * `dd`, `dr`, `D` (delete the current line)
-    * `dc`, `d|` (delete the current column)
-    * `yl`, `y`+`SPACE`, `y`+`TAB`, `yv` (copy the values of the current cell to kill-buffer)
-    * `yy`, `yr`, `Y` (copy the values of the current row to kill-buffer)
-    * `yc`, `y|` (copy the values of the current column to kill-buffer)
-    * `p` (paste the values of kill-buffer after the current cell, row or column)
-    * `P` (paste the values of kill-buffer before the current cell, row or column)
-    * `ALT`-`p`, `ESC`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
-* Assigned `ESC`+`q` as quitting because `ESC` had been assigned for quitting before, but is now used as a prefix key for 2-stroke commands (`q` still works as before). (#12)
+- Add key bindings: (#7, #8 and #12, Thanks to @toolleeo)
+    - `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
+    - `dd`, `dr`, `D` (delete the current line)
+    - `dc`, `d|` (delete the current column)
+    - `yl`, `y`+`SPACE`, `y`+`TAB`, `yv` (copy the values of the current cell to kill-buffer)
+    - `yy`, `yr`, `Y` (copy the values of the current row to kill-buffer)
+    - `yc`, `y|` (copy the values of the current column to kill-buffer)
+    - `p` (paste the values of kill-buffer after the current cell, row or column)
+    - `P` (paste the values of kill-buffer before the current cell, row or column)
+    - `ALT`-`p`, `ESC`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
+- Assigned `ESC`+`q` as quitting because `ESC` had been assigned for quitting before, but is now used as a prefix key for 2-stroke commands (`q` still works as before). (#12)
 
 ### Internal Changes
 
-* Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)
+- Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)
 
 v1.15.1
 =======
@@ -28,26 +28,26 @@ Oct 19, 2025
 
 ### Specification Changes
 
-* **Removed runtime measurement for ambiguous-width Unicode characters**
+- **Removed runtime measurement for ambiguous-width Unicode characters**
   Previously, `csvi` determined the display width of ambiguous-width characters (e.g., `∇`) by printing them and reading the cursor position using `ESC[6n]`.
   This caused issues on some older terminals and added unnecessary complexity, so the feature has been removed.
   The program now relies solely on [mattn/go-runewidth] for width determination.
   In most cases it works correctly, but if the width is misdetected, you can control it with the environment variable `RUNEWIDTH_EASTASIAN`:
 
-  * Double-width: `set RUNEWIDTH_EASTASIAN=1`
-  * Single-width: `set RUNEWIDTH_EASTASIAN=0` (any non-`1` value with at least one character is also valid)
+  - Double-width: `set RUNEWIDTH_EASTASIAN=1`
+  - Single-width: `set RUNEWIDTH_EASTASIAN=0` (any non-`1` value with at least one character is also valid)
 
   The options `-aw`, `-an`, and `-debug-bell` have been removed accordingly.
 
   [mattn/go-runewidth]: https://github.com/mattn/go-runewidth
 
-* **Added automatic light-background detection**
+- **Added automatic light-background detection**
   When the environment variable `COLORFGBG` is defined as `(FG);(BG)` and the foreground value `(FG)` is smaller than `(BG)`,
   `csvi` now automatically uses color settings for light backgrounds (equivalent to `-rv`).
 
 ### Bug Fixes
 
-* Fixed an issue where executing
+- Fixed an issue where executing
 
   ```
   echo "ihihi" | csvi -auto "w|-|q|y" > file
@@ -64,37 +64,37 @@ Oct 19, 2025
 
 ### Internal Changes
 
-* Moved command-line option parsing from the main package `cmd/csvi` to the subpackage `startup`.
-* Removed the deprecated function `(Config) Main`.
+- Moved command-line option parsing from the main package `cmd/csvi` to the subpackage `startup`.
+- Removed the deprecated function `(Config) Main`.
 
 v1.15.0
 =======
 Oct 10, 2025
 
-* Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
-* Added `-rv` option to prevent unnatural colors on terminals with a white background
-* At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence `ESC[6n`, this could cause a hang followed by an error. To address this:
-    * `-aw` (treat ambiguous-width characters as 2 cells) and `-an` (treat ambiguous-width characters as 1 cell) options were added to skip the measurement and explicitly specify the character width.
-    * If `ESC[6n` is not supported, the program now continues without aborting.
-* Suppress color output if the `NO_COLOR` environment variable is set (following https://no-color.org/ )
-* Added support for FreeBSD/amd64
-* Added API functions `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice` and and `(*_Application) MessageAndGetKey`.
-* Split the `"csvi"` package into subpackages such as `"internal/ansi"`, `"internal/manualctl"`, `"legacy"`, and `"candidate"`.
+- Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
+- Added `-rv` option to prevent unnatural colors on terminals with a white background
+- At startup, the width of ambiguous-width Unicode characters was being measured, but on terminals that do not support the cursor position query sequence `ESC[6n`, this could cause a hang followed by an error. To address this:
+    - `-aw` (treat ambiguous-width characters as 2 cells) and `-an` (treat ambiguous-width characters as 1 cell) options were added to skip the measurement and explicitly specify the character width.
+    - If `ESC[6n` is not supported, the program now continues without aborting.
+- Suppress color output if the `NO_COLOR` environment variable is set (following https://no-color.org/ )
+- Added support for FreeBSD/amd64
+- Added API functions `(Config) EditFromStringSlice`, `uncsv.NewRowFromStringSlice` and and `(*_Application) MessageAndGetKey`.
+- Split the `"csvi"` package into subpackages such as `"internal/ansi"`, `"internal/manualctl"`, `"legacy"`, and `"candidate"`.
 
 v1.14.0
 =======
 Jun 2, 2025
 
-* Added `L` (Shift-L) command to reload the file using a specified encoding to correct detection errors
+- Added `L` (Shift-L) command to reload the file using a specified encoding to correct detection errors
    - Encoding name completion is supported.
    - UTF-16LE and UTF-16BE are not supported yet.
-* Added search command (`*` and `#`) to find the next occurrence of the current cell's content
+- Added search command (`*` and `#`) to find the next occurrence of the current cell's content
 
 v1.13.1
 =======
 Jun 25, 2025
 
-* Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
+- Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
 
 v1.13.0
 =======
@@ -117,8 +117,8 @@ v1.12.0
 =======
 Oct 8, 2024
 
-* [#4] Define the different width for cells. e.g., `-w 14,0:10,1:20` means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to [@kevin-gwyrdh])
-* Fix: panic when 0 bytes files (`nul` or `/dev/null`) were given
+- [#4] Define the different width for cells. e.g., `-w 14,0:10,1:20` means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to [@kevin-gwyrdh])
+- Fix: panic when 0 bytes files (`nul` or `/dev/null`) were given
 
 [#4]: https://github.com/hymkor/csvi/issues/4
 [@kevin-gwyrdh]: https://github.com/kevin-gwyrdh
@@ -134,8 +134,8 @@ v1.11.0
 =======
 Oct 6, 2024
 
-* While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. [go-readline-ny v1.5.0]
-* Support the hankaku-kana mode on the SKK input (`Ctrl-Q` to enter the hankaku-kana mode from SKK kana mode) [go-readline-skk v0.4.0]
+- While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. [go-readline-ny v1.5.0]
+- Support the hankaku-kana mode on the SKK input (`Ctrl-Q` to enter the hankaku-kana mode from SKK kana mode) [go-readline-skk v0.4.0]
 
 [go-readline-ny v1.5.0]: https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0
 [go-readline-skk v0.4.0]: https://github.com/nyaosorg/go-readline-skk/releases/tag/v0.4.0
@@ -144,104 +144,104 @@ v1.10.1
 =======
 Jun 10, 2024
 
-* Modifying package
-    * When the cell validation fails, prompt to modify the input text
+- Modifying package
+    - When the cell validation fails, prompt to modify the input text
 
 v1.10.0
 =======
 Jun 02, 2024
 
-* When `-fixcol` is specified
-    * Fix: `o` and `O`: inserted column was always the first one of the new line
-    * Fix: `O`: the line of cursor is incorrect before new cell text is input
-* Add a new option to protect header (`-p` and `Config.ProtectHeader`)
-* Do not create a row contains nothing but EOF.
-* Modifying package
-    * Added a mechanism for cell input validation
-    * Change the parameter type of hander function for key pressed from Application to KeyEventArgs (Compatiblity broken)
-    * Unexport type `Application` and `(*Config) Edit` returns `*Result` instead
+- When `-fixcol` is specified
+    - Fix: `o` and `O`: inserted column was always the first one of the new line
+    - Fix: `O`: the line of cursor is incorrect before new cell text is input
+- Add a new option to protect header (`-p` and `Config.ProtectHeader`)
+- Do not create a row contains nothing but EOF.
+- Modifying package
+    - Added a mechanism for cell input validation
+    - Change the parameter type of hander function for key pressed from Application to KeyEventArgs (Compatiblity broken)
+    - Unexport type `Application` and `(*Config) Edit` returns `*Result` instead
 
 v1.9.5
 ======
 May 27, 2024
 
-* Modifying package
-    * User functions can be assigned to keys
-    * `csvi.Result` is the alias of `csvi.Application` now
+- Modifying package
+    - User functions can be assigned to keys
+    - `csvi.Result` is the alias of `csvi.Application` now
 
 v1.9.4
 ======
 May 26, 2024
 
-* Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released
-* Modifing package
-    * Make `uncsv.Cell.Original()` that returns the original value before modified.
-    * When `Config.FixColumn` is set true, the new row which `o` & `O` insert has all columns same as the row cursor exists
-    * `csvi.Result` has removed rows in a field.
+- Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released
+- Modifing package
+    - Make `uncsv.Cell.Original()` that returns the original value before modified.
+    - When `Config.FixColumn` is set true, the new row which `o` & `O` insert has all columns same as the row cursor exists
+    - `csvi.Result` has removed rows in a field.
 
 v1.9.3
 ======
 May.17, 2024
 
-* Modifing pacakge
-    * Change the return value of `Config.Edit` from `(*RowPtr,error)` to `(*Result,error)`
+- Modifing pacakge
+    - Change the return value of `Config.Edit` from `(*RowPtr,error)` to `(*Result,error)`
 
 v1.9.2
 ======
 May.12, 2024
 
-* Modifing package
-    * Use 14 for the default of csvi.Config.CellWidth
-    * Implement csvi.Config.Edit as a function instead of csvi.Config.Main
+- Modifing package
+    - Use 14 for the default of csvi.Config.CellWidth
+    - Implement csvi.Config.Edit as a function instead of csvi.Config.Main
 
 v1.9.1
 ======
 May.09, 2024
 
-* Fix timing to close the terminal input was incorrect
+- Fix timing to close the terminal input was incorrect
   (For some reason it hasn't surfaced as a problem)
 
 v1.9.0
 ======
 May.08, 2024
 
-* Add the option `-fixcol` that disables keys `i`,`a`, and `x` not to shift columns.
-* Move the main function to the sub-package `cmd/csvi` to be available as a package of Go
-* Add the option `-readonly` that forbide changing the value of cell. When enabled, "q" shutdowns csvi immediately
+- Add the option `-fixcol` that disables keys `i`,`a`, and `x` not to shift columns.
+- Move the main function to the sub-package `cmd/csvi` to be available as a package of Go
+- Add the option `-readonly` that forbide changing the value of cell. When enabled, "q" shutdowns csvi immediately
 
 v1.8.1
 ======
 Apr.26, 2024
 
-* Fix: crashed on starting `csvi` with no arguments
-* Fix: a cell were not flipped when the cursor was in a cell with no text.
-* Fix: the foreground color was not black, but gray.
-* Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes `foo\r\n` when executing `echo "foo" | csvi -auto "w|-|q|y" > foo.txt`
+- Fix: crashed on starting `csvi` with no arguments
+- Fix: a cell were not flipped when the cursor was in a cell with no text.
+- Fix: the foreground color was not black, but gray.
+- Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes `foo\r\n` when executing `echo "foo" | csvi -auto "w|-|q|y" > foo.txt`
 
 v1.8.0
 ======
 Apr.24, 2024
 
-* Update the read bytes of the status line 4 times per second.
-* Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.
+- Update the read bytes of the status line 4 times per second.
+- Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.
 
 v1.7.1
 ======
 Apr 16 2024
 
-* Set cursor on or off when yes or no is asked.
-* Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.
+- Set cursor on or off when yes or no is asked.
+- Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.
 
 v1.7.0
 ======
 Apr 15 2024
 
-* Added the `-auto` option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.
-* Added the `-16le` and `-16be` options to force interpretation as UTF-16 little-endian or big-endian encoding, respectively.
-* `-semicolon`: Enabled using semicolons as field delimiters (for some European locales that use commas as decimal separators). Considered allowing arbitrary delimiter strings, but decided against it to avoid potential issues.
-* `-nonutf8`: Added an option to handle cases where data is incorrectly interpreted as UTF-8 when it is not actually encoded that way.
-* Added the `-help` option to display a list of available options.
-* Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.
+- Added the `-auto` option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.
+- Added the `-16le` and `-16be` options to force interpretation as UTF-16 little-endian or big-endian encoding, respectively.
+- `-semicolon`: Enabled using semicolons as field delimiters (for some European locales that use commas as decimal separators). Considered allowing arbitrary delimiter strings, but decided against it to avoid potential issues.
+- `-nonutf8`: Added an option to handle cases where data is incorrectly interpreted as UTF-8 when it is not actually encoded that way.
+- Added the `-help` option to display a list of available options.
+- Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.
 
 v1.6.0
 ======
