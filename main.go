@@ -3,6 +3,7 @@ package csvi
 import (
 	"bufio"
 	"container/list"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -506,7 +507,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		for i := 0; i < 100; i++ {
 			row, err := fetch()
 			if err != nil {
-				if err != io.EOF {
+				if !errors.Is(err, io.EOF) {
 					return nil, err
 				}
 				fetch = nil
@@ -515,7 +516,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 			}
 			app.Push(row)
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				break
 			}
 		}
@@ -551,7 +552,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		fmt.Fprintln(out, s)
 	}
 	message := cfg.Message
-	var killbuffer string
+	var killbuffer pasteFunc
 	for {
 		screenHeight := _screenHeight - len(cfg.Titles)
 		screenHeight -= cfg.HeaderLines
@@ -587,19 +588,19 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			row, err := fetch()
 			if err != nil {
 				fetch = nil
-				if err != io.EOF || isEmptyRow(row) {
+				if !errors.Is(err, io.EOF) || isEmptyRow(row) {
 					return false
 				}
 			}
 			app.Push(row)
-			if message == "" && (err == io.EOF || time.Now().After(displayUpdateTime)) {
+			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				io.WriteString(out, "\r"+ansi.YELLOW)
 				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
 				io.WriteString(out, ansi.RESET)
 				io.WriteString(out, ansi.ERASE_SCRN_AFTER)
 				displayUpdateTime = time.Now().Add(time.Second / interval)
 			}
-			return err != io.EOF
+			return !errors.Is(err, io.EOF)
 		})
 		if err != nil {
 			return nil, err
@@ -637,7 +638,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					p.Restore(mode)
 				}
 				view.clearCache()
-			case "q", keys.Escape:
+			case "q":
 				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
 					io.WriteString(out, "\n")
 					return &Result{_Application: app}, nil
@@ -793,26 +794,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					message = m
 					break
 				}
-				if app.Len() <= 1 {
-					break
-				}
-				startPrevP := startRow.Prev()
-				prevP := cursorRow.Prev()
-				removedRow := cursorRow.Remove()
-				app.removedRows = append(app.removedRows, removedRow)
-				if prevP == nil {
-					cursorRow = app.Front()
-				} else if next := prevP.Next(); next != nil {
-					cursorRow = next
-				} else {
-					cursorRow = prevP
-					cursorRow.Term = removedRow.Term
-				}
-				if startPrevP == nil {
-					startRow = app.Front()
-				} else {
-					startRow = startPrevP.Next()
-				}
+				killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
+				repaint()
+				view.clearCache()
 			case "i":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m
@@ -867,26 +851,78 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 			case "u":
 				cursorRow.Cell[cursorCol].Restore(mode)
+			case "Y":
+				killbuffer = app.yankCurrentRow(cursorRow)
 			case "y":
-				killbuffer = cursorRow.Cell[cursorCol].Text()
-				message = "yanked the current cell: " + killbuffer
-			case "p":
+				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
+				if err != nil {
+					message = err.Error()
+					break
+				}
+				switch ch {
+				case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
+					killbuffer = app.yankCurrentCell(cursorRow, cursorCol)
+				case "y", "r":
+					killbuffer = app.yankCurrentRow(cursorRow)
+				case "|", "c":
+					killbuffer = app.yankCurrentColumn(cursorCol)
+				}
+			case "d":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
-				cursorRow.Replace(cursorCol, killbuffer, mode)
-				message = "pasted: " + killbuffer
-			case "d", "x":
+				if cfg.FixColumn {
+					ch, err = app.MessageAndGetKey(`Delete ? ["d"/"r": row] `)
+				} else {
+					ch, err = app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "d"/"r": row, "|"/"c": column] `)
+				}
+				if err != nil {
+					message = err.Error()
+					break
+				}
+				switch ch {
+				case "l", "v", " ", "\t", keys.CtrlF, keys.Right:
+					if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+						message = m
+						break
+					}
+					killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
+				case "d", "r":
+					killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
+					repaint()
+					view.clearCache()
+				case "|", "c":
+					if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+						message = m
+						break
+					}
+					killbuffer = app.removeCurrentColumn(cursorCol)
+					repaint()
+					view.clearCache()
+				}
+			case "p", "P", keys.AltP:
+				if killbuffer == nil {
+					break
+				}
+				pt := pasteAfter
+				if ch == "P" {
+					pt = pasteBefore
+				} else if ch == keys.AltP {
+					pt = pasteOver
+				}
+				if err := killbuffer(&startRow, &cursorRow, &cursorCol, pt); err != nil {
+					message = err.Error()
+					break
+				}
+				repaint()
+				view.clearCache()
+			case "x":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m
 					break
 				}
-				if len(cursorRow.Cell) <= 1 {
-					cursorRow.Replace(0, "", mode)
-				} else {
-					cursorRow.Delete(cursorCol)
-				}
+				killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
 			case "\"":
 				cursor := &cursorRow.Cell[cursorCol]
 				if cursor.IsQuoted() {
@@ -899,11 +935,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
 					for {
 						row, err := fetch()
-						if err != nil && err != io.EOF {
+						if err != nil && !errors.Is(err, io.EOF) {
 							return nil, err
 						}
 						app.Push(row)
-						if err == io.EOF {
+						if errors.Is(err, io.EOF) {
 							break
 						}
 					}
@@ -922,6 +958,29 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					cellWidth.Set(cursorCol, w)
 				}
 				view.clearCache()
+			case keys.Escape:
+				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste] `)
+				if err != nil {
+					message = err.Error()
+					break
+				}
+				switch ch {
+				case "q", "Q":
+					if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
+						io.WriteString(out, "\n")
+						return &Result{_Application: app}, nil
+					}
+				case "p", "P":
+					if killbuffer == nil {
+						break
+					}
+					if err := killbuffer(&startRow, &cursorRow, &cursorCol, pasteOver); err != nil {
+						message = err.Error()
+						break
+					}
+					repaint()
+					view.clearCache()
+				}
 			}
 		}
 		if L := len(cursorRow.Cell); L <= 0 {

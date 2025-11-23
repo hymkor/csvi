@@ -145,6 +145,14 @@ type Cell struct {
 	original []byte
 }
 
+func (c Cell) Clone() Cell {
+	return Cell{
+		source:   bytes.Clone(c.source),
+		text:     c.text,
+		original: []byte{},
+	}
+}
+
 func (c Cell) Text() string {
 	return c.text
 }
@@ -165,6 +173,11 @@ func (c Cell) IsQuoted() bool {
 	s := c.source
 	return (len(s) > 1 && s[0] == 0 && s[1] == '"') ||
 		(len(s) > 0 && s[0] == '"')
+}
+
+func (c *Cell) SetSource(newSource []byte, mode *Mode) {
+	c.source = newSource
+	c.text = dequote(mode.decode(newSource))
 }
 
 func (c *Cell) Restore(mode *Mode) {
@@ -460,6 +473,10 @@ func NewRowFromStringSlice(mode *Mode, texts []string) Row {
 
 func (row *Row) Insert(i int, text string, mode *Mode) {
 	row.Cell = slicesInsert(row.Cell, i, newCell(text, mode))
+}
+
+func (row *Row) InsertCell(i int, newCell Cell, mode *Mode) {
+	row.Cell = slicesInsert(row.Cell, i, newCell)
 }
 
 func (row *Row) Replace(i int, text string, mode *Mode) {

@@ -91,8 +91,10 @@ func (f *Flag) Run() error {
 	}
 	f.setGlobalColor()
 
-	dataSource, ttyOut := f.dataSourceAndTtyOut()
+	return f.RunInOut(f.dataSourceAndTtyOut())
+}
 
+func (f *Flag) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 	io.WriteString(ttyOut, ansi.CURSOR_OFF)
 	defer io.WriteString(ttyOut, ansi.CURSOR_ON)
 

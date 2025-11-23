@@ -20,12 +20,28 @@ import (
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
-type ManualCtl struct {
-	*tty8.Tty
+type clipBoard struct {
+	value string
 }
 
-func New() (ManualCtl, error) {
-	mc := ManualCtl{Tty: &tty8.Tty{}}
+func (c *clipBoard) Read() (string, error) {
+	return c.value, nil
+}
+
+func (c *clipBoard) Write(text string) error {
+	c.value = text
+	return nil
+}
+
+type ManualCtl struct {
+	*tty8.Tty
+	clipBoard
+}
+
+func New() (*ManualCtl, error) {
+	mc := &ManualCtl{
+		Tty: &tty8.Tty{},
+	}
 	return mc, mc.Open(nil)
 }
 
@@ -47,7 +63,7 @@ func skkInit() {
 	})
 }
 
-func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate.Candidate) (string, error) {
+func (m *ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidate.Candidate) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,
@@ -67,6 +83,7 @@ func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidat
 		ResetColor:   "\x1B[0m",
 		DefaultColor: "\x1B[0m",
 		PredictColor: predictColor,
+		Clipboard:    &m.clipBoard,
 	}
 	if len(c) > 0 {
 		editor.BindKey(keys.CtrlI, &completion.CmdCompletion2{
@@ -81,7 +98,7 @@ func (m ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candidat
 	return editor.ReadLine(context.Background())
 }
 
-func (m ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string, error) {
+func (m *ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (string, error) {
 	skkInit()
 	editor := &readline.Editor{
 		Writer:  out,

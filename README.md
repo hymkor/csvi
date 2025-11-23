@@ -110,14 +110,14 @@ Key-binding
 -----------
 
 * Move Cursor
-    * `h`,`Ctrl`-`B`,`←`,`Shift`-`TAB` (move cursor left)
-    * `j`,`Ctrl`-`N`,`↓`,`Enter` (move cursor down)
-    * `k`,`Ctrl`-`P`,`↑` (move cursor up)
-    * `l`,`Ctrl`-`F`,`→`,`TAB` (move cursor right)
+    * `h`, `Ctrl`+`B`, `←`, `Shift`+`TAB` (move cursor left)
+    * `j`, `Ctrl`+`N`, `↓`, `Enter` (move cursor down)
+    * `k`, `Ctrl`+`P`, `↑` (move cursor up)
+    * `l`, `Ctrl`+`F`, `→`, `TAB` (move cursor right)
     * `<` (move the beginning of file)
     * `>`,`G` (move the end of file)
-    * `0`,`^`,`Ctrl`-`A` (move the beginning of the current line)
-    * `$`,`Ctrl`-`E` (move the end of the current line)
+    * `0`, `^`, `Ctrl`+`A` (move the beginning of the current line)
+    * `$`,`Ctrl`+`E` (move the end of the current line)
 * Search
     * `/` (search forward for a partial match)
     * `?` (search backward for a partial match)
@@ -129,21 +129,26 @@ Key-binding
     * `i` (insert a new cell before the current one)
     * `a` (append a new cell after the current one)
     * `r` (replace the current cell)
-    * `d`,`x` (delete the current cell)
+    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
+    * `dd`, `dr`, `D` (delete the current line)
+    * `dc`, `d|` (delete the current column)
     * `w` (write to a file or STDOUT(`'-'`))
     * `o` (append a new line after the current one)
     * `O` (insert a new line before the current one)
-    * `D` (delete the current line)
     * `"` (enclose or remove double quotations if possible)
     * `u` (restore the original value of the current cell)
-    * `y` (copy the value of the current cell to kill-buffer)
-    * `p` (paste the value of kill-buffer to the current cell)
+    * `yl`, `y`+`SPACE`, `y`+`TAB`, `yv` (copy the values of the current cell to kill-buffer)
+    * `yy`, `yr`, `Y` (copy the values of the current row to kill-buffer)
+    * `yc`, `y|` (copy the values of the current column to kill-buffer)
+    * `p` (paste the values of kill-buffer after the current cell, row or column)
+    * `P` (paste the values of kill-buffer before the current cell, row or column)
+    * `ALT`+`p`, `ESC`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
 * Display settings
     * `L` (reload the file using a specified encoding)
-    * `Ctrl`-`L` (Repaint)
+    * `Ctrl`+`L` (Repaint)
     * `]` (widen the column at the cursor)
     * `[` (narrow the column at the cursor)
-* Quit: `q` or `ESC`
+* Quit: `q` or `ESC`+`q`
 
 Environment Variables
 ---------------------
