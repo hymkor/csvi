@@ -1,7 +1,9 @@
+Release notes
+=============
 ( **English** / [Japanese](release_note_ja.md) )
 
 v1.16.0
-=======
+-------
 Nov 24, 2025
 
 ### Bug Fixes
@@ -27,7 +29,7 @@ Nov 24, 2025
 - Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)
 
 v1.15.1
-=======
+-------
 Oct 19, 2025
 
 ### Specification Changes
@@ -72,7 +74,7 @@ Oct 19, 2025
 - Removed the deprecated function `(Config) Main`.
 
 v1.15.0
-=======
+-------
 Oct 10, 2025
 
 - Added key bindings `]` and `[` to adjust the width of the current column (widen and narrow, respectively).
@@ -86,7 +88,7 @@ Oct 10, 2025
 - Split the `"csvi"` package into subpackages such as `"internal/ansi"`, `"internal/manualctl"`, `"legacy"`, and `"candidate"`.
 
 v1.14.0
-=======
+-------
 Jun 2, 2025
 
 - Added `L` (Shift-L) command to reload the file using a specified encoding to correct detection errors
@@ -95,16 +97,16 @@ Jun 2, 2025
 - Added search command (`*` and `#`) to find the next occurrence of the current cell's content
 
 v1.13.1
-=======
+-------
 Jun 25, 2025
 
 - Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.
 
 v1.13.0
-=======
+-------
 May 14, 2025
 
-## 🚀 Experimental Release for macOS Users
+### Experimental Release for macOS Users
 
 This release includes a **macOS build for the first time**!
 
@@ -113,12 +115,12 @@ If you're a macOS user and willing to help, **please try it and report back** th
 
 Thank you for your support!
 
-## Other changes
+### Other changes
 
 - Added `-title` option to display a title row above the header row.
 
 v1.12.0
-=======
+-------
 Oct 8, 2024
 
 - [#4] Define the different width for cells. e.g., `-w 14,0:10,1:20` means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to [@kevin-gwyrdh])
@@ -128,14 +130,14 @@ Oct 8, 2024
 [@kevin-gwyrdh]: https://github.com/kevin-gwyrdh
 
 v1.11.1
-=======
+-------
 Oct 7, 2024
 
 - Fix: suggestions did not start when the original value of the current cell was empty
 - Fix: the search target for suggestions shifted one column to the right when inserting a cell value with `a`.
 
 v1.11.0
-=======
+-------
 Oct 6, 2024
 
 - While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. [go-readline-ny v1.5.0]
@@ -145,14 +147,14 @@ Oct 6, 2024
 [go-readline-skk v0.4.0]: https://github.com/nyaosorg/go-readline-skk/releases/tag/v0.4.0
 
 v1.10.1
-=======
+-------
 Jun 10, 2024
 
 - Modifying package
     - When the cell validation fails, prompt to modify the input text
 
 v1.10.0
-=======
+-------
 Jun 02, 2024
 
 - When `-fixcol` is specified
@@ -166,7 +168,7 @@ Jun 02, 2024
     - Unexport type `Application` and `(*Config) Edit` returns `*Result` instead
 
 v1.9.5
-======
+------
 May 27, 2024
 
 - Modifying package
@@ -174,7 +176,7 @@ May 27, 2024
     - `csvi.Result` is the alias of `csvi.Application` now
 
 v1.9.4
-======
+------
 May 26, 2024
 
 - Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released
@@ -184,14 +186,14 @@ May 26, 2024
     - `csvi.Result` has removed rows in a field.
 
 v1.9.3
-======
+------
 May.17, 2024
 
 - Modifing pacakge
     - Change the return value of `Config.Edit` from `(*RowPtr,error)` to `(*Result,error)`
 
 v1.9.2
-======
+------
 May.12, 2024
 
 - Modifing package
@@ -199,14 +201,14 @@ May.12, 2024
     - Implement csvi.Config.Edit as a function instead of csvi.Config.Main
 
 v1.9.1
-======
+------
 May.09, 2024
 
 - Fix timing to close the terminal input was incorrect
   (For some reason it hasn't surfaced as a problem)
 
 v1.9.0
-======
+------
 May.08, 2024
 
 - Add the option `-fixcol` that disables keys `i`,`a`, and `x` not to shift columns.
@@ -214,7 +216,7 @@ May.08, 2024
 - Add the option `-readonly` that forbide changing the value of cell. When enabled, "q" shutdowns csvi immediately
 
 v1.8.1
-======
+------
 Apr.26, 2024
 
 - Fix: crashed on starting `csvi` with no arguments
@@ -223,21 +225,21 @@ Apr.26, 2024
 - Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes `foo\r\n` when executing `echo "foo" | csvi -auto "w|-|q|y" > foo.txt`
 
 v1.8.0
-======
+------
 Apr.24, 2024
 
 - Update the read bytes of the status line 4 times per second.
 - Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.
 
 v1.7.1
-======
+------
 Apr 16 2024
 
 - Set cursor on or off when yes or no is asked.
 - Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.
 
 v1.7.0
-======
+------
 Apr 15 2024
 
 - Added the `-auto` option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.
@@ -248,7 +250,7 @@ Apr 15 2024
 - Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.
 
 v1.6.0
-======
+------
 Apr 8 2024
 
 - Rename from CSView to CSVI because not a few products that have the same name exist in the same category.
@@ -261,14 +263,14 @@ Apr 8 2024
 - Show (CURRENT-COLUMN-POSITION,CURRENT-ROW-POSITION/ALL-READ-ROWS-NUMBER) on the status line.
 
 v1.5.0
-======
+------
 Mar 31 2024
 
 - Support UTF16
     - Judge the file encoding UTF16 when the first two bytes are `\xFE\xFF` or `\xFF\xFE`, or `\0` is one of the two bytes
 
 v1.4.0
-======
+------
 Mar 27 2024
 
 - Fix the problem the cache buffer for drawing did not work on v1.3.0
@@ -283,7 +285,7 @@ Mar 27 2024
     - Implment: `(Cell) Source` that returns the binary value before decoding
 
 v1.3.0
-======
+------
 Mar 25 2024
 
 - `[CRLF]` or `[LF]` in the status line now indicates the line feed code of the current line instead of the representative line feed code of the entire file.
@@ -291,7 +293,7 @@ Mar 25 2024
 - The first few lines can now be fixed as header lines.(`-h int`)
 
 v1.2.0
-======
+------
 Feb 29 2024
 
 - `a`,`o`,`O`: make new cell and repaint before getline is called
@@ -313,26 +315,26 @@ Feb 29 2024
 - Add key assigns: `G`:Go to EOF, `Enter`:go to next line, `TAB`:go to the rightside cell, `Shift`+`TAB`:go to the leftside cell
 
 v1.1.3
-======
+------
 Feb 16 2024
 
 - Fix: the attributes of text converted by SKK were incorrect on Windows 8.1
 
 v1.1.2
-=====
+------
 Oct 01 2023
 
 - Strings being converted with SKK are now displayed as reversed or underlined
 - Fix: SKK failed to start when user-jisyo file did not exist
 
 v1.1.1
-======
+------
 Sep 20 2023
 
 - Use `:` for the path list separator instead of `;` from %GOREADLINESKK% on Linux
 
 v1.1.0
-======
+------
 Sep 20 2023
 
 - Backport from [lispread]
@@ -346,25 +348,25 @@ Sep 20 2023
 [go-readline-skk]: https://github.com/nyaosorg/go-readline-skk
 
 v1.0.0
-======
+------
 Sep 11 2023
 
 - Fix for the the imcompatibility between v0.8.3 and v0.14.0 of go-readline-ny
 
 v0.6.2
-======
+------
 Nov 23 2022
 
 - Fix: (#3) Too long field breaks the screen layout
 
 v0.6.1
-======
+------
 Feb 19 2022
 
 - Display [TSV],[CSV],[LF],[CRLF] on the status line.
 
 v0.6.0
-======
+------
 Dec 10 2021
 
 - Change visual:
@@ -380,7 +382,7 @@ Dec 10 2021
 - `x`: assign delete cell same as `d`
 
 v0.5.0
-======
+------
 Mar 27 2020
 
 - `o` - append a new line after the current line
@@ -388,7 +390,7 @@ Mar 27 2020
 - `D` - delete the current line
 
 v0.4.0
-======
+------
 Nov 4 2019
 
 - Support window resized
@@ -402,19 +404,19 @@ Nov 4 2019
 - `q`: (quit) ask yes/no
 
 v0.3.0
-======
+------
 Nov 2 2019
 
 - Support editing and writing to the file.
 
 v0.2.0
-======
+------
 Oct 31 2019
 
 - Implement search command `/`,`?`,`n`,`N`
 
 v0.1.0
-======
+------
 Oct 27 2019
 
 - first release
