@@ -46,7 +46,7 @@ release:
 	pwsh latest-notes.ps1 | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
-	make-scoop-manifest *-windows-*.zip > $(NAME).json
+	make-scoop-manifest -all *-windows-*.zip > $(NAME).json
 
 test:
 	$(GO) test -v ./...
