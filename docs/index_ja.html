@@ -1236,14 +1236,14 @@ scoop install csvi
 <ul>
 <li>カーソル移動
 <ul>
-<li><code>h</code>,<code>Ctrl</code>-<code>B</code>,<code>←</code>,<code>Shift</code>-<code>TAB</code> (左)</li>
-<li><code>j</code>,<code>Ctrl</code>-<code>N</code>,<code>↓</code>,<code>Enter</code> (下)</li>
-<li><code>k</code>,<code>Ctrl</code>-<code>P</code>,<code>↑</code> (上)</li>
-<li><code>l</code>,<code>Ctrl</code>-<code>F</code>,<code>→</code>,<code>TAB</code> (右)</li>
+<li><code>h</code>, <code>Ctrl</code>+<code>B</code>, <code>←</code>,<code>Shift</code>+<code>TAB</code> (左)</li>
+<li><code>j</code>, <code>Ctrl</code>+<code>N</code>, <code>↓</code>,<code>Enter</code> (下)</li>
+<li><code>k</code>, <code>Ctrl</code>+<code>P</code>, <code>↑</code> (上)</li>
+<li><code>l</code>, <code>Ctrl</code>+<code>F</code>, <code>→</code>,<code>TAB</code> (右)</li>
 <li><code>&lt;</code> (ファイル先頭)</li>
-<li><code>&gt;</code>,<code>G</code> (ファイル末尾)</li>
-<li><code>0</code>,<code>^</code>,<code>Ctrl</code>-<code>A</code> (行頭)</li>
-<li><code>$</code>,<code>Ctrl</code>-<code>E</code> (行末)</li>
+<li><code>&gt;</code>, <code>G</code> (ファイル末尾)</li>
+<li><code>0</code>, <code>^</code>, <code>Ctrl</code>+<code>A</code> (行頭)</li>
+<li><code>$</code>, <code>Ctrl</code>+<code>E</code> (行末)</li>
 </ul>
 </li>
 <li>検索
@@ -1261,26 +1261,31 @@ scoop install csvi
 <li><code>i</code> (現在のセルの前に新セルを挿入)</li>
 <li><code>a</code> (現在のセルの右に新セルを挿入)</li>
 <li><code>r</code> (現在のセルを置換)</li>
-<li><code>d</code>,<code>x</code> (現在のセルを削除)</li>
+<li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>, <code>x</code> (現在のセルを削除)</li>
+<li><code>dd</code>, <code>dr</code>, <code>D</code> (現在の行を削除する)</li>
+<li><code>dc</code>, <code>d|</code> (現在の列を削除する)</li>
 <li><code>w</code> (ファイルもしくは標準出力(<code>'-'</code>)に出力する)</li>
 <li><code>o</code> (現在の行の後に新しい行を追加する)</li>
 <li><code>O</code> (現在の行の前に新しい行を挿入する)</li>
-<li><code>D</code> (現在の行を削除する)</li>
 <li><code>&quot;</code> (可能であれば、二重引用符の囲む/外す)</li>
 <li><code>u</code> (現在のセルの元の値を復元する)</li>
-<li><code>y</code> (現在のセルの値を内部クリップボードへコピー)</li>
-<li><code>p</code> (現在のセルに内部クリップボードの値をペースト)</li>
+<li><code>yl</code>, <code>y</code>+<code>SPACE</code>, <code>y</code>+<code>TAB</code>, <code>yv</code> (現在のセルを内部クリップボードへコピー)</li>
+<li><code>yy</code>, <code>yr</code>, <code>Y</code> (現在の行を内部クリップボードへコピー)</li>
+<li><code>yc</code>, <code>y|</code> (現在の列を内部クリップボードへコピー)</li>
+<li><code>p</code> (現在のセル/列/行の直後に内部クリップボードの値をペースト)</li>
+<li><code>P</code> (現在のセル/列/行の直前に内部クリップボードの値をペースト)</li>
+<li><code>ALT</code>+<code>p</code>, <code>ESC</code>+<code>p</code> (現在のセル/列/行を内部クリップボードの値で上書き)</li>
 </ul>
 </li>
 <li>表示設定
 <ul>
 <li><code>L</code> (指定したエンコーディングでファイルを再読み込み)</li>
-<li><code>Ctrl</code>-<code>L</code>: (再表示)</li>
+<li><code>Ctrl</code>+<code>L</code> (再表示)</li>
 <li><code>]</code> (カーソルのある列の幅を広げる)</li>
 <li><code>[</code> (カーソルのある列の幅を縮める)</li>
 </ul>
 </li>
-<li>終了: <code>q</code> or <code>ESC</code></li>
+<li>終了: <code>q</code> or <code>ESC</code>+<code>q</code></li>
 </ul>
 <h2 id="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0">環境変数</h2>
 <h3 id="no-color">NO_COLOR</h3>

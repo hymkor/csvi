@@ -1140,10 +1140,38 @@ a.permalink:hover{
 </style>
 </head><body>
 <div class="main markdown-body">
+<h1 id="release-notes">Release notes</h1>
 <p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
-<h1 id="v1151">v1.15.1</h1>
-<p>Oct 19, 2025</p>
+<h2 id="v1160">v1.16.0</h2>
+<p>Nov 24, 2025</p>
+<h3 id="bug-fixes">Bug Fixes</h3>
+<ul>
+<li>Fix: Kill buffer of readline was cleared between sessions (#11)</li>
+</ul>
 <h3 id="specification-changes">Specification Changes</h3>
+<ul>
+<li>Add key bindings: (#7, #8 and #12, Thanks to @toolleeo)
+<ul>
+<li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>, <code>x</code> (delete the current cell)</li>
+<li><code>dd</code>, <code>dr</code>, <code>D</code> (delete the current line)</li>
+<li><code>dc</code>, <code>d|</code> (delete the current column)</li>
+<li><code>yl</code>, <code>y</code>+<code>SPACE</code>, <code>y</code>+<code>TAB</code>, <code>yv</code> (copy the values of the current cell to kill-buffer)</li>
+<li><code>yy</code>, <code>yr</code>, <code>Y</code> (copy the values of the current row to kill-buffer)</li>
+<li><code>yc</code>, <code>y|</code> (copy the values of the current column to kill-buffer)</li>
+<li><code>p</code> (paste the values of kill-buffer after the current cell, row or column)</li>
+<li><code>P</code> (paste the values of kill-buffer before the current cell, row or column)</li>
+<li><code>ALT</code>-<code>p</code>, <code>ESC</code>+<code>p</code> (overwrite the current cell/row/column with the content of the kill-buffer)</li>
+</ul>
+</li>
+<li>Assigned <code>ESC</code>+<code>q</code> as quitting because <code>ESC</code> had been assigned for quitting before, but is now used as a prefix key for 2-stroke commands (<code>q</code> still works as before). (#12)</li>
+</ul>
+<h3 id="internal-changes">Internal Changes</h3>
+<ul>
+<li>Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)</li>
+</ul>
+<h2 id="v1151">v1.15.1</h2>
+<p>Oct 19, 2025</p>
+<h3 id="specification-changes-1">Specification Changes</h3>
 <ul>
 <li>
 <p><strong>Removed runtime measurement for ambiguous-width Unicode characters</strong>
@@ -1163,7 +1191,7 @@ When the environment variable <code>COLORFGBG</code> is defined as <code>(FG);(B
 <code>csvi</code> now automatically uses color settings for light backgrounds (equivalent to <code>-rv</code>).</p>
 </li>
 </ul>
-<h3 id="bug-fixes">Bug Fixes</h3>
+<h3 id="bug-fixes-1">Bug Fixes</h3>
 <ul>
 <li>
 <p>Fixed an issue where executing</p>
@@ -1176,12 +1204,12 @@ When the environment variable <code>COLORFGBG</code> is defined as <code>(FG);(B
 This was caused by fallback handling in the old width-measurement logic, which has now been removed, so the problem no longer occurs.</p>
 </li>
 </ul>
-<h3 id="internal-changes">Internal Changes</h3>
+<h3 id="internal-changes-1">Internal Changes</h3>
 <ul>
 <li>Moved command-line option parsing from the main package <code>cmd/csvi</code> to the subpackage <code>startup</code>.</li>
 <li>Removed the deprecated function <code>(Config) Main</code>.</li>
 </ul>
-<h1 id="v1150">v1.15.0</h1>
+<h2 id="v1150">v1.15.0</h2>
 <p>Oct 10, 2025</p>
 <ul>
 <li>Added key bindings <code>]</code> and <code>[</code> to adjust the width of the current column (widen and narrow, respectively).</li>
@@ -1197,7 +1225,7 @@ This was caused by fallback handling in the old width-measurement logic, which h
 <li>Added API functions <code>(Config) EditFromStringSlice</code>, <code>uncsv.NewRowFromStringSlice</code> and and <code>(*_Application) MessageAndGetKey</code>.</li>
 <li>Split the <code>&quot;csvi&quot;</code> package into subpackages such as <code>&quot;internal/ansi&quot;</code>, <code>&quot;internal/manualctl&quot;</code>, <code>&quot;legacy&quot;</code>, and <code>&quot;candidate&quot;</code>.</li>
 </ul>
-<h1 id="v1140">v1.14.0</h1>
+<h2 id="v1140">v1.14.0</h2>
 <p>Jun 2, 2025</p>
 <ul>
 <li>Added <code>L</code> (Shift-L) command to reload the file using a specified encoding to correct detection errors
@@ -1208,41 +1236,41 @@ This was caused by fallback handling in the old width-measurement logic, which h
 </li>
 <li>Added search command (<code>*</code> and <code>#</code>) to find the next occurrence of the current cell's content</li>
 </ul>
-<h1 id="v1131">v1.13.1</h1>
+<h2 id="v1131">v1.13.1</h2>
 <p>Jun 25, 2025</p>
 <ul>
 <li>Made it possible to build with Go 1.20.14 to support Windows 7, 8, and Server 2008 or later.</li>
 </ul>
-<h1 id="v1130">v1.13.0</h1>
+<h2 id="v1130">v1.13.0</h2>
 <p>May 14, 2025</p>
-<h2 id="%F0%9F%9A%80-experimental-release-for-macos-users">🚀 Experimental Release for macOS Users</h2>
+<h3 id="experimental-release-for-macos-users">Experimental Release for macOS Users</h3>
 <p>This release includes a <strong>macOS build for the first time</strong>!</p>
 <p>We don't have access to a macOS environment, so we can't test it ourselves.
 If you're a macOS user and willing to help, <strong>please try it and report back</strong> through GitHub Issues or Discussions.</p>
 <p>Thank you for your support!</p>
-<h2 id="other-changes">Other changes</h2>
+<h3 id="other-changes">Other changes</h3>
 <ul>
 <li>Added <code>-title</code> option to display a title row above the header row.</li>
 </ul>
-<h1 id="v1120">v1.12.0</h1>
+<h2 id="v1120">v1.12.0</h2>
 <p>Oct 8, 2024</p>
 <ul>
 <li><a href="https://github.com/hymkor/csvi/issues/4">#4</a> Define the different width for cells. e.g., <code>-w 14,0:10,1:20</code> means: the first-column has 10 characters wide, the second 20, and other 14. (Thanks to <a href="https://github.com/kevin-gwyrdh">@kevin-gwyrdh</a>)</li>
 <li>Fix: panic when 0 bytes files (<code>nul</code> or <code>/dev/null</code>) were given</li>
 </ul>
-<h1 id="v1111">v1.11.1</h1>
+<h2 id="v1111">v1.11.1</h2>
 <p>Oct 7, 2024</p>
 <ul>
 <li>Fix: suggestions did not start when the original value of the current cell was empty</li>
 <li>Fix: the search target for suggestions shifted one column to the right when inserting a cell value with <code>a</code>.</li>
 </ul>
-<h1 id="v1110">v1.11.0</h1>
+<h2 id="v1110">v1.11.0</h2>
 <p>Oct 6, 2024</p>
 <ul>
 <li>While entering text in a cell, automatically display suggestions from cells in the same column that contain the current input. Press → or Ctrl-F to accept. <a href="https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.5.0">go-readline-ny v1.5.0</a></li>
 <li>Support the hankaku-kana mode on the SKK input (<code>Ctrl-Q</code> to enter the hankaku-kana mode from SKK kana mode) <a href="https://github.com/nyaosorg/go-readline-skk/releases/tag/v0.4.0">go-readline-skk v0.4.0</a></li>
 </ul>
-<h1 id="v1101">v1.10.1</h1>
+<h2 id="v1101">v1.10.1</h2>
 <p>Jun 10, 2024</p>
 <ul>
 <li>Modifying package
@@ -1251,7 +1279,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v1100">v1.10.0</h1>
+<h2 id="v1100">v1.10.0</h2>
 <p>Jun 02, 2024</p>
 <ul>
 <li>When <code>-fixcol</code> is specified
@@ -1270,7 +1298,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v195">v1.9.5</h1>
+<h2 id="v195">v1.9.5</h2>
 <p>May 27, 2024</p>
 <ul>
 <li>Modifying package
@@ -1280,7 +1308,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v194">v1.9.4</h1>
+<h2 id="v194">v1.9.4</h2>
 <p>May 26, 2024</p>
 <ul>
 <li>Fix: panic occured when no input lines were given. It is a bug existing only on v1.9.3 whose executable was not released</li>
@@ -1292,7 +1320,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v193">v1.9.3</h1>
+<h2 id="v193">v1.9.3</h2>
 <p>May.17, 2024</p>
 <ul>
 <li>Modifing pacakge
@@ -1301,7 +1329,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v192">v1.9.2</h1>
+<h2 id="v192">v1.9.2</h2>
 <p>May.12, 2024</p>
 <ul>
 <li>Modifing package
@@ -1311,20 +1339,20 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v191">v1.9.1</h1>
+<h2 id="v191">v1.9.1</h2>
 <p>May.09, 2024</p>
 <ul>
 <li>Fix timing to close the terminal input was incorrect
 (For some reason it hasn't surfaced as a problem)</li>
 </ul>
-<h1 id="v190">v1.9.0</h1>
+<h2 id="v190">v1.9.0</h2>
 <p>May.08, 2024</p>
 <ul>
 <li>Add the option <code>-fixcol</code> that disables keys <code>i</code>,<code>a</code>, and <code>x</code> not to shift columns.</li>
 <li>Move the main function to the sub-package <code>cmd/csvi</code> to be available as a package of Go</li>
 <li>Add the option <code>-readonly</code> that forbide changing the value of cell. When enabled, &quot;q&quot; shutdowns csvi immediately</li>
 </ul>
-<h1 id="v181">v1.8.1</h1>
+<h2 id="v181">v1.8.1</h2>
 <p>Apr.26, 2024</p>
 <ul>
 <li>Fix: crashed on starting <code>csvi</code> with no arguments</li>
@@ -1332,19 +1360,19 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Fix: the foreground color was not black, but gray.</li>
 <li>Change the case STDOUT or STDERR is used on no arguments to make the content of foo.txt becomes <code>foo\r\n</code> when executing <code>echo &quot;foo&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; foo.txt</code></li>
 </ul>
-<h1 id="v180">v1.8.0</h1>
+<h2 id="v180">v1.8.0</h2>
 <p>Apr.24, 2024</p>
 <ul>
 <li>Update the read bytes of the status line 4 times per second.</li>
 <li>Reduced the number of times ERASELINE(ESC[K) is output for too slow terminal to improve the speed to update screen.</li>
 </ul>
-<h1 id="v171">v1.7.1</h1>
+<h2 id="v171">v1.7.1</h2>
 <p>Apr 16 2024</p>
 <ul>
 <li>Set cursor on or off when yes or no is asked.</li>
 <li>Fix the problem (since v.1.6.0) that the cursor position could become invalid after moving from a long line to a short line, causing a crash when editing.</li>
 </ul>
-<h1 id="v170">v1.7.0</h1>
+<h2 id="v170">v1.7.0</h2>
 <p>Apr 15 2024</p>
 <ul>
 <li>Added the <code>-auto</code> option to enable running automated tests even without Expect-Lua. Using this option, all test programs were rewritten in PowerShell. nkf32 is no longer required for testing.</li>
@@ -1354,7 +1382,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Added the <code>-help</code> option to display a list of available options.</li>
 <li>Increased the number of leading bytes checked to detect UTF-16 encoding from the previous value to 10 bytes.</li>
 </ul>
-<h1 id="v160">v1.6.0</h1>
+<h2 id="v160">v1.6.0</h2>
 <p>Apr 8 2024</p>
 <ul>
 <li>Rename from CSView to CSVI because not a few products that have the same name exist in the same category.</li>
@@ -1366,7 +1394,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Enable to build without <code>env GOEXPERIMENT=rangefunc</code></li>
 <li>Show (CURRENT-COLUMN-POSITION,CURRENT-ROW-POSITION/ALL-READ-ROWS-NUMBER) on the status line.</li>
 </ul>
-<h1 id="v150">v1.5.0</h1>
+<h2 id="v150">v1.5.0</h2>
 <p>Mar 31 2024</p>
 <ul>
 <li>Support UTF16
@@ -1375,7 +1403,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v140">v1.4.0</h1>
+<h2 id="v140">v1.4.0</h2>
 <p>Mar 27 2024</p>
 <ul>
 <li>Fix the problem the cache buffer for drawing did not work on v1.3.0</li>
@@ -1395,14 +1423,14 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v130">v1.3.0</h1>
+<h2 id="v130">v1.3.0</h2>
 <p>Mar 25 2024</p>
 <ul>
 <li><code>[CRLF]</code> or <code>[LF]</code> in the status line now indicates the line feed code of the current line instead of the representative line feed code of the entire file.</li>
 <li>Rename sub-package: <code>csv</code>(<code>unbreakable-csv</code>) to <code>uncsv</code>(<code>uncsv</code>)</li>
 <li>The first few lines can now be fixed as header lines.(<code>-h int</code>)</li>
 </ul>
-<h1 id="v120">v1.2.0</h1>
+<h2 id="v120">v1.2.0</h2>
 <p>Feb 29 2024</p>
 <ul>
 <li><code>a</code>,<code>o</code>,<code>O</code>: make new cell and repaint before getline is called</li>
@@ -1426,23 +1454,23 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Fix: cell width was incorrect when it contained characters whose widths are ambiguous</li>
 <li>Add key assigns: <code>G</code>:Go to EOF, <code>Enter</code>:go to next line, <code>TAB</code>:go to the rightside cell, <code>Shift</code>+<code>TAB</code>:go to the leftside cell</li>
 </ul>
-<h1 id="v113">v1.1.3</h1>
+<h2 id="v113">v1.1.3</h2>
 <p>Feb 16 2024</p>
 <ul>
 <li>Fix: the attributes of text converted by SKK were incorrect on Windows 8.1</li>
 </ul>
-<h1 id="v112">v1.1.2</h1>
+<h2 id="v112">v1.1.2</h2>
 <p>Oct 01 2023</p>
 <ul>
 <li>Strings being converted with SKK are now displayed as reversed or underlined</li>
 <li>Fix: SKK failed to start when user-jisyo file did not exist</li>
 </ul>
-<h1 id="v111">v1.1.1</h1>
+<h2 id="v111">v1.1.1</h2>
 <p>Sep 20 2023</p>
 <ul>
 <li>Use <code>:</code> for the path list separator instead of <code>;</code> from %GOREADLINESKK% on Linux</li>
 </ul>
-<h1 id="v110">v1.1.0</h1>
+<h2 id="v110">v1.1.0</h2>
 <p>Sep 20 2023</p>
 <ul>
 <li>Backport from <a href="https://github.com/hymkor/lispread">lispread</a>
@@ -1455,22 +1483,22 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </ul>
 </li>
 </ul>
-<h1 id="v100">v1.0.0</h1>
+<h2 id="v100">v1.0.0</h2>
 <p>Sep 11 2023</p>
 <ul>
 <li>Fix for the the imcompatibility between v0.8.3 and v0.14.0 of go-readline-ny</li>
 </ul>
-<h1 id="v062">v0.6.2</h1>
+<h2 id="v062">v0.6.2</h2>
 <p>Nov 23 2022</p>
 <ul>
 <li>Fix: (#3) Too long field breaks the screen layout</li>
 </ul>
-<h1 id="v061">v0.6.1</h1>
+<h2 id="v061">v0.6.1</h2>
 <p>Feb 19 2022</p>
 <ul>
 <li>Display [TSV],[CSV],[LF],[CRLF] on the status line.</li>
 </ul>
-<h1 id="v060">v0.6.0</h1>
+<h2 id="v060">v0.6.0</h2>
 <p>Dec 10 2021</p>
 <ul>
 <li>Change visual:
@@ -1491,14 +1519,14 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Fix: empty lines in the input data were ignored.</li>
 <li><code>x</code>: assign delete cell same as <code>d</code></li>
 </ul>
-<h1 id="v050">v0.5.0</h1>
+<h2 id="v050">v0.5.0</h2>
 <p>Mar 27 2020</p>
 <ul>
 <li><code>o</code> - append a new line after the current line</li>
 <li><code>O</code> - insert a new line before the current line</li>
 <li><code>D</code> - delete the current line</li>
 </ul>
-<h1 id="v040">v0.4.0</h1>
+<h2 id="v040">v0.4.0</h2>
 <p>Nov 4 2019</p>
 <ul>
 <li>Support window resized</li>
@@ -1514,17 +1542,17 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li>Use stderr for drawing rather than stdout</li>
 <li><code>q</code>: (quit) ask yes/no</li>
 </ul>
-<h1 id="v030">v0.3.0</h1>
+<h2 id="v030">v0.3.0</h2>
 <p>Nov 2 2019</p>
 <ul>
 <li>Support editing and writing to the file.</li>
 </ul>
-<h1 id="v020">v0.2.0</h1>
+<h2 id="v020">v0.2.0</h2>
 <p>Oct 31 2019</p>
 <ul>
 <li>Implement search command <code>/</code>,<code>?</code>,<code>n</code>,<code>N</code></li>
 </ul>
-<h1 id="v010">v0.1.0</h1>
+<h2 id="v010">v0.1.0</h2>
 <p>Oct 27 2019</p>
 <ul>
 <li>first release</li>
@@ -1532,11 +1560,20 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
+<li><a href="#release-notes">Release notes</a>
+<ul>
+<li><a href="#v1160">v1.16.0</a>
+<ul>
+<li><a href="#bug-fixes">Bug Fixes</a></li>
+<li><a href="#specification-changes">Specification Changes</a></li>
+<li><a href="#internal-changes">Internal Changes</a></li>
+</ul>
+</li>
 <li><a href="#v1151">v1.15.1</a>
 <ul>
-<li><a href="#specification-changes">Specification Changes</a></li>
-<li><a href="#bug-fixes">Bug Fixes</a></li>
-<li><a href="#internal-changes">Internal Changes</a></li>
+<li><a href="#specification-changes-1">Specification Changes</a></li>
+<li><a href="#bug-fixes-1">Bug Fixes</a></li>
+<li><a href="#internal-changes-1">Internal Changes</a></li>
 </ul>
 </li>
 <li><a href="#v1150">v1.15.0</a></li>
@@ -1544,7 +1581,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li><a href="#v1131">v1.13.1</a></li>
 <li><a href="#v1130">v1.13.0</a>
 <ul>
-<li><a href="#experimental-release-for-macos-users">🚀 Experimental Release for macOS Users</a></li>
+<li><a href="#experimental-release-for-macos-users">Experimental Release for macOS Users</a></li>
 <li><a href="#other-changes">Other changes</a></li>
 </ul>
 </li>
@@ -1581,6 +1618,8 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li><a href="#v030">v0.3.0</a></li>
 <li><a href="#v020">v0.2.0</a></li>
 <li><a href="#v010">v0.1.0</a></li>
+</ul>
+</li>
 </ul>
 </div><!-- "sidebar" -->
 </body></html>

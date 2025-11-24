@@ -1236,14 +1236,14 @@ scoop install csvi
 <ul>
 <li>Move Cursor
 <ul>
-<li><code>h</code>,<code>Ctrl</code>-<code>B</code>,<code>←</code>,<code>Shift</code>-<code>TAB</code> (move cursor left)</li>
-<li><code>j</code>,<code>Ctrl</code>-<code>N</code>,<code>↓</code>,<code>Enter</code> (move cursor down)</li>
-<li><code>k</code>,<code>Ctrl</code>-<code>P</code>,<code>↑</code> (move cursor up)</li>
-<li><code>l</code>,<code>Ctrl</code>-<code>F</code>,<code>→</code>,<code>TAB</code> (move cursor right)</li>
+<li><code>h</code>, <code>Ctrl</code>+<code>B</code>, <code>←</code>, <code>Shift</code>+<code>TAB</code> (move cursor left)</li>
+<li><code>j</code>, <code>Ctrl</code>+<code>N</code>, <code>↓</code>, <code>Enter</code> (move cursor down)</li>
+<li><code>k</code>, <code>Ctrl</code>+<code>P</code>, <code>↑</code> (move cursor up)</li>
+<li><code>l</code>, <code>Ctrl</code>+<code>F</code>, <code>→</code>, <code>TAB</code> (move cursor right)</li>
 <li><code>&lt;</code> (move the beginning of file)</li>
 <li><code>&gt;</code>,<code>G</code> (move the end of file)</li>
-<li><code>0</code>,<code>^</code>,<code>Ctrl</code>-<code>A</code> (move the beginning of the current line)</li>
-<li><code>$</code>,<code>Ctrl</code>-<code>E</code> (move the end of the current line)</li>
+<li><code>0</code>, <code>^</code>, <code>Ctrl</code>+<code>A</code> (move the beginning of the current line)</li>
+<li><code>$</code>,<code>Ctrl</code>+<code>E</code> (move the end of the current line)</li>
 </ul>
 </li>
 <li>Search
@@ -1261,26 +1261,31 @@ scoop install csvi
 <li><code>i</code> (insert a new cell before the current one)</li>
 <li><code>a</code> (append a new cell after the current one)</li>
 <li><code>r</code> (replace the current cell)</li>
-<li><code>d</code>,<code>x</code> (delete the current cell)</li>
+<li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>, <code>x</code> (delete the current cell)</li>
+<li><code>dd</code>, <code>dr</code>, <code>D</code> (delete the current line)</li>
+<li><code>dc</code>, <code>d|</code> (delete the current column)</li>
 <li><code>w</code> (write to a file or STDOUT(<code>'-'</code>))</li>
 <li><code>o</code> (append a new line after the current one)</li>
 <li><code>O</code> (insert a new line before the current one)</li>
-<li><code>D</code> (delete the current line)</li>
 <li><code>&quot;</code> (enclose or remove double quotations if possible)</li>
 <li><code>u</code> (restore the original value of the current cell)</li>
-<li><code>y</code> (copy the value of the current cell to kill-buffer)</li>
-<li><code>p</code> (paste the value of kill-buffer to the current cell)</li>
+<li><code>yl</code>, <code>y</code>+<code>SPACE</code>, <code>y</code>+<code>TAB</code>, <code>yv</code> (copy the values of the current cell to kill-buffer)</li>
+<li><code>yy</code>, <code>yr</code>, <code>Y</code> (copy the values of the current row to kill-buffer)</li>
+<li><code>yc</code>, <code>y|</code> (copy the values of the current column to kill-buffer)</li>
+<li><code>p</code> (paste the values of kill-buffer after the current cell, row or column)</li>
+<li><code>P</code> (paste the values of kill-buffer before the current cell, row or column)</li>
+<li><code>ALT</code>+<code>p</code>, <code>ESC</code>+<code>p</code> (overwrite the current cell/row/column with the content of the kill-buffer)</li>
 </ul>
 </li>
 <li>Display settings
 <ul>
 <li><code>L</code> (reload the file using a specified encoding)</li>
-<li><code>Ctrl</code>-<code>L</code> (Repaint)</li>
+<li><code>Ctrl</code>+<code>L</code> (Repaint)</li>
 <li><code>]</code> (widen the column at the cursor)</li>
 <li><code>[</code> (narrow the column at the cursor)</li>
 </ul>
 </li>
-<li>Quit: <code>q</code> or <code>ESC</code></li>
+<li>Quit: <code>q</code> or <code>ESC</code>+<code>q</code></li>
 </ul>
 <h2 id="environment-variables">Environment Variables</h2>
 <h3 id="no-color">NO_COLOR</h3>
