@@ -29,7 +29,7 @@ func testRun(t *testing.T, dataSource io.Reader, args ...string) {
 		if disable != nil {
 			defer disable()
 		}
-		ttyOut = colorable.NewColorableStdout()
+		ttyOut = colorable.NewColorableStderr()
 	}
 	err = instance.RunInOut(dataSource, ttyOut)
 	if err != nil && !errors.Is(err, io.EOF) {

@@ -2,6 +2,10 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+### 内部的変更
+
+- PowerShell で書いていたテストコードを Go に置き換えて、GitHub Actions や Windows以外の環境でも実行できるようにした。(#14)
+
 v1.16.0
 -------
 Nov 24, 2025
