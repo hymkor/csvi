@@ -2,6 +2,10 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+### Internal Changes
+
+- Replace all PowerShell-based test scripts with Go test files so that the test suite can run on GitHub Actions and other non-Windows environments. (#14)
+
 v1.16.0
 -------
 Nov 24, 2025
