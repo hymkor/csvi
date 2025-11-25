@@ -1142,6 +1142,10 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
+<h3 id="internal-changes">Internal Changes</h3>
+<ul>
+<li>Replace all PowerShell-based test scripts with Go test files so that the test suite can run on GitHub Actions and other non-Windows environments. (#14)</li>
+</ul>
 <h2 id="v1160">v1.16.0</h2>
 <p>Nov 24, 2025</p>
 <h3 id="bug-fixes">Bug Fixes</h3>
@@ -1165,7 +1169,7 @@ a.permalink:hover{
 </li>
 <li>Assigned <code>ESC</code>+<code>q</code> as quitting because <code>ESC</code> had been assigned for quitting before, but is now used as a prefix key for 2-stroke commands (<code>q</code> still works as before). (#12)</li>
 </ul>
-<h3 id="internal-changes">Internal Changes</h3>
+<h3 id="internal-changes-1">Internal Changes</h3>
 <ul>
 <li>Internal maintenance: updated dependencies and removed staticcheck warnings. (#6)</li>
 </ul>
@@ -1204,7 +1208,7 @@ When the environment variable <code>COLORFGBG</code> is defined as <code>(FG);(B
 This was caused by fallback handling in the old width-measurement logic, which has now been removed, so the problem no longer occurs.</p>
 </li>
 </ul>
-<h3 id="internal-changes-1">Internal Changes</h3>
+<h3 id="internal-changes-2">Internal Changes</h3>
 <ul>
 <li>Moved command-line option parsing from the main package <code>cmd/csvi</code> to the subpackage <code>startup</code>.</li>
 <li>Removed the deprecated function <code>(Config) Main</code>.</li>
@@ -1562,18 +1566,19 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#internal-changes">Internal Changes</a></li>
 <li><a href="#v1160">v1.16.0</a>
 <ul>
 <li><a href="#bug-fixes">Bug Fixes</a></li>
 <li><a href="#specification-changes">Specification Changes</a></li>
-<li><a href="#internal-changes">Internal Changes</a></li>
+<li><a href="#internal-changes-1">Internal Changes</a></li>
 </ul>
 </li>
 <li><a href="#v1151">v1.15.1</a>
 <ul>
 <li><a href="#specification-changes-1">Specification Changes</a></li>
 <li><a href="#bug-fixes-1">Bug Fixes</a></li>
-<li><a href="#internal-changes-1">Internal Changes</a></li>
+<li><a href="#internal-changes-2">Internal Changes</a></li>
 </ul>
 </li>
 <li><a href="#v1150">v1.15.0</a></li>

@@ -7,11 +7,11 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
 <!-- -->
 
-[\<English\>](./README.md) / **\<Japanese\>**
+( [\<English\>](./README.md) / **\<Japanese\>** )
 
 **CSVI** は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。
 
-### &#10024; 主な特徴
+## 主な特徴
 
 - **保存時の差分が最小**  
   編集していないセルは、元のテキストの表現（改行コード、二重引用符、BOM、エンコーディング、区切り文字など）を極力維持します。  

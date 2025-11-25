@@ -1142,6 +1142,10 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</h3>
+<ul>
+<li>PowerShell で書いていたテストコードを Go に置き換えて、GitHub Actions や Windows以外の環境でも実行できるようにした。(#14)</li>
+</ul>
 <h2 id="v1160">v1.16.0</h2>
 <p>Nov 24, 2025</p>
 <h3 id="%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3">不具合修正</h3>
@@ -1165,7 +1169,7 @@ a.permalink:hover{
 </li>
 <li>終了キーだった<code>ESC</code> をプレフィックスキーとしたため、<code>ESC</code>+<code>q</code> をあらたに終了に割りあてた (<code>q</code> は従来どおり) (#12)</li>
 </ul>
-<h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</h3>
+<h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-1">内部的変更</h3>
 <ul>
 <li>依存モジュールの更新とstaticcheck 警告の解消 (#6)</li>
 </ul>
@@ -1195,7 +1199,7 @@ a.permalink:hover{
 </code></pre>
 が混入する問題を修正しました。原因は、曖昧幅実測が失敗した際のフォロー処理によるもので、この機構の廃止により再発しません。</li>
 </ul>
-<h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-1">内部的変更</h3>
+<h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-2">内部的変更</h3>
 <ul>
 <li>コマンドラインオプション解析処理を <code>&quot;cmd/csvi&quot;</code> から <code>&quot;startup&quot;</code> パッケージへ移動。</li>
 <li>非推奨の関数 <code>(Config) Main</code> を削除。</li>
@@ -1557,18 +1561,19 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</a></li>
 <li><a href="#v1160">v1.16.0</a>
 <ul>
 <li><a href="#%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3">不具合修正</a></li>
 <li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</a></li>
-<li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</a></li>
+<li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-1">内部的変更</a></li>
 </ul>
 </li>
 <li><a href="#v1151">v1.15.1</a>
 <ul>
 <li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-1">仕様変更</a></li>
 <li><a href="#%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3-1">不具合修正</a></li>
-<li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-1">内部的変更</a></li>
+<li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-2">内部的変更</a></li>
 </ul>
 </li>
 <li><a href="#v1150">v1.15.0</a></li>

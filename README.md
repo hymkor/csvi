@@ -7,11 +7,11 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
 <!-- -->
 
-**\<English\>** / [\<Japanese\>](./README_ja.md)
+( **\<English\>** / [\<Japanese\>](./README_ja.md) )
 
 **CSVI** is a terminal-based CSV editor for UNIX-like systems and Windows.
 
-### &#10024; Key Features
+## Key Features
 
 - **Minimal changes on save**  
   CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
