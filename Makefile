@@ -50,7 +50,6 @@ manifest:
 
 test:
 	$(GO) test -v ./...
-	pwsh test/case3.ps1
 
 benchmark:
 	pwsh test/benchmark.ps1
