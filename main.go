@@ -94,7 +94,7 @@ func sum(f func(n int) int, from, to int) int {
 }
 
 func drawLine(
-	csvs []uncsv.Cell,
+	field []uncsv.Cell,
 	cellWidth func(int) int,
 	screenWidth int,
 	cursorPos int,
@@ -102,7 +102,7 @@ func drawLine(
 	style *_ColorStyle,
 	out io.Writer) {
 
-	if len(csvs) <= 0 && cursorPos >= 0 {
+	if len(field) <= 0 && cursorPos >= 0 {
 		io.WriteString(out, style.Cursor.On)
 		io.WriteString(out, "\x1B[K")
 		io.WriteString(out, style.Cursor.Off)
@@ -119,30 +119,30 @@ func drawLine(
 	}
 	io.WriteString(out, "\x1B[K")
 
-	for len(csvs) > 0 {
-		cursor := csvs[0]
+	for len(field) > 0 {
+		cursor := field[0]
 		text := cursor.Text()
-		csvs = csvs[1:]
+		field = field[1:]
 		nextI := i + 1
 
 		cw := cellWidth(i)
-		for len(csvs) > 0 && csvs[0].Text() == "" && nextI != cursorPos {
+		for len(field) > 0 && text == "" && nextI != cursorPos {
 			cw += cellWidth(nextI)
-			csvs = csvs[1:]
+			field = field[1:]
 			nextI++
 		}
-		if cw > screenWidth || len(csvs) <= 0 {
+		if cw > screenWidth || len(field) <= 0 {
 			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
-		ss, _ := cutStrInWidth(text, cw)
+		text, _ = cutStrInWidth(text, cw)
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
 		}
 		if cursor.Modified() {
 			io.WriteString(out, ansi.UNDERLINE_ON)
 		}
-		io.WriteString(out, ss)
+		io.WriteString(out, text)
 		if cursor.Modified() {
 			io.WriteString(out, ansi.UNDERLINE_OFF)
 		}
