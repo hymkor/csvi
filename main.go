@@ -141,7 +141,7 @@ func (style lineStyle) drawLine(
 			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
-		text, _ = cutStrInWidth(text, cw)
+		text = runewidth.Truncate(text, cw, "\u2026")
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
 		}
