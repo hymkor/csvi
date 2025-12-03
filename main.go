@@ -38,29 +38,29 @@ func (c *colorSet) Revert() {
 	}
 }
 
-type _ColorStyle struct {
+type colorStyle struct {
 	Cursor, Even, Odd colorSet
 }
 
-func (v *_ColorStyle) Revert() {
+func (v *colorStyle) Revert() {
 	v.Cursor.Revert()
 	v.Even.Revert()
 	v.Odd.Revert()
 }
 
-var bodyColorStyle = _ColorStyle{
+var bodyColorStyle = colorStyle{
 	Cursor: colorSet{On: "\x1B[107;30;22m", Off: "\x1B[49;39m", Rev: "\x1B[40;37m"},
 	Even:   colorSet{On: "\x1B[48;5;235;39;1m", Off: "\x1B[22;49m", Rev: "\x1B[48;5;252;39m"},
 	Odd:    colorSet{On: "\x1B[49;39;1m", Off: "\x1B[22m"},
 }
 
-var headColorStyle = _ColorStyle{
+var headColorStyle = colorStyle{
 	Cursor: colorSet{On: "\x1B[107;30;22m", Off: "\x1B[49;36m", Rev: "\x1B[40;36m"},
 	Even:   colorSet{On: "\x1B[48;5;235;36;1m", Off: "\x1B[22;49m", Rev: "\x1B[48;5;252;36m"},
 	Odd:    colorSet{On: "\x1B[49;36;1m", Off: "\x1B[22m"},
 }
 
-var monoChromeStyle = _ColorStyle{
+var monoChromeStyle = colorStyle{
 	Cursor: colorSet{On: "\x1B[7m", Off: "\x1B[0m"},
 	Even:   colorSet{On: "\x1B[0m", Off: "\x1B[0m"},
 	Odd:    colorSet{On: "\x1B[0m", Off: "\x1B[0m"},
@@ -99,7 +99,7 @@ func drawLine(
 	screenWidth int,
 	cursorPos int,
 	reverse bool,
-	style *_ColorStyle,
+	style *colorStyle,
 	out io.Writer) {
 
 	if len(field) <= 0 && cursorPos >= 0 {
@@ -176,7 +176,7 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
+func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpos, csrlin, w, h int, style *colorStyle, cache map[int]string, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
@@ -274,7 +274,7 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 	}
 	style := &bodyColorStyle
 	if headerLines%2 == 1 {
-		style = &_ColorStyle{
+		style = &colorStyle{
 			Cursor: bodyColorStyle.Cursor,
 			Even:   bodyColorStyle.Odd,
 			Odd:    bodyColorStyle.Even,
