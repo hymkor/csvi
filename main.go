@@ -93,13 +93,17 @@ func sum(f func(n int) int, from, to int) int {
 	return result
 }
 
-func drawLine(
+type lineStyle struct {
+	cellWidth    func(int) int
+	screenWidth  int
+	screenHeight int
+	*colorStyle
+}
+
+func (style lineStyle) drawLine(
 	field []uncsv.Cell,
-	cellWidth func(int) int,
-	screenWidth int,
 	cursorPos int,
 	reverse bool,
-	style *colorStyle,
 	out io.Writer) {
 
 	if len(field) <= 0 && cursorPos >= 0 {
@@ -119,15 +123,17 @@ func drawLine(
 	}
 	io.WriteString(out, "\x1B[K")
 
+	screenWidth := style.screenWidth
+
 	for len(field) > 0 {
 		cursor := field[0]
 		text := cursor.Text()
 		field = field[1:]
 		nextI := i + 1
 
-		cw := cellWidth(i)
+		cw := style.cellWidth(i)
 		for len(field) > 0 && text == "" && nextI != cursorPos {
-			cw += cellWidth(nextI)
+			cw += style.cellWidth(nextI)
 			field = field[1:]
 			nextI++
 		}
@@ -158,7 +164,7 @@ func drawLine(
 		if screenWidth <= 0 {
 			break
 		}
-		fmt.Fprintf(out, "\x1B[%dG", sum(cellWidth, 0, nextI)+1)
+		fmt.Fprintf(out, "\x1B[%dG", sum(style.cellWidth, 0, nextI)+1)
 		if i == cursorPos {
 			io.WriteString(out, "\x1B[K")
 		}
@@ -176,12 +182,12 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpos, csrlin, w, h int, style *colorStyle, cache map[int]string, out io.Writer) int {
+func (style lineStyle) drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin int, cache map[int]string, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
 	page(func(record []uncsv.Cell) bool {
-		if count >= h {
+		if count >= style.screenHeight {
 			return false
 		}
 		if count > 0 {
@@ -193,7 +199,7 @@ func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpo
 			cursorPos = csrpos
 		}
 		var buffer strings.Builder
-		drawLine(record, cellWidth, w, cursorPos, reverse, style, &buffer)
+		style.drawLine(record, cursorPos, reverse, &buffer)
 		line := buffer.String()
 		if f := cache[count]; f != line {
 			io.WriteString(out, line)
@@ -240,6 +246,7 @@ func (v *_View) clearCache() {
 func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
 	// print header
 	lfCount := 0
+
 	cellWidth := func(n int) int {
 		return _cellWidth.Get(n + startCol)
 	}
@@ -252,7 +259,12 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 				header = header.Next()
 			}
 		}
-		lfCount = drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, v.headCache, out)
+		lfCount = lineStyle{
+			cellWidth:    cellWidth,
+			screenWidth:  screenWidth - 1,
+			screenHeight: h,
+			colorStyle:   &headColorStyle,
+		}.drawPage(enum, cursorCol-startCol, cursorRow.lnum, v.headCache, out)
 	}
 	if startRow.lnum < headerLines {
 		for i := 0; i < headerLines && startRow != nil; i++ {
@@ -280,7 +292,12 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 			Odd:    bodyColorStyle.Even,
 		}
 	}
-	return lfCount + drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
+	return lfCount + lineStyle{
+		cellWidth:    cellWidth,
+		screenWidth:  screenWidth - 1,
+		screenHeight: screenHeight - 1,
+		colorStyle:   style,
+	}.drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, v.bodyCache, out)
 }
 
 func (app *_Application) MessageAndGetKey(message string) (string, error) {
