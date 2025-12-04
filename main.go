@@ -133,7 +133,7 @@ func (style lineStyle) drawLine(
 		nextI := i + 1
 
 		cw := style.cellWidth(i)
-		for len(field) > 0 && text == "" && nextI != cursorPos {
+		for len(field) > 0 && field[0].Text() == "" && nextI != cursorPos {
 			cw += style.cellWidth(nextI)
 			field = field[1:]
 			nextI++
