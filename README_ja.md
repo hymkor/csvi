@@ -108,6 +108,7 @@ Options
 * `-p` ヘッダー行を保護する
 * `-readonly` 読み取り専用モード
 * `-rv` 反転表示を有効にする（文字色と背景色を反転）
+* `-ofs string` セル間の区切り文字
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
