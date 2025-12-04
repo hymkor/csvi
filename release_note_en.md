@@ -2,6 +2,9 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Truncate text that exceeds the cell width and append U+2026 (ellipsis). (#15 and #19 thanks to @toolleeo)
+- Implement `-ofs STRING` to specify the separator between cells. (#15 and #19, thanks to @toolleeo)
+
 ### Internal Changes
 
 - Replace all PowerShell-based test scripts with Go test files so that the test suite can run on GitHub Actions and other non-Windows environments. (#14)
