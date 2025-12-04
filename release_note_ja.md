@@ -2,6 +2,9 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした. (#15, #19 thanks to @toolleeo)
+- セル間の区切り文字を指定する`-ofs STRING` オプションを追加 (#15, #19, thanks to @toolleeo)
+
 ### 内部的変更
 
 - PowerShell で書いていたテストコードを Go に置き換えて、GitHub Actions や Windows以外の環境でも実行できるようにした。(#14)

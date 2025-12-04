@@ -38,29 +38,29 @@ func (c *colorSet) Revert() {
 	}
 }
 
-type _ColorStyle struct {
+type colorStyle struct {
 	Cursor, Even, Odd colorSet
 }
 
-func (v *_ColorStyle) Revert() {
+func (v *colorStyle) Revert() {
 	v.Cursor.Revert()
 	v.Even.Revert()
 	v.Odd.Revert()
 }
 
-var bodyColorStyle = _ColorStyle{
+var bodyColorStyle = colorStyle{
 	Cursor: colorSet{On: "\x1B[107;30;22m", Off: "\x1B[49;39m", Rev: "\x1B[40;37m"},
 	Even:   colorSet{On: "\x1B[48;5;235;39;1m", Off: "\x1B[22;49m", Rev: "\x1B[48;5;252;39m"},
 	Odd:    colorSet{On: "\x1B[49;39;1m", Off: "\x1B[22m"},
 }
 
-var headColorStyle = _ColorStyle{
+var headColorStyle = colorStyle{
 	Cursor: colorSet{On: "\x1B[107;30;22m", Off: "\x1B[49;36m", Rev: "\x1B[40;36m"},
 	Even:   colorSet{On: "\x1B[48;5;235;36;1m", Off: "\x1B[22;49m", Rev: "\x1B[48;5;252;36m"},
 	Odd:    colorSet{On: "\x1B[49;36;1m", Off: "\x1B[22m"},
 }
 
-var monoChromeStyle = _ColorStyle{
+var monoChromeStyle = colorStyle{
 	Cursor: colorSet{On: "\x1B[7m", Off: "\x1B[0m"},
 	Even:   colorSet{On: "\x1B[0m", Off: "\x1B[0m"},
 	Odd:    colorSet{On: "\x1B[0m", Off: "\x1B[0m"},
@@ -93,16 +93,21 @@ func sum(f func(n int) int, from, to int) int {
 	return result
 }
 
-func drawLine(
-	csvs []uncsv.Cell,
-	cellWidth func(int) int,
-	screenWidth int,
+type lineStyle struct {
+	cellWidth    func(int) int
+	screenWidth  int
+	screenHeight int
+	*colorStyle
+	sep string
+}
+
+func (style lineStyle) drawLine(
+	field []uncsv.Cell,
 	cursorPos int,
 	reverse bool,
-	style *_ColorStyle,
 	out io.Writer) {
 
-	if len(csvs) <= 0 && cursorPos >= 0 {
+	if len(field) <= 0 && cursorPos >= 0 {
 		io.WriteString(out, style.Cursor.On)
 		io.WriteString(out, "\x1B[K")
 		io.WriteString(out, style.Cursor.Off)
@@ -119,30 +124,35 @@ func drawLine(
 	}
 	io.WriteString(out, "\x1B[K")
 
-	for len(csvs) > 0 {
-		cursor := csvs[0]
+	screenWidth := style.screenWidth
+
+	for len(field) > 0 {
+		cursor := field[0]
 		text := cursor.Text()
-		csvs = csvs[1:]
+		field = field[1:]
 		nextI := i + 1
 
-		cw := cellWidth(i)
-		for len(csvs) > 0 && csvs[0].Text() == "" && nextI != cursorPos {
-			cw += cellWidth(nextI)
-			csvs = csvs[1:]
+		cw := style.cellWidth(i)
+		for len(field) > 0 && text == "" && nextI != cursorPos {
+			cw += style.cellWidth(nextI)
+			field = field[1:]
 			nextI++
 		}
-		if cw > screenWidth || len(csvs) <= 0 {
+		if cw > screenWidth || len(field) <= 0 {
 			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
-		ss, _ := cutStrInWidth(text, cw)
+		if i > 0 {
+			text = style.sep + text
+		}
+		text = runewidth.Truncate(text, cw, "\u2026")
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
 		}
 		if cursor.Modified() {
 			io.WriteString(out, ansi.UNDERLINE_ON)
 		}
-		io.WriteString(out, ss)
+		io.WriteString(out, text)
 		if cursor.Modified() {
 			io.WriteString(out, ansi.UNDERLINE_OFF)
 		}
@@ -158,7 +168,7 @@ func drawLine(
 		if screenWidth <= 0 {
 			break
 		}
-		fmt.Fprintf(out, "\x1B[%dG", sum(cellWidth, 0, nextI)+1)
+		fmt.Fprintf(out, "\x1B[%dG", sum(style.cellWidth, 0, nextI)+1)
 		if i == cursorPos {
 			io.WriteString(out, "\x1B[K")
 		}
@@ -176,12 +186,12 @@ func up(n int, out io.Writer) {
 	}
 }
 
-func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpos, csrlin, w, h int, style *_ColorStyle, cache map[int]string, out io.Writer) int {
+func (style lineStyle) drawPage(page func(func([]uncsv.Cell) bool), csrpos, csrlin int, cache map[int]string, out io.Writer) int {
 	reverse := false
 	count := 0
 	lfCount := 0
 	page(func(record []uncsv.Cell) bool {
-		if count >= h {
+		if count >= style.screenHeight {
 			return false
 		}
 		if count > 0 {
@@ -193,7 +203,7 @@ func drawPage(page func(func([]uncsv.Cell) bool), cellWidth func(int) int, csrpo
 			cursorPos = csrpos
 		}
 		var buffer strings.Builder
-		drawLine(record, cellWidth, w, cursorPos, reverse, style, &buffer)
+		style.drawLine(record, cursorPos, reverse, &buffer)
 		line := buffer.String()
 		if f := cache[count]; f != line {
 			io.WriteString(out, line)
@@ -237,9 +247,10 @@ func (v *_View) clearCache() {
 	}
 }
 
-func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, sep string, out io.Writer) int {
 	// print header
 	lfCount := 0
+
 	cellWidth := func(n int) int {
 		return _cellWidth.Get(n + startCol)
 	}
@@ -252,7 +263,13 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 				header = header.Next()
 			}
 		}
-		lfCount = drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum, screenWidth-1, h, &headColorStyle, v.headCache, out)
+		lfCount = lineStyle{
+			cellWidth:    cellWidth,
+			screenWidth:  screenWidth - 1,
+			screenHeight: h,
+			colorStyle:   &headColorStyle,
+			sep:          sep,
+		}.drawPage(enum, cursorCol-startCol, cursorRow.lnum, v.headCache, out)
 	}
 	if startRow.lnum < headerLines {
 		for i := 0; i < headerLines && startRow != nil; i++ {
@@ -274,13 +291,19 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 	}
 	style := &bodyColorStyle
 	if headerLines%2 == 1 {
-		style = &_ColorStyle{
+		style = &colorStyle{
 			Cursor: bodyColorStyle.Cursor,
 			Even:   bodyColorStyle.Odd,
 			Odd:    bodyColorStyle.Even,
 		}
 	}
-	return lfCount + drawPage(enum, cellWidth, cursorCol-startCol, cursorRow.lnum-startRow.lnum, screenWidth-1, screenHeight-1, style, v.bodyCache, out)
+	return lfCount + lineStyle{
+		cellWidth:    cellWidth,
+		screenWidth:  screenWidth - 1,
+		screenHeight: screenHeight - 1,
+		colorStyle:   style,
+		sep:          sep,
+	}.drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, v.bodyCache, out)
 }
 
 func (app *_Application) MessageAndGetKey(message string) (string, error) {
@@ -382,6 +405,7 @@ type Config struct {
 	KeyMap          map[string]func(*KeyEventArgs) (*CommandResult, error)
 	OnCellValidated func(*CellValidatedEvent) (string, error)
 	Titles          []string
+	OutputSep       string
 }
 
 func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
@@ -563,10 +587,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			io.WriteString(out, ansi.CURSOR_OFF)
 		}
 
-		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, app.OutputSep, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+			lfCount = view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, app.OutputSep, out)
 		}
 
 		io.WriteString(out, ansi.YELLOW)

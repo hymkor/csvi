@@ -108,6 +108,7 @@ Options
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
 * `-rv` Enable reverse-video display (invert foreground and background colors)
+* `-ofs string` String used as the separator between cells in the output
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
