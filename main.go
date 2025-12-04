@@ -307,7 +307,7 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 }
 
 func (app *_Application) MessageAndGetKey(message string) (string, error) {
-	fmt.Fprintf(app, "%s\r%s%s", ansi.YELLOW, message, ansi.ERASE_LINE)
+	fmt.Fprintf(app, "%s\r%s%s ", ansi.YELLOW, message, ansi.ERASE_LINE)
 	io.WriteString(app, ansi.CURSOR_ON)
 	ch, err := app.GetKey()
 	io.WriteString(app, ansi.CURSOR_OFF)
@@ -502,6 +502,48 @@ func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, c
 	}
 }
 
+func (app *_Application) trySave(fetch func() (*uncsv.Row, error), out io.Writer) (string, error) {
+	if fetch != nil {
+		io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+		for {
+			row, err := fetch()
+			if err != nil && !errors.Is(err, io.EOF) {
+				return "", err
+			}
+			app.Push(row)
+			if errors.Is(err, io.EOF) {
+				break
+			}
+		}
+	}
+	message, err := cmdWrite(app)
+	if err == nil {
+		app.ResetDirty()
+	}
+	return message, err
+}
+
+func (app *_Application) tryQuit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+	if !app.ReadOnly && app.isDirty() {
+		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
+		if err != nil {
+			return nil, err
+		}
+		if ch == "y" || ch == "Y" {
+			message, err := app.trySave(fetch, out)
+			if err != nil {
+				return nil, err
+			}
+			fmt.Fprintf(app.out, "\r%s%s%s", ansi.YELLOW, message, ansi.ERASE_LINE)
+		} else if ch != "n" && ch != "N" {
+			return nil, nil
+		}
+	}
+	io.WriteString(out, "\n")
+	return &Result{_Application: app}, nil
+
+}
+
 func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
@@ -669,9 +711,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				app.ResetDirty()
 				view.clearCache()
 			case "q":
-				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
-					io.WriteString(out, "\n")
-					return &Result{_Application: app}, nil
+				if rc, err := app.tryQuit(fetch, out); err != nil {
+					message = err.Error()
+				} else if rc != nil {
+					return rc, nil
 				}
 			case "j", keys.Down, keys.CtrlN, keys.Enter:
 				if next := cursorRow.Next(); next != nil {
@@ -894,7 +937,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			case "Y":
 				killbuffer = app.yankCurrentRow(cursorRow)
 			case "y":
-				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
+				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column]`)
 				if err != nil {
 					message = err.Error()
 					break
@@ -913,9 +956,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					break
 				}
 				if cfg.FixColumn {
-					ch, err = app.MessageAndGetKey(`Delete ? ["d"/"r": row] `)
+					ch, err = app.MessageAndGetKey(`Delete ? ["d"/"r": row]`)
 				} else {
-					ch, err = app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "d"/"r": row, "|"/"c": column] `)
+					ch, err = app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "d"/"r": row, "|"/"c": column]`)
 				}
 				if err != nil {
 					message = err.Error()
@@ -984,21 +1027,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				modifiedAfter := cursor.Modified()
 				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "w":
-				if fetch != nil {
-					io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
-					for {
-						row, err := fetch()
-						if err != nil && !errors.Is(err, io.EOF) {
-							return nil, err
-						}
-						app.Push(row)
-						if errors.Is(err, io.EOF) {
-							break
-						}
-					}
-				}
-				if err := cmdWrite(app); err != nil {
+				if msg, err := app.trySave(fetch, out); err != nil {
 					message = err.Error()
+				} else {
+					message = msg
 				}
 				view.clearCache()
 			case "]":
@@ -1012,16 +1044,17 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				view.clearCache()
 			case keys.Escape:
-				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste] `)
+				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste]`)
 				if err != nil {
 					message = err.Error()
 					break
 				}
 				switch ch {
 				case "q", "Q":
-					if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
-						io.WriteString(out, "\n")
-						return &Result{_Application: app}, nil
+					if rc, err := app.tryQuit(fetch, out); err != nil {
+						message = err.Error()
+					} else if rc != nil {
+						return rc, nil
 					}
 				case "p", "P":
 					if killbuffer == nil {
