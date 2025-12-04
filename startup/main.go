@@ -120,6 +120,7 @@ func (f *Flag) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 		ReadOnly:      f.ReadOnly,
 		ProtectHeader: f.ProtectHeader,
 		Titles:        titles,
+		OutputSep:     f.OutputSep,
 	}.Edit(dataSource, ttyOut)
 
 	return err

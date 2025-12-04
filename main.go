@@ -98,6 +98,7 @@ type lineStyle struct {
 	screenWidth  int
 	screenHeight int
 	*colorStyle
+	sep string
 }
 
 func (style lineStyle) drawLine(
@@ -141,6 +142,9 @@ func (style lineStyle) drawLine(
 			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
+		if i > 0 {
+			text = style.sep + text
+		}
 		text = runewidth.Truncate(text, cw, "\u2026")
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
@@ -243,7 +247,7 @@ func (v *_View) clearCache() {
 	}
 }
 
-func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, out io.Writer) int {
+func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, sep string, out io.Writer) int {
 	// print header
 	lfCount := 0
 
@@ -264,6 +268,7 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 			screenWidth:  screenWidth - 1,
 			screenHeight: h,
 			colorStyle:   &headColorStyle,
+			sep:          sep,
 		}.drawPage(enum, cursorCol-startCol, cursorRow.lnum, v.headCache, out)
 	}
 	if startRow.lnum < headerLines {
@@ -297,6 +302,7 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 		screenWidth:  screenWidth - 1,
 		screenHeight: screenHeight - 1,
 		colorStyle:   style,
+		sep:          sep,
 	}.drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, v.bodyCache, out)
 }
 
@@ -399,6 +405,7 @@ type Config struct {
 	KeyMap          map[string]func(*KeyEventArgs) (*CommandResult, error)
 	OnCellValidated func(*CellValidatedEvent) (string, error)
 	Titles          []string
+	OutputSep       string
 }
 
 func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
@@ -580,10 +587,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			io.WriteString(out, ansi.CURSOR_OFF)
 		}
 
-		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+		lfCount := view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, app.OutputSep, out)
 		repaint := func() {
 			up(lfCount, out)
-			lfCount = view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, out)
+			lfCount = view.Draw(app.Front(), startRow, cursorRow, cellWidth, cfg.HeaderLines, startCol, cursorCol, screenHeight, screenWidth, app.OutputSep, out)
 		}
 
 		io.WriteString(out, ansi.YELLOW)
