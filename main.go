@@ -323,8 +323,13 @@ func first[T any](value T, _ error) T {
 	return value
 }
 
-func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *RowPtr, cursorCol int, screenWidth int) {
+func printStatusLine(out io.Writer, dirty bool, mode *uncsv.Mode, cursorRow *RowPtr, cursorCol int, screenWidth int) {
 	n := 0
+	if dirty {
+		n += first(out.Write([]byte{'*'}))
+	} else {
+		n += first(out.Write([]byte{' '}))
+	}
 	if mode.Comma == '\t' {
 		n += first(io.WriteString(out, "[TSV]"))
 	} else if mode.Comma == ',' {
@@ -597,7 +602,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 		} else if 0 <= cursorRow.lnum && cursorRow.lnum < app.Len() {
-			printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
+			printStatusLine(out, app.isDirty(), mode, cursorRow, cursorCol, screenWidth)
 		}
 		io.WriteString(out, ansi.RESET)
 		io.WriteString(out, ansi.ERASE_SCRN_AFTER)
@@ -619,7 +624,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			app.Push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				io.WriteString(out, "\r"+ansi.YELLOW)
-				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
+				printStatusLine(out, app.isDirty(), mode, cursorRow, cursorCol, screenWidth)
 				io.WriteString(out, ansi.RESET)
 				io.WriteString(out, ansi.ERASE_SCRN_AFTER)
 				displayUpdateTime = time.Now().Add(time.Second / interval)
