@@ -661,6 +661,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				for p := app.Front(); p != nil; p = p.Next() {
 					p.Restore(mode)
 				}
+				app.ResetDirty()
 				view.clearCache()
 			case "q":
 				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
@@ -786,6 +787,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if text, err := app.readlineAndValidate("new line>", "", cursorRow, newCol); err == nil {
 					cursorRow.Replace(newCol, text, mode)
 				}
+				app.setHardDirty()
 			case "O":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
@@ -813,6 +815,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if text, err := app.readlineAndValidate("new line>", "", cursorRow, newCol); err == nil {
 					cursorRow.Replace(newCol, text, mode)
 				}
+				app.setHardDirty()
 			case "D":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
@@ -821,6 +824,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
 				repaint()
 				view.clearCache()
+				app.setHardDirty()
 			case "i":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m
@@ -834,6 +838,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						cursorRow.Insert(cursorCol, text, mode)
 						cursorCol++
 					}
+					app.setHardDirty()
 				}
 			case "a":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
@@ -859,12 +864,14 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						cursorRow.Replace(cursorCol, text, mode)
 					}
 				}
+				app.setHardDirty()
 			case "r", "R", keys.F2:
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
 				cursor := &cursorRow.Cell[cursorCol]
+				modifiedBefore := cursor.Modified()
 				q := cursor.IsQuoted()
 				view.clearCache()
 				if text, err := app.readlineAndValidate("replace cell>", cursor.Text(), cursorRow, cursorCol); err == nil {
@@ -873,8 +880,12 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						*cursor = cursor.Quote(mode)
 					}
 				}
+				modifiedAfter := cursor.Modified()
+				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "u":
+				modifiedBefore := cursorRow.Cell[cursorCol].Modified()
 				cursorRow.Cell[cursorCol].Restore(mode)
+				app.updateSoftDirty(modifiedBefore, false)
 			case "Y":
 				killbuffer = app.yankCurrentRow(cursorRow)
 			case "y":
@@ -925,6 +936,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					repaint()
 					view.clearCache()
 				}
+				app.setHardDirty()
 			case "p", "P", keys.AltP:
 				if killbuffer == nil {
 					break
@@ -941,24 +953,31 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				repaint()
 				view.clearCache()
+				app.setHardDirty()
 			case "x":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
 				cursor := &cursorRow.Cell[cursorCol]
+				modifiedBefore := cursor.Modified()
 				q := cursor.IsQuoted()
 				cursorRow.Replace(cursorCol, "", mode)
 				if q {
 					*cursor = cursor.Quote(mode)
 				}
+				modifiedAfter := cursor.Modified()
+				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "\"":
 				cursor := &cursorRow.Cell[cursorCol]
+				modifiedBefore := cursor.Modified()
 				if cursor.IsQuoted() {
 					cursorRow.Replace(cursorCol, cursor.Text(), mode)
 				} else {
 					*cursor = cursor.Quote(mode)
 				}
+				modifiedAfter := cursor.Modified()
+				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "w":
 				if fetch != nil {
 					io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
@@ -1007,6 +1026,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						message = err.Error()
 						break
 					}
+					app.setHardDirty()
 					repaint()
 					view.clearCache()
 				}
