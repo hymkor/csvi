@@ -4,6 +4,8 @@ Release notes
 
 - テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした. (#15, #19 thanks to @toolleeo)
 - セル間の区切り文字を指定する`-ofs STRING` オプションを追加 (#15, #19, thanks to @toolleeo)
+- x を現在のセルを空にする操作に変更 (#16, #21, thanks to @toolleeo)
+  ( 従来の動作である、セルを削除し、右側のセルで詰める機能は dl, d+SPACE, d+TAB, dv で引き続き使用可能 )
 
 ### 内部的変更
 

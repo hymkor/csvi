@@ -942,11 +942,16 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				repaint()
 				view.clearCache()
 			case "x":
-				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
+				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
-				killbuffer = app.removeCurrentCell(cursorRow, cursorCol)
+				cursor := &cursorRow.Cell[cursorCol]
+				q := cursor.IsQuoted()
+				cursorRow.Replace(cursorCol, "", mode)
+				if q {
+					*cursor = cursor.Quote(mode)
+				}
 			case "\"":
 				cursor := &cursorRow.Cell[cursorCol]
 				if cursor.IsQuoted() {

@@ -104,7 +104,7 @@ Options
 * `-auto string` auto pilot (for testcode)
 * `-nonutf8` do not judge as UTF-8
 * `-w widths` set the widths of cells (e.g., `-w 14,0:10,1:20` to set the first column to 10 characters wide, the second column to 20 characters wide, and all others to 14 characters wide)
-* `-fixcol` forbid insertion or deletion of cells (disables `i`, `a`, and `x`)
+* `-fixcol` forbid insertion or deletion of cells (disables `i`, `a`, and some of `d`-prefixed deletion commands)
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
 * `-rv` Enable reverse-video display (invert foreground and background colors)
@@ -135,7 +135,8 @@ Key-binding
     * `i` (insert a new cell before the current one)
     * `a` (append a new cell after the current one)
     * `r` (replace the current cell)
-    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
+    * `x` (clear the current cell)
+    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv` (delete cell and shift cells on the right)
     * `dd`, `dr`, `D` (delete the current line)
     * `dc`, `d|` (delete the current column)
     * `w` (write to a file or STDOUT(`'-'`))
