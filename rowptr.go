@@ -70,7 +70,45 @@ type _Application struct {
 	csvLines    *list.List
 	removedRows []*uncsv.Row
 	out         io.Writer
+	dirty       int
 	*Config
+}
+
+func (app *_Application) ResetDirty() {
+	app.dirty = 0
+}
+
+func (app *_Application) isDirty() bool {
+	return app.dirty != 0
+}
+
+func (app *_Application) setHardDirty() {
+	app.dirty |= 1
+}
+
+func (app *_Application) increaseSoftDirty() {
+	app.dirty += 2
+}
+
+func (app *_Application) decreaseSoftDirty() {
+	if app.dirty >= 2 {
+		app.dirty -= 2
+	}
+}
+
+func (app *_Application) updateSoftDirty(before, after bool) {
+	if before == after {
+		return
+	}
+	if after {
+		app.increaseSoftDirty()
+	} else {
+		app.decreaseSoftDirty()
+	}
+}
+
+func (app *_Application) resetSoftDirty() {
+	app.dirty &= 1
 }
 
 type Result struct {

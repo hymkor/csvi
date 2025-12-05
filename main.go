@@ -307,7 +307,7 @@ func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth,
 }
 
 func (app *_Application) MessageAndGetKey(message string) (string, error) {
-	fmt.Fprintf(app, "%s\r%s%s", ansi.YELLOW, message, ansi.ERASE_LINE)
+	fmt.Fprintf(app, "%s\r%s%s ", ansi.YELLOW, message, ansi.ERASE_LINE)
 	io.WriteString(app, ansi.CURSOR_ON)
 	ch, err := app.GetKey()
 	io.WriteString(app, ansi.CURSOR_OFF)
@@ -323,8 +323,13 @@ func first[T any](value T, _ error) T {
 	return value
 }
 
-func printStatusLine(out io.Writer, mode *uncsv.Mode, cursorRow *RowPtr, cursorCol int, screenWidth int) {
+func printStatusLine(out io.Writer, dirty bool, mode *uncsv.Mode, cursorRow *RowPtr, cursorCol int, screenWidth int) {
 	n := 0
+	if dirty {
+		n += first(out.Write([]byte{'*'}))
+	} else {
+		n += first(out.Write([]byte{' '}))
+	}
 	if mode.Comma == '\t' {
 		n += first(io.WriteString(out, "[TSV]"))
 	} else if mode.Comma == ',' {
@@ -497,6 +502,48 @@ func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, c
 	}
 }
 
+func (app *_Application) trySave(fetch func() (*uncsv.Row, error), out io.Writer) (string, error) {
+	if fetch != nil {
+		io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+		for {
+			row, err := fetch()
+			if err != nil && !errors.Is(err, io.EOF) {
+				return "", err
+			}
+			app.Push(row)
+			if errors.Is(err, io.EOF) {
+				break
+			}
+		}
+	}
+	message, err := cmdWrite(app)
+	if err == nil {
+		app.ResetDirty()
+	}
+	return message, err
+}
+
+func (app *_Application) tryQuit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+	if !app.ReadOnly && app.isDirty() {
+		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
+		if err != nil {
+			return nil, err
+		}
+		if ch == "y" || ch == "Y" {
+			message, err := app.trySave(fetch, out)
+			if err != nil {
+				return nil, err
+			}
+			fmt.Fprintf(app.out, "\r%s%s%s", ansi.YELLOW, message, ansi.ERASE_LINE)
+		} else if ch != "n" && ch != "N" {
+			return nil, nil
+		}
+	}
+	io.WriteString(out, "\n")
+	return &Result{_Application: app}, nil
+
+}
+
 func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
@@ -597,7 +644,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		if message != "" {
 			io.WriteString(out, runewidth.Truncate(message, screenWidth-1, ""))
 		} else if 0 <= cursorRow.lnum && cursorRow.lnum < app.Len() {
-			printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
+			printStatusLine(out, app.isDirty(), mode, cursorRow, cursorCol, screenWidth)
 		}
 		io.WriteString(out, ansi.RESET)
 		io.WriteString(out, ansi.ERASE_SCRN_AFTER)
@@ -619,7 +666,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			app.Push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				io.WriteString(out, "\r"+ansi.YELLOW)
-				printStatusLine(out, mode, cursorRow, cursorCol, screenWidth)
+				printStatusLine(out, app.isDirty(), mode, cursorRow, cursorCol, screenWidth)
 				io.WriteString(out, ansi.RESET)
 				io.WriteString(out, ansi.ERASE_SCRN_AFTER)
 				displayUpdateTime = time.Now().Add(time.Second / interval)
@@ -661,11 +708,13 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				for p := app.Front(); p != nil; p = p.Next() {
 					p.Restore(mode)
 				}
+				app.resetSoftDirty()
 				view.clearCache()
 			case "q":
-				if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
-					io.WriteString(out, "\n")
-					return &Result{_Application: app}, nil
+				if rc, err := app.tryQuit(fetch, out); err != nil {
+					message = err.Error()
+				} else if rc != nil {
+					return rc, nil
 				}
 			case "j", keys.Down, keys.CtrlN, keys.Enter:
 				if next := cursorRow.Next(); next != nil {
@@ -786,6 +835,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if text, err := app.readlineAndValidate("new line>", "", cursorRow, newCol); err == nil {
 					cursorRow.Replace(newCol, text, mode)
 				}
+				app.setHardDirty()
 			case "O":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
@@ -813,6 +863,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if text, err := app.readlineAndValidate("new line>", "", cursorRow, newCol); err == nil {
 					cursorRow.Replace(newCol, text, mode)
 				}
+				app.setHardDirty()
 			case "D":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
@@ -821,6 +872,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				killbuffer = app.removeCurrentRow(&startRow, &cursorRow)
 				repaint()
 				view.clearCache()
+				app.setHardDirty()
 			case "i":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
 					message = m
@@ -834,6 +886,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						cursorRow.Insert(cursorCol, text, mode)
 						cursorCol++
 					}
+					app.setHardDirty()
 				}
 			case "a":
 				if m := cfg.checkWriteProtectAndColumn(cursorRow); m != "" {
@@ -859,12 +912,14 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						cursorRow.Replace(cursorCol, text, mode)
 					}
 				}
+				app.setHardDirty()
 			case "r", "R", keys.F2:
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
 				cursor := &cursorRow.Cell[cursorCol]
+				modifiedBefore := cursor.Modified()
 				q := cursor.IsQuoted()
 				view.clearCache()
 				if text, err := app.readlineAndValidate("replace cell>", cursor.Text(), cursorRow, cursorCol); err == nil {
@@ -873,12 +928,16 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						*cursor = cursor.Quote(mode)
 					}
 				}
+				modifiedAfter := cursor.Modified()
+				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "u":
+				modifiedBefore := cursorRow.Cell[cursorCol].Modified()
 				cursorRow.Cell[cursorCol].Restore(mode)
+				app.updateSoftDirty(modifiedBefore, false)
 			case "Y":
 				killbuffer = app.yankCurrentRow(cursorRow)
 			case "y":
-				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column] `)
+				ch, err := app.MessageAndGetKey(`Yank ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "y"/"r": row, "|"/"c": column]`)
 				if err != nil {
 					message = err.Error()
 					break
@@ -897,9 +956,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					break
 				}
 				if cfg.FixColumn {
-					ch, err = app.MessageAndGetKey(`Delete ? ["d"/"r": row] `)
+					ch, err = app.MessageAndGetKey(`Delete ? ["d"/"r": row]`)
 				} else {
-					ch, err = app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "d"/"r": row, "|"/"c": column] `)
+					ch, err = app.MessageAndGetKey(`Delete ? ["l"/"v"/SPACE/TAB/C-F/→: cell, "d"/"r": row, "|"/"c": column]`)
 				}
 				if err != nil {
 					message = err.Error()
@@ -925,6 +984,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					repaint()
 					view.clearCache()
 				}
+				app.setHardDirty()
 			case "p", "P", keys.AltP:
 				if killbuffer == nil {
 					break
@@ -941,40 +1001,36 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				repaint()
 				view.clearCache()
+				app.setHardDirty()
 			case "x":
 				if m := cfg.checkWriteProtect(cursorRow); m != "" {
 					message = m
 					break
 				}
 				cursor := &cursorRow.Cell[cursorCol]
+				modifiedBefore := cursor.Modified()
 				q := cursor.IsQuoted()
 				cursorRow.Replace(cursorCol, "", mode)
 				if q {
 					*cursor = cursor.Quote(mode)
 				}
+				modifiedAfter := cursor.Modified()
+				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "\"":
 				cursor := &cursorRow.Cell[cursorCol]
+				modifiedBefore := cursor.Modified()
 				if cursor.IsQuoted() {
 					cursorRow.Replace(cursorCol, cursor.Text(), mode)
 				} else {
 					*cursor = cursor.Quote(mode)
 				}
+				modifiedAfter := cursor.Modified()
+				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "w":
-				if fetch != nil {
-					io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
-					for {
-						row, err := fetch()
-						if err != nil && !errors.Is(err, io.EOF) {
-							return nil, err
-						}
-						app.Push(row)
-						if errors.Is(err, io.EOF) {
-							break
-						}
-					}
-				}
-				if err := cmdWrite(app); err != nil {
+				if msg, err := app.trySave(fetch, out); err != nil {
 					message = err.Error()
+				} else {
+					message = msg
 				}
 				view.clearCache()
 			case "]":
@@ -988,16 +1044,17 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				view.clearCache()
 			case keys.Escape:
-				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste] `)
+				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste]`)
 				if err != nil {
 					message = err.Error()
 					break
 				}
 				switch ch {
 				case "q", "Q":
-					if cfg.ReadOnly || app.YesNo("Quit Sure ? [y/n]") {
-						io.WriteString(out, "\n")
-						return &Result{_Application: app}, nil
+					if rc, err := app.tryQuit(fetch, out); err != nil {
+						message = err.Error()
+					} else if rc != nil {
+						return rc, nil
 					}
 				case "p", "P":
 					if killbuffer == nil {
@@ -1007,6 +1064,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						message = err.Error()
 						break
 					}
+					app.setHardDirty()
 					repaint()
 					view.clearCache()
 				}

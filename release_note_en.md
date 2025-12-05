@@ -6,6 +6,9 @@ Release notes
 - Implement `-ofs STRING` to specify the separator between cells. (#15 and #19, thanks to @toolleeo)
 - Map x to clear the current cell (#16, #21, thanks to @toolleeo)
   ( The previous behavior—deleting the cell and shifting the cells on the right—is still available via `dl`, `d`+`SPACE`, `d`+`TAB`, and `dv`. )
+- Track whether the file has been modified (#23)
+  - Display `*` in the status line when there are unsaved changes
+  - When executing the `q` command, prompt whether to save the changes (#17, thanks to @toolleeo)
 
 ### Internal Changes
 
