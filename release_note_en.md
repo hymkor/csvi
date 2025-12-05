@@ -9,6 +9,7 @@ Release notes
 - Track whether the file has been modified (#23)
   - Display `*` in the status line when there are unsaved changes
   - When executing the `q` command, prompt whether to save the changes (#17, thanks to @toolleeo)
+- Implement page up/down (#22, #24, thanks to @wumfi)
 
 ### Internal Changes
 
