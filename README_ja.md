@@ -249,10 +249,12 @@ Release Note
 Acknowledgements
 ----------------
 
-- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) — [Issue #1](https://github.com/hymkor/csvi/issues/1)
-- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) — [Issue #4](https://github.com/hymkor/csvi/issues/4)
-- [emisjerry (emisjerry)](https://github.com/emisjerry) — [YouTube動画](https://www.youtube.com/watch?v=_cxBQKpfUds)
-- [rinodrops (Rino)](https://github.com/rinodrops) — [Discussion #5](https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997)
+- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc)
+- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh)
+- [emisjerry (emisjerry)](https://github.com/emisjerry)
+- [rinodrops (Rino)](https://github.com/rinodrops)
+- [toolleeo](https://github.com/toolleeo)
+- [wumfi](https://github.com/wumfi)
 
 Author
 ------
