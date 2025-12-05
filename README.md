@@ -116,14 +116,16 @@ Key-binding
 -----------
 
 * Move Cursor
-    * `h`, `Ctrl`+`B`, `←`, `Shift`+`TAB` (move cursor left)
+    * `h`, `←`, `Shift`+`TAB` (move cursor left)
     * `j`, `Ctrl`+`N`, `↓`, `Enter` (move cursor down)
     * `k`, `Ctrl`+`P`, `↑` (move cursor up)
-    * `l`, `Ctrl`+`F`, `→`, `TAB` (move cursor right)
-    * `<` (move the beginning of file)
-    * `>`,`G` (move the end of file)
-    * `0`, `^`, `Ctrl`+`A` (move the beginning of the current line)
-    * `$`,`Ctrl`+`E` (move the end of the current line)
+    * `l`, `→`, `TAB` (move cursor right)
+    * `<` (move to the beginning of file)
+    * `>`,`G` (move to the end of file)
+    * `0`, `^`, `Ctrl`+`A` (move to the beginning of the current line)
+    * `$`,`Ctrl`+`E` (move to the end of the current line)
+    * `PgUp`, `Ctrl`+`B` (move up one page)
+    * `PgDn`, `Ctrl`+`F` (move down one page)
 * Search
     * `/` (search forward for a partial match)
     * `?` (search backward for a partial match)
