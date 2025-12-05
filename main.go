@@ -716,6 +716,28 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				} else if rc != nil {
 					return rc, nil
 				}
+			case keys.CtrlF, keys.PageDown:
+				for i := 0; i < screenHeight-1; i++ {
+					if next := cursorRow.Next(); next != nil {
+						cursorRow = next
+					} else {
+						break
+					}
+					if next := startRow.Next(); next != nil {
+						startRow = next
+					}
+				}
+			case keys.CtrlB, keys.PageUp:
+				for i := 0; i < screenHeight-1; i++ {
+					if prev := cursorRow.Prev(); prev != nil {
+						cursorRow = prev
+					} else {
+						break
+					}
+					if prev := startRow.Prev(); prev != nil {
+						startRow = prev
+					}
+				}
 			case "j", keys.Down, keys.CtrlN, keys.Enter:
 				if next := cursorRow.Next(); next != nil {
 					cursorRow = next
@@ -724,11 +746,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if prev := cursorRow.Prev(); prev != nil {
 					cursorRow = prev
 				}
-			case "h", keys.Left, keys.CtrlB, keys.ShiftTab:
+			case "h", keys.Left, keys.ShiftTab:
 				if cursorCol > 0 {
 					cursorCol--
 				}
-			case "l", keys.Right, keys.CtrlF, keys.CtrlI:
+			case "l", keys.Right, keys.CtrlI:
 				cursorCol++
 			case "0", "^", keys.CtrlA:
 				cursorCol = 0
