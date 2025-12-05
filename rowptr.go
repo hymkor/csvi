@@ -107,6 +107,10 @@ func (app *_Application) updateSoftDirty(before, after bool) {
 	}
 }
 
+func (app *_Application) resetSoftDirty() {
+	app.dirty &= 1
+}
+
 type Result struct {
 	*_Application
 }

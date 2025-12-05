@@ -708,7 +708,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				for p := app.Front(); p != nil; p = p.Next() {
 					p.Restore(mode)
 				}
-				app.ResetDirty()
+				app.resetSoftDirty()
 				view.clearCache()
 			case "q":
 				if rc, err := app.tryQuit(fetch, out); err != nil {
