@@ -10,6 +10,7 @@ Release notes
     - 変更がある場合、ステータスラインに`*` を表示
     - `q` コマンド実行時に保存するかを確認するようにした (#17, thanks to @toolleeo)
 - ページ単位の移動(PgDn,PgUp)を実装 (#22, #24, thanks to @wumfi)
+- `gg` にファイル先頭への移動を設定 (#18, #25, thanks to @toolleeo)
 
 ### 内部的変更
 

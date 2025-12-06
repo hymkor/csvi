@@ -120,7 +120,7 @@ Key-binding
     * `j`, `Ctrl`+`N`, `↓`, `Enter` (move cursor down)
     * `k`, `Ctrl`+`P`, `↑` (move cursor up)
     * `l`, `→`, `TAB` (move cursor right)
-    * `<` (move to the beginning of file)
+    * `<`, `gg` (move to the beginning of file)
     * `>`,`G` (move to the end of file)
     * `0`, `^`, `Ctrl`+`A` (move to the beginning of the current line)
     * `$`,`Ctrl`+`E` (move to the end of the current line)
