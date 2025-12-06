@@ -2,6 +2,12 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.17.0
+-------
+Dec 7, 2025
+
+### Specification Changes
+
 - Truncate text that exceeds the cell width and append U+2026 (ellipsis). (#15 and #19 thanks to @toolleeo)
 - Implement `-ofs STRING` to specify the separator between cells. (#15 and #19, thanks to @toolleeo)
 - Map x to clear the current cell (#16, #21, thanks to @toolleeo)

@@ -2,6 +2,12 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.17.0
+-------
+Dec 7, 2025
+
+### 仕様変更
+
 - テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした. (#15, #19 thanks to @toolleeo)
 - セル間の区切り文字を指定する`-ofs STRING` オプションを追加 (#15, #19, thanks to @toolleeo)
 - x を現在のセルを空にする操作に変更 (#16, #21, thanks to @toolleeo)
