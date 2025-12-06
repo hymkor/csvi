@@ -59,13 +59,24 @@ Install
 > &#9888;&#65039; Note: macOS用バイナリは実験的ビルドで、検証できていません。
 > もし何らかの問題を確認されましたらお知らせください！
 
-### "go install" を使う場合
+<!-- pwsh -Command "readme-install.ps1 'ja'" -->
+
+### "go install" を使う場合 (要Go言語開発環境)
 
 ```
 go install github.com/hymkor/csvi@latest
 ```
 
-### scoop インストーラーを使う場合 (Windowsのみ)
+### [eget] インストーラーを使う場合 (クロスプラットフォーム)
+
+```
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/csvi
+```
+
+[eget]: https://github.com/zyedidia/eget
+
+### [scoop] インストーラーを使う場合 (Windowsのみ)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
@@ -77,6 +88,10 @@ scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 ```
+
+[scoop]: https://scoop.sh/
+
+<!-- -->
 
 Usage
 -----

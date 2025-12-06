@@ -59,13 +59,24 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 > &#9888;&#65039; Note: The macOS build is experimental and not yet tested.
 > Please let us know if you encounter any issues!
 
-### Use "go install"
+<!-- pwsh -Command "readme-install.ps1" | -->
+
+### Use "go install" (requires Go toolchain)
 
 ```
 go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
-### Use scoop-installer (Windows only)
+### Use [eget] installer (cross-platform)"
+
+```
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/csvi
+```
+
+[eget]: https://github.com/zyedidia/eget
+
+### Use [scoop]-installer (Windows only)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
@@ -77,6 +88,9 @@ or
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 ```
+
+[scoop]: https://scoop.sh/
+<!-- -->
 
 Usage
 -----
