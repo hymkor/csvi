@@ -10,6 +10,7 @@ Release notes
   - Display `*` in the status line when there are unsaved changes
   - When executing the `q` command, prompt whether to save the changes (#17, thanks to @toolleeo)
 - Implement page up/down (#22, #24, thanks to @wumfi)
+- Assign `gg` as an additional keybinding for moving to the first row. (#18, #25, thanks to @toolleeo)
 
 ### Internal Changes
 
