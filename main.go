@@ -756,6 +756,14 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				cursorCol = 0
 			case "$", keys.CtrlE:
 				cursorCol = len(cursorRow.Cell) - 1
+			case "g":
+				ch, err := app.MessageAndGetKey("g- [\"g\": move to the beginning of file ]")
+				if err == nil && ch == "g" {
+					cursorRow = app.Front()
+					startRow = app.Front()
+					cursorCol = 0
+					startCol = 0
+				}
 			case "<":
 				cursorRow = app.Front()
 				startRow = app.Front()
