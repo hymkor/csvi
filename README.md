@@ -220,7 +220,7 @@ the built-in SKK[^SKK] Kana-to-Kanji conversion via [go-readline-skk] is enabled
 Use as a Go package
 -------------------
 
-```example.go
+```examples/example.go
 package main
 
 import (
