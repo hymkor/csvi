@@ -214,7 +214,7 @@ Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定
 Use as a package
 ----------------
 
-```example.go
+```examples/example.go
 package main
 
 import (
