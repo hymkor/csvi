@@ -15,7 +15,7 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func (app *_Application) dump(w io.Writer) {
+func (app *application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
@@ -31,7 +31,7 @@ func (app *_Application) dump(w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func (app *_Application) getFname() (string, error) {
+func (app *application) getFname() (string, error) {
 	fname := "-"
 	if args := flag.Args(); len(args) >= 1 {
 		var err error
@@ -43,7 +43,7 @@ func (app *_Application) getFname() (string, error) {
 	return app.GetFilename(app, "write to>", fname)
 }
 
-func (app *_Application) cmdWrite(fname string) (string, error) {
+func (app *application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
 		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
@@ -73,7 +73,7 @@ func (app *_Application) cmdWrite(fname string) (string, error) {
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
-func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error)) (string, error) {
+func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string, error) {
 	var wg sync.WaitGroup
 	chStop := make(chan struct{})
 	defer close(chStop)

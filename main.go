@@ -306,7 +306,7 @@ func (v *viewCache) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWi
 	}.drawPage(enum, cursorCol-startCol, cursorRow.lnum-startRow.lnum, v.bodyCache, out)
 }
 
-func (app *_Application) MessageAndGetKey(message string) (string, error) {
+func (app *application) MessageAndGetKey(message string) (string, error) {
 	fmt.Fprintf(app, "%s\r%s%s ", ansi.YELLOW, message, ansi.ERASE_LINE)
 	io.WriteString(app, ansi.CURSOR_ON)
 	ch, err := app.GetKey()
@@ -314,7 +314,7 @@ func (app *_Application) MessageAndGetKey(message string) (string, error) {
 	return ch, err
 }
 
-func (app *_Application) YesNo(message string) bool {
+func (app *application) YesNo(message string) bool {
 	ch, err := app.MessageAndGetKey(message)
 	return err == nil && ch == "y"
 }
@@ -393,7 +393,7 @@ type CellValidatedEvent struct {
 }
 
 type KeyEventArgs struct {
-	*_Application
+	*application
 	CursorRow *RowPtr
 	CursorCol int
 }
@@ -486,7 +486,7 @@ func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
 	return ""
 }
 
-func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, col int) (string, error) {
+func (app *application) readlineAndValidate(prompt, text string, row *RowPtr, col int) (string, error) {
 	candidates := makeCandidate(row.lnum-1, col, row)
 	for {
 		var err error
@@ -502,7 +502,7 @@ func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, c
 	}
 }
 
-func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error)) (*Result, error) {
+func (app *application) tryQuit(fetch func() (bool, *uncsv.Row, error)) (*Result, error) {
 	if !app.ReadOnly && app.isDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
 		if err != nil {
@@ -519,7 +519,7 @@ func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error)) (*Resul
 		}
 	}
 	io.WriteString(app.out, "\n")
-	return &Result{_Application: app}, nil
+	return &Result{application: app}, nil
 
 }
 
@@ -548,7 +548,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		defer pilot.Close()
 		cfg.Pilot = pilot
 	}
-	app := &_Application{
+	app := &application{
 		Config:   cfg,
 		csvLines: list.New(),
 		out:      out,
@@ -660,13 +660,13 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 
 		if handler, ok := cfg.KeyMap[ch]; ok {
 			e := &KeyEventArgs{
-				CursorRow:    cursorRow,
-				CursorCol:    cursorCol,
-				_Application: app,
+				CursorRow:   cursorRow,
+				CursorCol:   cursorCol,
+				application: app,
 			}
 			cmdResult, err := handler(e)
 			if err != nil || cmdResult.Quit {
-				return &Result{_Application: app}, err
+				return &Result{application: app}, err
 			}
 			message = cmdResult.Message
 		} else {
