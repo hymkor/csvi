@@ -502,11 +502,14 @@ func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, c
 	}
 }
 
-func (app *_Application) trySave(fetch func() (*uncsv.Row, error), out io.Writer) (string, error) {
+func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error), out io.Writer) (string, error) {
 	if fetch != nil {
 		io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
 		for {
-			row, err := fetch()
+			ok, row, err := fetch()
+			if !ok {
+				break
+			}
 			if err != nil && !errors.Is(err, io.EOF) {
 				return "", err
 			}
@@ -523,7 +526,7 @@ func (app *_Application) trySave(fetch func() (*uncsv.Row, error), out io.Writer
 	return message, err
 }
 
-func (app *_Application) tryQuit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error), out io.Writer) (*Result, error) {
 	if !app.ReadOnly && app.isDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
 		if err != nil {
@@ -609,9 +612,20 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 
 	keyWorker := nonblock.New(func() (string, error) {
 		return pilot.GetKey()
+	}, func() (bool, *uncsv.Row, error) {
+		if fetch == nil {
+			return false, nil, nil
+		}
+		row, err := fetch()
+		if err != nil {
+			fetch = nil
+			if !errors.Is(err, io.EOF) || isEmptyRow(row) {
+				return false, nil, nil
+			}
+		}
+		return true, row, err
 	})
 	defer keyWorker.Close()
-
 	view := newView()
 
 	screenWidth, _screenHeight, err := pilot.Size()
@@ -652,17 +666,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		const interval = 4
 		displayUpdateTime := time.Now().Add(time.Second / interval)
 
-		ch, err := keyWorker.GetOr(func() bool {
-			if fetch == nil {
-				return false
-			}
-			row, err := fetch()
-			if err != nil {
-				fetch = nil
-				if !errors.Is(err, io.EOF) || isEmptyRow(row) {
-					return false
-				}
-			}
+		ch, err := keyWorker.GetOr(func(row *uncsv.Row, err error) bool {
 			app.Push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				io.WriteString(out, "\r"+ansi.YELLOW)
@@ -711,7 +715,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				app.resetSoftDirty()
 				view.clearCache()
 			case "q":
-				if rc, err := app.tryQuit(fetch, out); err != nil {
+				if rc, err := app.tryQuit(keyWorker.Fetch, out); err != nil {
 					message = err.Error()
 				} else if rc != nil {
 					return rc, nil
@@ -1057,7 +1061,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				modifiedAfter := cursor.Modified()
 				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "w":
-				if msg, err := app.trySave(fetch, out); err != nil {
+				if msg, err := app.trySave(keyWorker.Fetch, out); err != nil {
 					message = err.Error()
 				} else {
 					message = msg
@@ -1081,7 +1085,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				switch ch {
 				case "q", "Q":
-					if rc, err := app.tryQuit(fetch, out); err != nil {
+					if rc, err := app.tryQuit(keyWorker.Fetch, out); err != nil {
 						message = err.Error()
 					} else if rc != nil {
 						return rc, nil
