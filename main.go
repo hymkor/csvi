@@ -226,19 +226,19 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 	}
 }
 
-type _View struct {
+type viewCache struct {
 	headCache map[int]string
 	bodyCache map[int]string
 }
 
-func newView() *_View {
-	return &_View{
+func newView() *viewCache {
+	return &viewCache{
 		headCache: map[int]string{},
 		bodyCache: map[int]string{},
 	}
 }
 
-func (v *_View) clearCache() {
+func (v *viewCache) clearCache() {
 	for k := range v.headCache {
 		delete(v.headCache, k)
 	}
@@ -247,7 +247,7 @@ func (v *_View) clearCache() {
 	}
 }
 
-func (v *_View) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, sep string, out io.Writer) int {
+func (v *viewCache) Draw(header, startRow, cursorRow *RowPtr, _cellWidth *CellWidth, headerLines, startCol, cursorCol, screenHeight, screenWidth int, sep string, out io.Writer) int {
 	// print header
 	lfCount := 0
 
