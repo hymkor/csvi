@@ -23,6 +23,7 @@ type Flag struct {
 	ProtectHeader bool   `flag:"p,Protect the header line"`
 	Title         string `flag:"title,Set title string"`
 	ReverseVideo  bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
+	OutputSep     string `flag:"ofs,Output separator between cells"`
 	flagSet       *flag.FlagSet
 }
 

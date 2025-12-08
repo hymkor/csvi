@@ -143,6 +143,7 @@ type Cell struct {
 	source   []byte
 	text     string
 	original []byte
+	saved    []byte
 }
 
 func (c Cell) Clone() Cell {
@@ -150,6 +151,7 @@ func (c Cell) Clone() Cell {
 		source:   bytes.Clone(c.source),
 		text:     c.text,
 		original: []byte{},
+		saved:    nil,
 	}
 }
 
@@ -166,7 +168,17 @@ func (c Cell) SourceText(m *Mode) string {
 }
 
 func (c Cell) Modified() bool {
-	return !bytes.Equal(c.source, c.original)
+	if c.saved == nil {
+		return !bytes.Equal(c.source, c.original)
+	}
+	return !bytes.Equal(c.source, c.saved)
+}
+
+func (c *Cell) MarkAsSave() {
+	if !c.Modified() {
+		return
+	}
+	c.saved = bytes.Clone(c.source)
 }
 
 func (c Cell) IsQuoted() bool {
@@ -181,7 +193,11 @@ func (c *Cell) SetSource(newSource []byte, mode *Mode) {
 }
 
 func (c *Cell) Restore(mode *Mode) {
-	c.source = c.original
+	if c.saved == nil {
+		c.source = c.original
+	} else {
+		c.source = c.saved
+	}
 	c.text = dequote(mode.decode(c.original))
 }
 
@@ -493,6 +509,12 @@ func (row *Row) Restore(mode *Mode) {
 	for i, c := range row.Cell {
 		c.Restore(mode)
 		row.Cell[i] = c
+	}
+}
+
+func (row *Row) MarkAsSave() {
+	for i := range row.Cell {
+		row.Cell[i].MarkAsSave()
 	}
 }
 

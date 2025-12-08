@@ -1,7 +1,7 @@
 "CSVI" - Terminal CSV Editor
 ============================
 
-<!-- badges.cmd | -->
+<!-- pwsh -Command "badges.ps1" | -->
 [![Go Test](https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/csvi/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/csvi/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
@@ -59,13 +59,24 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 > &#9888;&#65039; Note: The macOS build is experimental and not yet tested.
 > Please let us know if you encounter any issues!
 
-### Use "go install"
+<!-- pwsh -Command "readme-install.ps1" | -->
+
+### Use "go install" (requires Go toolchain)
 
 ```
 go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
-### Use scoop-installer (Windows only)
+### Use [eget] installer (cross-platform)"
+
+```
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/csvi
+```
+
+[eget]: https://github.com/zyedidia/eget
+
+### Use [scoop]-installer (Windows only)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
@@ -77,6 +88,9 @@ or
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 ```
+
+[scoop]: https://scoop.sh/
+<!-- -->
 
 Usage
 -----
@@ -104,10 +118,11 @@ Options
 * `-auto string` auto pilot (for testcode)
 * `-nonutf8` do not judge as UTF-8
 * `-w widths` set the widths of cells (e.g., `-w 14,0:10,1:20` to set the first column to 10 characters wide, the second column to 20 characters wide, and all others to 14 characters wide)
-* `-fixcol` forbid insertion or deletion of cells (disables `i`, `a`, and `x`)
+* `-fixcol` forbid insertion or deletion of cells (disables `i`, `a`, and some of `d`-prefixed deletion commands)
 * `-p` Protect the header line
 * `-readonly` Read Only Mode
 * `-rv` Enable reverse-video display (invert foreground and background colors)
+* `-ofs string` String used as the separator between cells in the output
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -115,14 +130,16 @@ Key-binding
 -----------
 
 * Move Cursor
-    * `h`, `Ctrl`+`B`, `←`, `Shift`+`TAB` (move cursor left)
+    * `h`, `←`, `Shift`+`TAB` (move cursor left)
     * `j`, `Ctrl`+`N`, `↓`, `Enter` (move cursor down)
     * `k`, `Ctrl`+`P`, `↑` (move cursor up)
-    * `l`, `Ctrl`+`F`, `→`, `TAB` (move cursor right)
-    * `<` (move the beginning of file)
-    * `>`,`G` (move the end of file)
-    * `0`, `^`, `Ctrl`+`A` (move the beginning of the current line)
-    * `$`,`Ctrl`+`E` (move the end of the current line)
+    * `l`, `→`, `TAB` (move cursor right)
+    * `<`, `gg` (move to the beginning of file)
+    * `>`,`G` (move to the end of file)
+    * `0`, `^`, `Ctrl`+`A` (move to the beginning of the current line)
+    * `$`,`Ctrl`+`E` (move to the end of the current line)
+    * `PgUp`, `Ctrl`+`B` (move up one page)
+    * `PgDn`, `Ctrl`+`F` (move down one page)
 * Search
     * `/` (search forward for a partial match)
     * `?` (search backward for a partial match)
@@ -134,7 +151,8 @@ Key-binding
     * `i` (insert a new cell before the current one)
     * `a` (append a new cell after the current one)
     * `r` (replace the current cell)
-    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (delete the current cell)
+    * `x` (clear the current cell)
+    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv` (delete cell and shift cells on the right)
     * `dd`, `dr`, `D` (delete the current line)
     * `dc`, `d|` (delete the current column)
     * `w` (write to a file or STDOUT(`'-'`))
@@ -202,7 +220,7 @@ the built-in SKK[^SKK] Kana-to-Kanji conversion via [go-readline-skk] is enabled
 Use as a Go package
 -------------------
 
-```example.go
+```examples/example.go
 package main
 
 import (
@@ -252,10 +270,12 @@ Release Note
 Acknowledgements
 ----------------
 
-- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) — [Issue #1](https://github.com/hymkor/csvi/issues/1)
-- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) — [Issue #4](https://github.com/hymkor/csvi/issues/4)
-- [emisjerry (emisjerry)](https://github.com/emisjerry) — [YouTube video](https://www.youtube.com/watch?v=_cxBQKpfUds)
-- [rinodrops (Rino)](https://github.com/rinodrops) — [Discussion #5](https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997)
+- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc)
+- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh)
+- [emisjerry (emisjerry)](https://github.com/emisjerry)
+- [rinodrops (Rino)](https://github.com/rinodrops)
+- [toolleeo](https://github.com/toolleeo)
+- [wumfi](https://github.com/wumfi)
 
 Author
 ------

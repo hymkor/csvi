@@ -2,6 +2,22 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.17.0
+-------
+Dec 7, 2025
+
+### 仕様変更
+
+- テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした. (#15, #19 thanks to @toolleeo)
+- セル間の区切り文字を指定する`-ofs STRING` オプションを追加 (#15, #19, thanks to @toolleeo)
+- x を現在のセルを空にする操作に変更 (#16, #21, thanks to @toolleeo)
+  ( 従来の動作である、セルを削除し、右側のセルで詰める機能は dl, d+SPACE, d+TAB, dv で引き続き使用可能 )
+- ファイル全体の変更有無を管理 (#23)
+    - 変更がある場合、ステータスラインに`*` を表示
+    - `q` コマンド実行時に保存するかを確認するようにした (#17, thanks to @toolleeo)
+- ページ単位の移動(PgDn,PgUp)を実装 (#22, #24, thanks to @wumfi)
+- `gg` にファイル先頭への移動を設定 (#18, #25, thanks to @toolleeo)
+
 ### 内部的変更
 
 - PowerShell で書いていたテストコードを Go に置き換えて、GitHub Actions や Windows以外の環境でも実行できるようにした。(#14)

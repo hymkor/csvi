@@ -46,7 +46,7 @@ func TestCaseSmallA(t *testing.T) {
 }
 
 func TestTailSmallX(t *testing.T) {
-	op := "<|$|x"
+	op := "<|$|d| "
 	exp := `あ,い,う,え
 か,き,く,け,こ
 さ,し,す,せ,そ
@@ -61,7 +61,7 @@ func TestTailSmallX(t *testing.T) {
 }
 
 func TestHeadSmallX(t *testing.T) {
-	op := "<|x"
+	op := "<|d| "
 	exp := `い,う,え,お
 か,き,く,け,こ
 さ,し,す,せ,そ

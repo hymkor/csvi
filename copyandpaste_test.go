@@ -62,7 +62,7 @@ func testCase(t *testing.T, source, process, result string, options ...string) {
 
 func TestDeleteCell(t *testing.T) { // `x`
 	src := "あ,い,う,え,お\nか,き,く,け,こ"
-	op := "<|x"
+	op := "<|d| "
 	exp := "い,う,え,お\nか,き,く,け,こ"
 
 	testCase(t, src, op, exp)

@@ -1,7 +1,7 @@
 "CSVI" - ターミナル用CSVエディタ
 ============================
 
-<!-- badges.cmd | -->
+<!-- pwsh -Command "badges.ps1" | -->
 [![Go Test](https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/csvi/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/csvi/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
@@ -59,13 +59,24 @@ Install
 > &#9888;&#65039; Note: macOS用バイナリは実験的ビルドで、検証できていません。
 > もし何らかの問題を確認されましたらお知らせください！
 
-### "go install" を使う場合
+<!-- pwsh -Command "readme-install.ps1 'ja'" -->
+
+### "go install" を使う場合 (要Go言語開発環境)
 
 ```
 go install github.com/hymkor/csvi@latest
 ```
 
-### scoop インストーラーを使う場合 (Windowsのみ)
+### [eget] インストーラーを使う場合 (クロスプラットフォーム)
+
+```
+cd (YOUR-BIN-DIRECTORY)
+eget hymkor/csvi
+```
+
+[eget]: https://github.com/zyedidia/eget
+
+### [scoop] インストーラーを使う場合 (Windowsのみ)
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
@@ -77,6 +88,10 @@ scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 ```
+
+[scoop]: https://scoop.sh/
+
+<!-- -->
 
 Usage
 -----
@@ -104,10 +119,11 @@ Options
 * `-auto string` 自動処理 (テストコード用)
 * `-nonutf8` UTF-8 と判断しない
 * `-w widths` セルの幅を設定 (例: `-w 14,0:10,1:20` 1列目は10桁,2列目は20桁,他は14桁とする)
-* `-fixcol` セルの挿入削除を禁止する (`i`, `a`, `x` を無効化)
+* `-fixcol` セルの挿入削除を禁止する (`i`, `a` と`d`で始まるコマンドの幾つかを無効化)
 * `-p` ヘッダー行を保護する
 * `-readonly` 読み取り専用モード
 * `-rv` 反転表示を有効にする（文字色と背景色を反転）
+* `-ofs string` セル間の区切り文字
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -115,14 +131,16 @@ Options
 -----------
 
 * カーソル移動
-    * `h`, `Ctrl`+`B`, `←`,`Shift`+`TAB` (左)
+    * `h`, `←`,`Shift`+`TAB` (左)
     * `j`, `Ctrl`+`N`, `↓`,`Enter` (下)
     * `k`, `Ctrl`+`P`, `↑` (上)
-    * `l`, `Ctrl`+`F`, `→`,`TAB` (右)
-    * `<` (ファイル先頭)
+    * `l`, `→`,`TAB` (右)
+    * `<`, `gg` (ファイル先頭)
     * `>`, `G` (ファイル末尾)
     * `0`, `^`, `Ctrl`+`A` (行頭)
     * `$`, `Ctrl`+`E` (行末)
+    * `PgUp`, `Ctrl`+`B` (前のページへ)
+    * `PgDn`, `Ctrl`+`F` (次のページへ)
 * 検索
     * `/` (キーワードを部分一致で前方検索)
     * `?` (キーワードを部分一致で後方検索)
@@ -134,7 +152,8 @@ Options
     * `i` (現在のセルの前に新セルを挿入)
     * `a` (現在のセルの右に新セルを挿入)
     * `r` (現在のセルを置換)
-    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`, `x` (現在のセルを削除)
+    * `x` (現在のセルを空にする)
+    * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`  (現在のセルを削除して右のセルで詰める)
     * `dd`, `dr`, `D` (現在の行を削除する)
     * `dc`, `d|` (現在の列を削除する)
     * `w` (ファイルもしくは標準出力(`'-'`)に出力する)
@@ -195,7 +214,7 @@ Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定
 Use as a package
 ----------------
 
-```example.go
+```examples/example.go
 package main
 
 import (
@@ -245,10 +264,12 @@ Release Note
 Acknowledgements
 ----------------
 
-- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc) — [Issue #1](https://github.com/hymkor/csvi/issues/1)
-- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh) — [Issue #4](https://github.com/hymkor/csvi/issues/4)
-- [emisjerry (emisjerry)](https://github.com/emisjerry) — [YouTube動画](https://www.youtube.com/watch?v=_cxBQKpfUds)
-- [rinodrops (Rino)](https://github.com/rinodrops) — [Discussion #5](https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997)
+- [sergeevabc (Aleksandr Sergeev)](https://github.com/sergeevabc)
+- [kevin-gwyrdh (Kevin)](https://github.com/kevin-gwyrdh)
+- [emisjerry (emisjerry)](https://github.com/emisjerry)
+- [rinodrops (Rino)](https://github.com/rinodrops)
+- [toolleeo](https://github.com/toolleeo)
+- [wumfi](https://github.com/wumfi)
 
 Author
 ------

@@ -2,6 +2,22 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.17.0
+-------
+Dec 7, 2025
+
+### Specification Changes
+
+- Truncate text that exceeds the cell width and append U+2026 (ellipsis). (#15 and #19 thanks to @toolleeo)
+- Implement `-ofs STRING` to specify the separator between cells. (#15 and #19, thanks to @toolleeo)
+- Map x to clear the current cell (#16, #21, thanks to @toolleeo)
+  ( The previous behavior—deleting the cell and shifting the cells on the right—is still available via `dl`, `d`+`SPACE`, `d`+`TAB`, and `dv`. )
+- Track whether the file has been modified (#23)
+  - Display `*` in the status line when there are unsaved changes
+  - When executing the `q` command, prompt whether to save the changes (#17, thanks to @toolleeo)
+- Implement page up/down (#22, #24, thanks to @wumfi)
+- Assign `gg` as an additional keybinding for moving to the first row. (#18, #25, thanks to @toolleeo)
+
 ### Internal Changes
 
 - Replace all PowerShell-based test scripts with Go test files so that the test suite can run on GitHub Actions and other non-Windows environments. (#14)
