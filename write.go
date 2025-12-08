@@ -7,7 +7,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sync"
 
+	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -29,19 +31,19 @@ func dump(app *_Application, w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func cmdWrite(app *_Application) (string, error) {
+func getFname(app *_Application) (string, error) {
 	fname := "-"
-	var err error
 	if args := flag.Args(); len(args) >= 1 {
+		var err error
 		fname, err = filepath.Abs(args[0])
 		if err != nil {
 			return "", err
 		}
 	}
-	fname, err = app.GetFilename(app, "write to>", fname)
-	if err != nil {
-		return "", err
-	}
+	return app.GetFilename(app, "write to>", fname)
+}
+
+func cmdWrite(fname string, app *_Application) (string, error) {
 	if fname == "-" {
 		dump(app, os.Stdout)
 		return "Output to STDOUT", nil
@@ -69,4 +71,46 @@ func cmdWrite(app *_Application) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
+}
+
+func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error), out io.Writer) (string, error) {
+	var wg sync.WaitGroup
+	chStop := make(chan struct{})
+	defer close(chStop)
+
+	if fetch != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-chStop:
+					return
+				default:
+					ok, row, err := fetch()
+					if !ok {
+						return
+					}
+					if err != nil && !errors.Is(err, io.EOF) {
+						return
+					}
+					app.Push(row)
+					if errors.Is(err, io.EOF) {
+						return
+					}
+				}
+			}
+		}()
+	}
+	fname, err := getFname(app)
+	if err != nil {
+		return "", err
+	}
+	io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+	wg.Wait()
+	message, err := cmdWrite(fname, app)
+	if err == nil {
+		app.ResetDirty()
+	}
+	return message, err
 }

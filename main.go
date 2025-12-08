@@ -502,30 +502,6 @@ func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, c
 	}
 }
 
-func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error), out io.Writer) (string, error) {
-	if fetch != nil {
-		io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
-		for {
-			ok, row, err := fetch()
-			if !ok {
-				break
-			}
-			if err != nil && !errors.Is(err, io.EOF) {
-				return "", err
-			}
-			app.Push(row)
-			if errors.Is(err, io.EOF) {
-				break
-			}
-		}
-	}
-	message, err := cmdWrite(app)
-	if err == nil {
-		app.ResetDirty()
-	}
-	return message, err
-}
-
 func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error), out io.Writer) (*Result, error) {
 	if !app.ReadOnly && app.isDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
