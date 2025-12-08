@@ -15,7 +15,7 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func dump(app *_Application, w io.Writer) {
+func (app *_Application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
@@ -31,7 +31,7 @@ func dump(app *_Application, w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func getFname(app *_Application) (string, error) {
+func (app *_Application) getFname() (string, error) {
 	fname := "-"
 	if args := flag.Args(); len(args) >= 1 {
 		var err error
@@ -43,9 +43,9 @@ func getFname(app *_Application) (string, error) {
 	return app.GetFilename(app, "write to>", fname)
 }
 
-func cmdWrite(fname string, app *_Application) (string, error) {
+func (app *_Application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
-		dump(app, os.Stdout)
+		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
 	}
 	fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
@@ -66,14 +66,14 @@ func cmdWrite(fname string, app *_Application) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	dump(app, fd)
+	app.dump(fd)
 	if err := fd.Close(); err != nil {
 		return "", err
 	}
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
-func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error), out io.Writer) (string, error) {
+func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error)) (string, error) {
 	var wg sync.WaitGroup
 	chStop := make(chan struct{})
 	defer close(chStop)
@@ -102,13 +102,13 @@ func (app *_Application) trySave(fetch func() (bool, *uncsv.Row, error), out io.
 			}
 		}()
 	}
-	fname, err := getFname(app)
+	fname, err := app.getFname()
 	if err != nil {
 		return "", err
 	}
-	io.WriteString(out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+	io.WriteString(app.out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
 	wg.Wait()
-	message, err := cmdWrite(fname, app)
+	message, err := app.cmdWrite(fname)
 	if err == nil {
 		app.ResetDirty()
 	}

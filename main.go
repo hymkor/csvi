@@ -502,14 +502,14 @@ func (app *_Application) readlineAndValidate(prompt, text string, row *RowPtr, c
 	}
 }
 
-func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error), out io.Writer) (*Result, error) {
+func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error)) (*Result, error) {
 	if !app.ReadOnly && app.isDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
 		if err != nil {
 			return nil, err
 		}
 		if ch == "y" || ch == "Y" {
-			message, err := app.trySave(fetch, out)
+			message, err := app.trySave(fetch)
 			if err != nil {
 				return nil, err
 			}
@@ -518,7 +518,7 @@ func (app *_Application) tryQuit(fetch func() (bool, *uncsv.Row, error), out io.
 			return nil, nil
 		}
 	}
-	io.WriteString(out, "\n")
+	io.WriteString(app.out, "\n")
 	return &Result{_Application: app}, nil
 
 }
@@ -691,7 +691,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				app.resetSoftDirty()
 				view.clearCache()
 			case "q":
-				if rc, err := app.tryQuit(keyWorker.Fetch, out); err != nil {
+				if rc, err := app.tryQuit(keyWorker.Fetch); err != nil {
 					message = err.Error()
 				} else if rc != nil {
 					return rc, nil
@@ -1037,7 +1037,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				modifiedAfter := cursor.Modified()
 				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "w":
-				if msg, err := app.trySave(keyWorker.Fetch, out); err != nil {
+				if msg, err := app.trySave(keyWorker.Fetch); err != nil {
 					message = err.Error()
 				} else {
 					message = msg
@@ -1061,7 +1061,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				switch ch {
 				case "q", "Q":
-					if rc, err := app.tryQuit(keyWorker.Fetch, out); err != nil {
+					if rc, err := app.tryQuit(keyWorker.Fetch); err != nil {
 						message = err.Error()
 					} else if rc != nil {
 						return rc, nil
