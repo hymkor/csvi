@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- `u` (undo) で最後に保存した時の値に戻すべき動作が、最初にロードした時の値に戻ってしまう不具合を修正
+
 v1.17.0
 -------
 Dec 7, 2025

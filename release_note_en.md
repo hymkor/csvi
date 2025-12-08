@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Fixed an issue where `u` (undo) restored the value from the initial load instead of the last save.
+
 v1.17.0
 -------
 Dec 7, 2025
