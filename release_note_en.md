@@ -2,6 +2,10 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Prevent key input responsiveness from being blocked even when CSV data reading stalls. (#28)
+  ( e.g.: `pwsh -Command "Get-Content utf_ken_all.csv ; Start-Sleep 15" | csvi` )
+- Previously, the save operation waited to finish reading all remaining data before prompting for the file name. Now the file-name prompt is shown first, and the full data read runs in the background. (#28)
+
 v1.17.0
 -------
 Dec 7, 2025
