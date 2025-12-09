@@ -18,7 +18,7 @@ type pasteFunc func(head, dst **RowPtr, col *int, pt pasteType) error
 
 func noPaste(head, dst **RowPtr, col *int, pt pasteType) error { return nil }
 
-func (app *_Application) yankCurrentCell(src *RowPtr, col int) pasteFunc {
+func (app *application) yankCurrentCell(src *RowPtr, col int) pasteFunc {
 	dup := src.Cell[col].Clone()
 	paste := func(head, dst **RowPtr, dcol *int, pt pasteType) error {
 		if pt == pasteOver {
@@ -40,7 +40,7 @@ func (app *_Application) yankCurrentCell(src *RowPtr, col int) pasteFunc {
 	return paste
 }
 
-func (app *_Application) removeCurrentCell(src *RowPtr, col int) pasteFunc {
+func (app *application) removeCurrentCell(src *RowPtr, col int) pasteFunc {
 	paste := app.yankCurrentCell(src, col)
 	if len(src.Cell) <= 1 {
 		src.Replace(0, "", app.Config.Mode)
@@ -50,7 +50,7 @@ func (app *_Application) removeCurrentCell(src *RowPtr, col int) pasteFunc {
 	return paste
 }
 
-func (app *_Application) makeRowPaster(dup *uncsv.Row) pasteFunc {
+func (app *application) makeRowPaster(dup *uncsv.Row) pasteFunc {
 	paste := func(head, dst **RowPtr, _ *int, pt pasteType) error {
 		if m := app.checkWriteProtect(*dst); m != "" {
 			return errors.New(m)
@@ -81,7 +81,7 @@ func (app *_Application) makeRowPaster(dup *uncsv.Row) pasteFunc {
 	return paste
 }
 
-func (app *_Application) yankCurrentRow(src *RowPtr) pasteFunc {
+func (app *application) yankCurrentRow(src *RowPtr) pasteFunc {
 	dup := &uncsv.Row{Term: src.Term}
 	for _, c := range src.Cell {
 		dup.Cell = append(dup.Cell, c.Clone())
@@ -89,7 +89,7 @@ func (app *_Application) yankCurrentRow(src *RowPtr) pasteFunc {
 	return app.makeRowPaster(dup)
 }
 
-func (app *_Application) removeCurrentRow(head, src **RowPtr) pasteFunc {
+func (app *application) removeCurrentRow(head, src **RowPtr) pasteFunc {
 	if app.Len() <= 1 {
 		return noPaste
 	}
@@ -117,7 +117,7 @@ func (app *_Application) removeCurrentRow(head, src **RowPtr) pasteFunc {
 	return paste
 }
 
-func (app *_Application) yankCurrentColumn(col int) pasteFunc {
+func (app *application) yankCurrentColumn(col int) pasteFunc {
 	dup := []uncsv.Cell{}
 	for p := app.Front(); p != nil; p = p.Next() {
 		var newCell uncsv.Cell
@@ -161,7 +161,7 @@ func (app *_Application) yankCurrentColumn(col int) pasteFunc {
 	}
 }
 
-func (app *_Application) removeCurrentColumn(col int) pasteFunc {
+func (app *application) removeCurrentColumn(col int) pasteFunc {
 	paste := app.yankCurrentColumn(col)
 	for p := app.Front(); p != nil; p = p.Next() {
 		if len(p.Cell) > 1 && col < len(p.Cell) {
