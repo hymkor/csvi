@@ -1202,16 +1202,22 @@ The bottom line of the screen shows technical info: quoting, encoding, field sep
 <p>⚠️ Note: The macOS build is experimental and not yet tested.
 Please let us know if you encounter any issues!</p>
 </blockquote>
-<h3 id="use-go-install">Use &quot;go install&quot;</h3>
+<!-- raw HTML omitted -->
+<h3 id="use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</h3>
 <pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
 </code></pre>
-<h3 id="use-scoop-installer-windows-only">Use scoop-installer (Windows only)</h3>
+<h3 id="use-eget-installer-cross-platform">Use <a href="https://github.com/zyedidia/eget">eget</a> installer (cross-platform)&quot;</h3>
+<pre><code>cd (YOUR-BIN-DIRECTORY)
+eget hymkor/csvi
+</code></pre>
+<h3 id="use-scoop-installer-windows-only">Use <a href="https://scoop.sh/">scoop</a>-installer (Windows only)</h3>
 <pre><code>scoop install https://raw.githubusercontent.com/hymkor/csvi/master/csvi.json
 </code></pre>
 <p>or</p>
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 </code></pre>
+<!-- raw HTML omitted -->
 <h2 id="usage">Usage</h2>
 <pre><code>$ csvi {options} FILENAME(...)
 </code></pre>
@@ -1231,23 +1237,26 @@ scoop install csvi
 <li><code>-auto string</code> auto pilot (for testcode)</li>
 <li><code>-nonutf8</code> do not judge as UTF-8</li>
 <li><code>-w widths</code> set the widths of cells (e.g., <code>-w 14,0:10,1:20</code> to set the first column to 10 characters wide, the second column to 20 characters wide, and all others to 14 characters wide)</li>
-<li><code>-fixcol</code> forbid insertion or deletion of cells (disables <code>i</code>, <code>a</code>, and <code>x</code>)</li>
+<li><code>-fixcol</code> forbid insertion or deletion of cells (disables <code>i</code>, <code>a</code>, and some of <code>d</code>-prefixed deletion commands)</li>
 <li><code>-p</code> Protect the header line</li>
 <li><code>-readonly</code> Read Only Mode</li>
 <li><code>-rv</code> Enable reverse-video display (invert foreground and background colors)</li>
+<li><code>-ofs string</code> String used as the separator between cells in the output</li>
 </ul>
 <h2 id="key-binding">Key-binding</h2>
 <ul>
 <li>Move Cursor
 <ul>
-<li><code>h</code>, <code>Ctrl</code>+<code>B</code>, <code>←</code>, <code>Shift</code>+<code>TAB</code> (move cursor left)</li>
+<li><code>h</code>, <code>←</code>, <code>Shift</code>+<code>TAB</code> (move cursor left)</li>
 <li><code>j</code>, <code>Ctrl</code>+<code>N</code>, <code>↓</code>, <code>Enter</code> (move cursor down)</li>
 <li><code>k</code>, <code>Ctrl</code>+<code>P</code>, <code>↑</code> (move cursor up)</li>
-<li><code>l</code>, <code>Ctrl</code>+<code>F</code>, <code>→</code>, <code>TAB</code> (move cursor right)</li>
-<li><code>&lt;</code> (move the beginning of file)</li>
-<li><code>&gt;</code>,<code>G</code> (move the end of file)</li>
-<li><code>0</code>, <code>^</code>, <code>Ctrl</code>+<code>A</code> (move the beginning of the current line)</li>
-<li><code>$</code>,<code>Ctrl</code>+<code>E</code> (move the end of the current line)</li>
+<li><code>l</code>, <code>→</code>, <code>TAB</code> (move cursor right)</li>
+<li><code>&lt;</code>, <code>gg</code> (move to the beginning of file)</li>
+<li><code>&gt;</code>,<code>G</code> (move to the end of file)</li>
+<li><code>0</code>, <code>^</code>, <code>Ctrl</code>+<code>A</code> (move to the beginning of the current line)</li>
+<li><code>$</code>,<code>Ctrl</code>+<code>E</code> (move to the end of the current line)</li>
+<li><code>PgUp</code>, <code>Ctrl</code>+<code>B</code> (move up one page)</li>
+<li><code>PgDn</code>, <code>Ctrl</code>+<code>F</code> (move down one page)</li>
 </ul>
 </li>
 <li>Search
@@ -1265,7 +1274,8 @@ scoop install csvi
 <li><code>i</code> (insert a new cell before the current one)</li>
 <li><code>a</code> (append a new cell after the current one)</li>
 <li><code>r</code> (replace the current cell)</li>
-<li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>, <code>x</code> (delete the current cell)</li>
+<li><code>x</code> (clear the current cell)</li>
+<li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code> (delete cell and shift cells on the right)</li>
 <li><code>dd</code>, <code>dr</code>, <code>D</code> (delete the current line)</li>
 <li><code>dc</code>, <code>d|</code> (delete the current column)</li>
 <li><code>w</code> (write to a file or STDOUT(<code>'-'</code>))</li>
@@ -1328,7 +1338,7 @@ the built-in SKK<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc
 </ul>
 <p>(Note: <code>~</code> is automatically expanded to <code>%USERPROFILE%</code> on Windows, even in <code>cmd.exe</code>.)</p>
 <h2 id="use-as-a-go-package">Use as a Go package</h2>
-<pre><code class="language-example.go">package main
+<pre><code class="language-examples/example.go">package main
 
 import (
     &quot;fmt&quot;
@@ -1374,10 +1384,12 @@ func main() {
 </ul>
 <h2 id="acknowledgements">Acknowledgements</h2>
 <ul>
-<li><a href="https://github.com/sergeevabc">sergeevabc (Aleksandr Sergeev)</a> — <a href="https://github.com/hymkor/csvi/issues/1">Issue #1</a></li>
-<li><a href="https://github.com/kevin-gwyrdh">kevin-gwyrdh (Kevin)</a> — <a href="https://github.com/hymkor/csvi/issues/4">Issue #4</a></li>
-<li><a href="https://github.com/emisjerry">emisjerry (emisjerry)</a> — <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">YouTube video</a></li>
-<li><a href="https://github.com/rinodrops">rinodrops (Rino)</a> — <a href="https://github.com/hymkor/csvi/discussions/5#discussioncomment-13140997">Discussion #5</a></li>
+<li><a href="https://github.com/sergeevabc">sergeevabc (Aleksandr Sergeev)</a></li>
+<li><a href="https://github.com/kevin-gwyrdh">kevin-gwyrdh (Kevin)</a></li>
+<li><a href="https://github.com/emisjerry">emisjerry (emisjerry)</a></li>
+<li><a href="https://github.com/rinodrops">rinodrops (Rino)</a></li>
+<li><a href="https://github.com/toolleeo">toolleeo</a></li>
+<li><a href="https://github.com/wumfi">wumfi</a></li>
 </ul>
 <h2 id="author">Author</h2>
 <ul>
@@ -1400,8 +1412,9 @@ func main() {
 <li><a href="#install">Install</a>
 <ul>
 <li><a href="#manual-installation">Manual Installation</a></li>
-<li><a href="#use-go-install">Use &quot;go install&quot;</a></li>
-<li><a href="#use-scoop-installer-windows-only">Use scoop-installer (Windows only)</a></li>
+<li><a href="#use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</a></li>
+<li><a href="#use-eget-installer-cross-platform">Use [eget] installer (cross-platform)&quot;</a></li>
+<li><a href="#use-scoop-installer-windows-only">Use [scoop]-installer (Windows only)</a></li>
 </ul>
 </li>
 <li><a href="#usage">Usage</a></li>

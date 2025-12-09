@@ -1142,6 +1142,28 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1171">v1.17.1</h2>
+<p>Dec 9, 2025</p>
+<ul>
+<li><code>u</code> (undo) で最後に保存した時の値に戻すべき動作が、最初にロードした時の値に戻ってしまう不具合を修正</li>
+</ul>
+<h2 id="v1170">v1.17.0</h2>
+<p>Dec 7, 2025</p>
+<h3 id="%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</h3>
+<ul>
+<li>テキストがセル幅を超える場合、末尾を U+2026(…)で省略表示するようにした. (#15, #19 thanks to @toolleeo)</li>
+<li>セル間の区切り文字を指定する<code>-ofs STRING</code> オプションを追加 (#15, #19, thanks to @toolleeo)</li>
+<li>x を現在のセルを空にする操作に変更 (#16, #21, thanks to @toolleeo)
+( 従来の動作である、セルを削除し、右側のセルで詰める機能は dl, d+SPACE, d+TAB, dv で引き続き使用可能 )</li>
+<li>ファイル全体の変更有無を管理 (#23)
+<ul>
+<li>変更がある場合、ステータスラインに<code>*</code> を表示</li>
+<li><code>q</code> コマンド実行時に保存するかを確認するようにした (#17, thanks to @toolleeo)</li>
+</ul>
+</li>
+<li>ページ単位の移動(PgDn,PgUp)を実装 (#22, #24, thanks to @wumfi)</li>
+<li><code>gg</code> にファイル先頭への移動を設定 (#18, #25, thanks to @toolleeo)</li>
+</ul>
 <h3 id="%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</h3>
 <ul>
 <li>PowerShell で書いていたテストコードを Go に置き換えて、GitHub Actions や Windows以外の環境でも実行できるようにした。(#14)</li>
@@ -1152,7 +1174,7 @@ a.permalink:hover{
 <ul>
 <li>readline の kill buffer の内容が、セッションとセッションの間で引き継がれていなかった問題を修正 (#11)</li>
 </ul>
-<h3 id="%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</h3>
+<h3 id="%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-1">仕様変更</h3>
 <ul>
 <li>キーバインドを追加: (#7, #8, #12, Thanks to @toolleeo)
 <ul>
@@ -1175,7 +1197,7 @@ a.permalink:hover{
 </ul>
 <h2 id="v1151">v1.15.1</h2>
 <p>Oct 19, 2025</p>
-<h3 id="%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-1">仕様変更</h3>
+<h3 id="%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-2">仕様変更</h3>
 <ul>
 <li>
 <p><strong>曖昧幅の Unicode 文字の実測による幅判定を廃止</strong>
@@ -1561,17 +1583,23 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1171">v1.17.1</a></li>
+<li><a href="#v1170">v1.17.0</a>
+<ul>
+<li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</a></li>
 <li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4">内部的変更</a></li>
+</ul>
+</li>
 <li><a href="#v1160">v1.16.0</a>
 <ul>
 <li><a href="#%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3">不具合修正</a></li>
-<li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">仕様変更</a></li>
+<li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-1">仕様変更</a></li>
 <li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-1">内部的変更</a></li>
 </ul>
 </li>
 <li><a href="#v1151">v1.15.1</a>
 <ul>
-<li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-1">仕様変更</a></li>
+<li><a href="#%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4-2">仕様変更</a></li>
 <li><a href="#%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3-1">不具合修正</a></li>
 <li><a href="#%E5%86%85%E9%83%A8%E7%9A%84%E5%A4%89%E6%9B%B4-2">内部的変更</a></li>
 </ul>

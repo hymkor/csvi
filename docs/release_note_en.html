@@ -1142,6 +1142,28 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
+<h2 id="v1171">v1.17.1</h2>
+<p>Dec 9, 2025</p>
+<ul>
+<li>Fixed an issue where <code>u</code> (undo) restored the value from the initial load instead of the last save.</li>
+</ul>
+<h2 id="v1170">v1.17.0</h2>
+<p>Dec 7, 2025</p>
+<h3 id="specification-changes">Specification Changes</h3>
+<ul>
+<li>Truncate text that exceeds the cell width and append U+2026 (ellipsis). (#15 and #19 thanks to @toolleeo)</li>
+<li>Implement <code>-ofs STRING</code> to specify the separator between cells. (#15 and #19, thanks to @toolleeo)</li>
+<li>Map x to clear the current cell (#16, #21, thanks to @toolleeo)
+( The previous behavior—deleting the cell and shifting the cells on the right—is still available via <code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, and <code>dv</code>. )</li>
+<li>Track whether the file has been modified (#23)
+<ul>
+<li>Display <code>*</code> in the status line when there are unsaved changes</li>
+<li>When executing the <code>q</code> command, prompt whether to save the changes (#17, thanks to @toolleeo)</li>
+</ul>
+</li>
+<li>Implement page up/down (#22, #24, thanks to @wumfi)</li>
+<li>Assign <code>gg</code> as an additional keybinding for moving to the first row. (#18, #25, thanks to @toolleeo)</li>
+</ul>
 <h3 id="internal-changes">Internal Changes</h3>
 <ul>
 <li>Replace all PowerShell-based test scripts with Go test files so that the test suite can run on GitHub Actions and other non-Windows environments. (#14)</li>
@@ -1152,7 +1174,7 @@ a.permalink:hover{
 <ul>
 <li>Fix: Kill buffer of readline was cleared between sessions (#11)</li>
 </ul>
-<h3 id="specification-changes">Specification Changes</h3>
+<h3 id="specification-changes-1">Specification Changes</h3>
 <ul>
 <li>Add key bindings: (#7, #8 and #12, Thanks to @toolleeo)
 <ul>
@@ -1175,7 +1197,7 @@ a.permalink:hover{
 </ul>
 <h2 id="v1151">v1.15.1</h2>
 <p>Oct 19, 2025</p>
-<h3 id="specification-changes-1">Specification Changes</h3>
+<h3 id="specification-changes-2">Specification Changes</h3>
 <ul>
 <li>
 <p><strong>Removed runtime measurement for ambiguous-width Unicode characters</strong>
@@ -1566,17 +1588,23 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1171">v1.17.1</a></li>
+<li><a href="#v1170">v1.17.0</a>
+<ul>
+<li><a href="#specification-changes">Specification Changes</a></li>
 <li><a href="#internal-changes">Internal Changes</a></li>
+</ul>
+</li>
 <li><a href="#v1160">v1.16.0</a>
 <ul>
 <li><a href="#bug-fixes">Bug Fixes</a></li>
-<li><a href="#specification-changes">Specification Changes</a></li>
+<li><a href="#specification-changes-1">Specification Changes</a></li>
 <li><a href="#internal-changes-1">Internal Changes</a></li>
 </ul>
 </li>
 <li><a href="#v1151">v1.15.1</a>
 <ul>
-<li><a href="#specification-changes-1">Specification Changes</a></li>
+<li><a href="#specification-changes-2">Specification Changes</a></li>
 <li><a href="#bug-fixes-1">Bug Fixes</a></li>
 <li><a href="#internal-changes-2">Internal Changes</a></li>
 </ul>
