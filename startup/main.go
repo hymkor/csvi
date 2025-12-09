@@ -111,6 +111,7 @@ func (f *Flag) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 	if f.Title != "" {
 		titles = []string{f.Title}
 	}
+
 	_, err = csvi.Config{
 		Mode:          mode,
 		Pilot:         f.pilot(),
@@ -121,6 +122,7 @@ func (f *Flag) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 		ProtectHeader: f.ProtectHeader,
 		Titles:        titles,
 		OutputSep:     f.OutputSep,
+		SavePath:      f.SavePath,
 	}.Edit(dataSource, ttyOut)
 
 	return err

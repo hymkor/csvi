@@ -2,11 +2,9 @@ package csvi
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/hymkor/csvi/internal/ansi"
@@ -30,18 +28,6 @@ func (app *application) dump(w io.Writer) {
 }
 
 var errCanceled = errors.New("canceled")
-
-func (app *application) getFname() (string, error) {
-	fname := "-"
-	if args := flag.Args(); len(args) >= 1 {
-		var err error
-		fname, err = filepath.Abs(args[0])
-		if err != nil {
-			return "", err
-		}
-	}
-	return app.GetFilename(app, "write to>", fname)
-}
 
 func (app *application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
@@ -102,7 +88,7 @@ func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string,
 			}
 		}()
 	}
-	fname, err := app.getFname()
+	fname, err := app.GetFilename(app, "write to>", app.getSavePath())
 	if err != nil {
 		return "", err
 	}
@@ -112,5 +98,6 @@ func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string,
 	if err == nil {
 		app.ResetDirty()
 	}
+	app.lastSavePath = fname
 	return message, err
 }

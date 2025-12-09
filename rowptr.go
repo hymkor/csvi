@@ -67,11 +67,22 @@ func (r *RowPtr) Index() int {
 }
 
 type application struct {
-	csvLines    *list.List
-	removedRows []*uncsv.Row
-	out         io.Writer
-	dirty       int
+	csvLines     *list.List
+	removedRows  []*uncsv.Row
+	out          io.Writer
+	dirty        int
+	lastSavePath string
 	*Config
+}
+
+func (app *application) getSavePath() string {
+	if app.lastSavePath != "" {
+		return app.lastSavePath
+	}
+	if app.Config.SavePath != "" {
+		return app.Config.SavePath
+	}
+	return "-"
 }
 
 func (app *application) ResetDirty() {
