@@ -2,11 +2,10 @@ package csvi
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/hymkor/csvi/internal/ansi"
@@ -31,38 +30,47 @@ func (app *application) dump(w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func (app *application) getFname() (string, error) {
-	fname := "-"
-	if args := flag.Args(); len(args) >= 1 {
-		var err error
-		fname, err = filepath.Abs(args[0])
-		if err != nil {
-			return "", err
-		}
-	}
-	return app.GetFilename(app, "write to>", fname)
-}
-
 func (app *application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
 		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
 	}
-	fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
-	if os.IsExist(err) {
-		if _, ok := overWritten[fname]; ok {
-			os.Remove(fname)
-		} else {
-			if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
-				return "", errCanceled
-			}
-			backupName := fname + "~"
-			os.Remove(backupName)
-			os.Rename(fname, backupName)
-			overWritten[fname] = struct{}{}
+
+	perm := os.FileMode(0666)
+	openflag := os.O_WRONLY | os.O_EXCL | os.O_CREATE
+
+	fd, err := os.OpenFile(fname, openflag, perm)
+	if err == nil {
+		app.dump(fd)
+		if err := fd.Close(); err != nil {
+			return "", err
 		}
-		fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
+		return fmt.Sprintf("Saved as \"%s\"", fname), nil
 	}
+	if !errors.Is(err, os.ErrExist) {
+		return "", err
+	}
+	stat, err := os.Stat(fname)
+	if err != nil {
+		return "", err
+	}
+	perm = stat.Mode().Perm()
+	if _, done := overWritten[fname]; done || !stat.Mode().IsRegular() {
+		openflag = os.O_WRONLY | os.O_CREATE | os.O_TRUNC
+	} else {
+		if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
+			return "", errCanceled
+		}
+		backup := fname + "~"
+		if err := os.Remove(backup); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return "", err
+		}
+		if err := os.Rename(fname, backup); err != nil {
+			return "", err
+		}
+		overWritten[fname] = struct{}{}
+	}
+	fd, err = os.OpenFile(fname, openflag, perm)
 	if err != nil {
 		return "", err
 	}
@@ -102,7 +110,7 @@ func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string,
 			}
 		}()
 	}
-	fname, err := app.getFname()
+	fname, err := app.GetFilename(app, "write to>", app.getSavePath())
 	if err != nil {
 		return "", err
 	}
@@ -112,5 +120,6 @@ func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string,
 	if err == nil {
 		app.ResetDirty()
 	}
+	app.lastSavePath = fname
 	return message, err
 }

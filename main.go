@@ -411,6 +411,7 @@ type Config struct {
 	OnCellValidated func(*CellValidatedEvent) (string, error)
 	Titles          []string
 	OutputSep       string
+	SavePath        string
 }
 
 func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {

@@ -2,6 +2,7 @@ package startup
 
 import (
 	"flag"
+	"path/filepath"
 
 	"github.com/hymkor/struct2flag"
 )
@@ -24,6 +25,7 @@ type Flag struct {
 	Title         string `flag:"title,Set title string"`
 	ReverseVideo  bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
 	OutputSep     string `flag:"ofs,Output separator between cells"`
+	SavePath      string
 	flagSet       *flag.FlagSet
 }
 
@@ -43,5 +45,14 @@ func (f *Flag) Bind(fs *flag.FlagSet) *Flag {
 func Run() error {
 	f := NewFlag().Bind(flag.CommandLine)
 	flag.Parse()
+
+	if args := flag.Args(); len(args) >= 1 {
+		var err error
+		f.SavePath, err = filepath.Abs(args[0])
+		if err != nil {
+			return err
+		}
+	}
+
 	return f.Run()
 }
