@@ -1,7 +1,7 @@
 package csvi_test
 
 import (
-	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -21,8 +21,10 @@ func TestUndo1(t *testing.T) {
 }
 
 func TestUndo2(t *testing.T) {
-	op := "<|r|あ'|w|" + os.DevNull + "|r|あ''|u"
-	exp := `あ',い,う,え,お
+	dummy := filepath.Join(t.TempDir(), "test.csv")
+	op := "<|r|あ+|w|" + dummy + "|r|あ++|u"
+	//println(op)
+	exp := `あ+,い,う,え,お
 か,き,く,け,こ
 さ,し,す,せ,そ
 た,ち,つ,て,と
