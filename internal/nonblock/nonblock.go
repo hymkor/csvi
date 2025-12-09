@@ -1,48 +1,81 @@
 package nonblock
 
-type _Response struct {
-	data string
-	err  error
+type keyResponse struct {
+	key string
+	err error
 }
 
-type NonBlock struct {
-	chReq chan struct{}
-	chRes chan _Response
+type dataResponse[T any] struct {
+	val T
+	err error
 }
 
-func New(getter func() (string, error)) *NonBlock {
-	chReq := make(chan struct{})
-	chRes := make(chan _Response)
+type NonBlock[T any] struct {
+	chKeyReq  chan struct{}
+	chKeyRes  chan keyResponse
+	chDataRes chan dataResponse[T]
+	chStopReq chan struct{}
+}
+
+func New[T any](keyGetter func() (string, error),
+	dataGetter func() (bool, T, error)) *NonBlock[T] {
+
+	w := &NonBlock[T]{
+		chKeyReq:  make(chan struct{}),
+		chKeyRes:  make(chan keyResponse),
+		chDataRes: make(chan dataResponse[T]),
+		chStopReq: make(chan struct{}),
+	}
 
 	go func() {
-		for range chReq {
-			data, err := getter()
-			chRes <- _Response{data: data, err: err}
+		for range w.chKeyReq {
+			key, err := keyGetter()
+			w.chKeyRes <- keyResponse{key: key, err: err}
 		}
-		close(chRes)
 	}()
 
-	return &NonBlock{
-		chReq: chReq,
-		chRes: chRes,
-	}
+	go func() {
+		for {
+			select {
+			case <-w.chStopReq:
+				return
+			default:
+				ok, data, err := dataGetter()
+				if !ok {
+					close(w.chDataRes)
+					return
+				}
+				w.chDataRes <- dataResponse[T]{val: data, err: err}
+			}
+		}
+	}()
+
+	return w
 }
 
-func (w *NonBlock) GetOr(work func() bool) (string, error) {
-	w.chReq <- struct{}{}
+func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
+	w.chKeyReq <- struct{}{}
 	for {
 		select {
-		case res := <-w.chRes:
-			return res.data, res.err
-		default:
-			if cont := work(); !cont {
-				res := <-w.chRes
-				return res.data, res.err
+		case res, ok := <-w.chKeyRes:
+			if ok {
+				return res.key, res.err
+			}
+		case res, ok := <-w.chDataRes:
+			if ok && !work(res.val, res.err) {
+				res := <-w.chKeyRes
+				return res.key, res.err
 			}
 		}
 	}
 }
 
-func (w *NonBlock) Close() {
-	close(w.chReq)
+func (w *NonBlock[T]) Fetch() (bool, T, error) {
+	res, ok := <-w.chDataRes
+	return ok, res.val, res.err
+}
+
+func (w *NonBlock[T]) Close() {
+	close(w.chStopReq)
+	close(w.chKeyReq)
 }
