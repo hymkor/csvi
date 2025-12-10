@@ -2,37 +2,9 @@ package csvi_test
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"testing"
 )
-
-func makeSource(t *testing.T, name, content string) string {
-	t.Helper()
-	dir := t.TempDir()
-	path := filepath.Join(dir, name)
-	err := os.WriteFile(path, []byte(content), 0666)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	return path
-}
-
-func disableStdout(t *testing.T) func() {
-	if testing.Verbose() {
-		return func() {}
-	}
-	fd, err := os.Create(os.DevNull)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	stdoutSave := os.Stdout
-	os.Stdout = fd
-	return func() {
-		fd.Close()
-		os.Stdout = stdoutSave
-	}
-}
 
 func TestCase3(t *testing.T) {
 	path1 := makeSource(t, "t1.csv", "first\n")
