@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hymkor/csvi/startup"
+	"github.com/hymkor/csvi/csviapp"
 )
 
 func makeSource(t *testing.T, name, content string) string {
@@ -43,9 +43,9 @@ func TestCase3(t *testing.T) {
 	path3 := makeSource(t, "t3.csv", "third\n")
 	outputPath := filepath.Join(t.TempDir(), "t4.csv")
 
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := startup.NewFlag().Bind(fs)
-	err := fs.Parse([]string{"-auto", fmt.Sprintf("w|%s|q|y", outputPath), path1, path2, path3})
+	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
+	instance := csviapp.NewFlag().Bind(flagSet)
+	err := flagSet.Parse([]string{"-auto", fmt.Sprintf("w|%s|q|y", outputPath), path1, path2, path3})
 	if err != nil {
 		t.Fatal(err.Error())
 	}

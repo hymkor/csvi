@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hymkor/csvi/startup"
+	"github.com/hymkor/csvi/csviapp"
 )
 
 func TestFileIO(t *testing.T) {
@@ -20,9 +20,9 @@ func TestFileIO(t *testing.T) {
 }
 
 func TestPipelineIO(t *testing.T) {
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := startup.NewFlag().Bind(fs)
-	err := fs.Parse([]string{"-auto", "w|-|q|y"})
+	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
+	instance := csviapp.NewFlag().Bind(flagSet)
+	err := flagSet.Parse([]string{"-auto", "w|-|q|y"})
 	if err != nil {
 		t.Fatal(err.Error())
 	}

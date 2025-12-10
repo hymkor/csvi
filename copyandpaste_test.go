@@ -12,14 +12,14 @@ import (
 
 	"github.com/mattn/go-colorable"
 
-	"github.com/hymkor/csvi/startup"
+	"github.com/hymkor/csvi/csviapp"
 )
 
 func testRun(t *testing.T, dataSource io.Reader, args ...string) {
 	t.Helper()
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := startup.NewFlag().Bind(fs)
-	err := fs.Parse(args)
+	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
+	instance := csviapp.NewFlag().Bind(flagSet)
+	err := flagSet.Parse(args)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
