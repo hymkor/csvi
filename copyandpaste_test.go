@@ -18,7 +18,7 @@ import (
 func testRun(t *testing.T, dataSource io.Reader, args ...string) {
 	t.Helper()
 	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := csviapp.NewFlag().Bind(flagSet)
+	instance := csviapp.NewOptions().Bind(flagSet)
 	err := flagSet.Parse(args)
 	if err != nil {
 		t.Fatal(err.Error())

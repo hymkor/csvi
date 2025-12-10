@@ -15,7 +15,7 @@ import (
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
-func (f *Flag) mode() (*uncsv.Mode, error) {
+func (f *Options) mode() (*uncsv.Mode, error) {
 	mode := &uncsv.Mode{}
 	if f.Iana != "" {
 		if err := mode.SetEncoding(f.Iana); err != nil {
@@ -53,7 +53,7 @@ func (f *Flag) mode() (*uncsv.Mode, error) {
 	return mode, nil
 }
 
-func (f *Flag) setGlobalColor() {
+func (f *Options) setGlobalColor() {
 	if f.ReverseVideo || csvi.IsRevertVideoWithEnv() {
 		csvi.RevertColor()
 	} else if noColor := os.Getenv("NO_COLOR"); len(noColor) > 0 {
@@ -61,7 +61,7 @@ func (f *Flag) setGlobalColor() {
 	}
 }
 
-func (f *Flag) dataSourceAndTtyOut() (io.Reader, io.Writer) {
+func (f *Options) dataSourceAndTtyOut() (io.Reader, io.Writer) {
 	if len(f.flagSet.Args()) <= 0 {
 		ttyOut := colorable.NewColorableStderr()
 		if isatty.IsTerminal(os.Stdin.Fd()) {
@@ -73,14 +73,14 @@ func (f *Flag) dataSourceAndTtyOut() (io.Reader, io.Writer) {
 		colorable.NewColorableStdout()
 }
 
-func (f *Flag) pilot() csvi.Pilot {
+func (f *Options) pilot() csvi.Pilot {
 	if f.Auto == "" {
 		return nil
 	}
 	return &autoPilot{script: f.Auto}
 }
 
-func (f *Flag) Run() error {
+func (f *Options) Run() error {
 	if f.Help {
 		f.flagSet.Usage()
 		return nil
@@ -94,7 +94,7 @@ func (f *Flag) Run() error {
 	return f.RunInOut(f.dataSourceAndTtyOut())
 }
 
-func (f *Flag) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
+func (f *Options) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 	io.WriteString(ttyOut, ansi.CURSOR_OFF)
 	defer io.WriteString(ttyOut, ansi.CURSOR_ON)
 

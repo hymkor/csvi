@@ -21,7 +21,7 @@ func TestFileIO(t *testing.T) {
 
 func TestPipelineIO(t *testing.T) {
 	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := csviapp.NewFlag().Bind(flagSet)
+	instance := csviapp.NewOptions().Bind(flagSet)
 	err := flagSet.Parse([]string{"-auto", "w|-|q|y"})
 	if err != nil {
 		t.Fatal(err.Error())

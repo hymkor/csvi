@@ -44,7 +44,7 @@ func TestCase3(t *testing.T) {
 	outputPath := filepath.Join(t.TempDir(), "t4.csv")
 
 	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := csviapp.NewFlag().Bind(flagSet)
+	instance := csviapp.NewOptions().Bind(flagSet)
 	err := flagSet.Parse([]string{"-auto", fmt.Sprintf("w|%s|q|y", outputPath), path1, path2, path3})
 	if err != nil {
 		t.Fatal(err.Error())
