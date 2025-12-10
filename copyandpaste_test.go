@@ -15,11 +15,15 @@ import (
 	"github.com/hymkor/csvi/csviapp"
 )
 
+func newTestOptions(args ...string) (*csviapp.Options, error) {
+	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
+	opt := csviapp.NewOptions().Bind(flagSet)
+	return opt, flagSet.Parse(args)
+}
+
 func testRun(t *testing.T, dataSource io.Reader, args ...string) {
 	t.Helper()
-	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := csviapp.NewOptions().Bind(flagSet)
-	err := flagSet.Parse(args)
+	instance, err := newTestOptions(args...)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
