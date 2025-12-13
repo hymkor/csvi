@@ -1,14 +1,14 @@
 package csvi_test
 
 import (
+	"errors"
+	"flag"
+	"fmt"
 	"io"
 	"os"
-	"testing"
-	"flag"
-	"errors"
 	"path/filepath"
-	"fmt"
 	"strings"
+	"testing"
 
 	"github.com/mattn/go-colorable"
 
