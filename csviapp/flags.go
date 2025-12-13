@@ -1,4 +1,4 @@
-package startup
+package csviapp
 
 import (
 	"flag"
@@ -7,7 +7,7 @@ import (
 	"github.com/hymkor/struct2flag"
 )
 
-type Flag struct {
+type Options struct {
 	CellWidth     string `flag:"w,set the \x60widths\x60 of cells like '-w DefaultWidth,COL0:WIDTH0,COL1:WIDTH1,...'. COLn is the index starting from 0"`
 	Header        uint   `flag:"h,the number of row-header"`
 	Tsv           bool   `flag:"t,use TAB as field-separator"`
@@ -29,21 +29,21 @@ type Flag struct {
 	flagSet       *flag.FlagSet
 }
 
-func NewFlag() *Flag {
-	return &Flag{
+func NewOptions() *Options {
+	return &Options{
 		CellWidth: "14",
 		Header:    1,
 	}
 }
 
-func (f *Flag) Bind(fs *flag.FlagSet) *Flag {
+func (f *Options) Bind(fs *flag.FlagSet) *Options {
 	f.flagSet = fs
 	struct2flag.Bind(fs, f)
 	return f
 }
 
 func Run() error {
-	f := NewFlag().Bind(flag.CommandLine)
+	f := NewOptions().Bind(flag.CommandLine)
 	flag.Parse()
 
 	if args := flag.Args(); len(args) >= 1 {
