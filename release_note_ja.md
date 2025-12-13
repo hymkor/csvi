@@ -2,6 +2,10 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.18.0
+-------
+Dec 14, 2025
+
 - CSVデータ読み込みが滞っても、キー入力に対する応答が止まらないようにした (#28)
   ( e.g.: `pwsh -Command "Get-Content utf_ken_all.csv ; Start-Sleep 15" | csvi` )
 - セーブ処理で従来はファイル名入力よりも先に、未読データの読み込み完了を待っていたが、今はファイル名入力を優先し、その裏でデータ読み込みを継続するようにした (#28)
