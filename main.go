@@ -125,6 +125,7 @@ func (style lineStyle) drawLine(
 	io.WriteString(out, "\x1B[K")
 
 	screenWidth := style.screenWidth
+	sepLen := runewidth.StringWidth(style.sep)
 
 	for len(field) > 0 {
 		cursor := field[0]
@@ -142,10 +143,16 @@ func (style lineStyle) drawLine(
 			cw = screenWidth
 		}
 		text = replaceTable.Replace(text)
-		if i > 0 {
-			text = style.sep + text
+		if i > 0 && style.sep != "" {
+			io.WriteString(out, "\x1B[30;1m")
+			io.WriteString(out, style.sep)
+			if reverse {
+				io.WriteString(out, style.Odd.On)
+			} else {
+				io.WriteString(out, style.Even.On)
+			}
 		}
-		text = runewidth.Truncate(text, cw, "\u2026")
+		text = runewidth.Truncate(text, cw-sepLen, "\u2026")
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
 		}
