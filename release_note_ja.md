@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- `-ofs` で指定する区切り文字を灰色で表示するようにした(#33)
+
 v1.18.0
 -------
 Dec 14, 2025

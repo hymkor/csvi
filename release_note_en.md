@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Print the separator specified by `-ofs` in gray. (#33)
+
 v1.18.0
 -------
 Dec 14, 2025
