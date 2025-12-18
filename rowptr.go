@@ -2,7 +2,6 @@ package csvi
 
 import (
 	"container/list"
-	"io"
 
 	"github.com/hymkor/csvi/uncsv"
 )
@@ -64,15 +63,6 @@ func (r *RowPtr) InsertBefore(val *uncsv.Row) *RowPtr {
 
 func (r *RowPtr) Index() int {
 	return r.lnum
-}
-
-type application struct {
-	csvLines     *list.List
-	removedRows  []*uncsv.Row
-	out          io.Writer
-	dirty        int
-	lastSavePath string
-	*Config
 }
 
 func (app *application) getSavePath() string {
