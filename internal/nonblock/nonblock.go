@@ -75,6 +75,16 @@ func (w *NonBlock[T]) Fetch() (bool, T, error) {
 	return ok, res.val, res.err
 }
 
+func (w *NonBlock[T]) TryFetch() (bool, T, error) {
+	select {
+	case res, ok := <-w.chDataRes:
+		return ok, res.val, res.err
+	default:
+		var zero T
+		return false, zero, nil
+	}
+}
+
 func (w *NonBlock[T]) Close() {
 	close(w.chStopReq)
 	close(w.chKeyReq)

@@ -249,6 +249,7 @@ type application struct {
 	bodyCache    map[int]string
 	lfCount      int
 	fetch        func() (bool, *uncsv.Row, error)
+	tryFetch     func() (bool, *uncsv.Row, error)
 	*Config
 }
 
@@ -567,11 +568,18 @@ func (app *application) Fetch() (bool, *uncsv.Row, error) {
 	return app.fetch()
 }
 
+func (app *application) TryFetch() (bool, *uncsv.Row, error) {
+	if app.tryFetch == nil {
+		return false, nil, nil
+	}
+	return app.tryFetch()
+}
+
 func (app *application) nextOrFetch(p *RowPtr) *RowPtr {
 	if next := p.Next(); next != nil {
 		return next
 	}
-	if ok, row, _ := app.Fetch(); ok {
+	if ok, row, _ := app.TryFetch(); ok {
 		if row != nil {
 			app.Push(row)
 		}
@@ -641,6 +649,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	defer keyWorker.Close()
 
 	app.fetch = keyWorker.Fetch
+	app.tryFetch = keyWorker.TryFetch
 
 	var _screenHeight int
 	var err error
