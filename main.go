@@ -248,7 +248,7 @@ type application struct {
 	headCache    map[int]string
 	bodyCache    map[int]string
 	lfCount      int
-	fetch        func() (*uncsv.Row, error)
+	fetch        func() (bool, *uncsv.Row, error)
 	*Config
 }
 
@@ -294,7 +294,7 @@ func (app *application) Draw() int {
 				if !callback(cellsAfter(header.Cell, app.startCol)) {
 					return
 				}
-				header = header.Next()
+				header = app.nextOrFetch(header)
 			}
 		}
 		app.lfCount = lineStyle{
@@ -308,7 +308,7 @@ func (app *application) Draw() int {
 	startRow := app.startRow
 	if startRow.lnum < app.HeaderLines {
 		for i := 0; i < app.HeaderLines && startRow != nil; i++ {
-			startRow = startRow.Next()
+			startRow = app.nextOrFetch(startRow)
 		}
 	}
 	if startRow == nil {
@@ -321,7 +321,7 @@ func (app *application) Draw() int {
 			if !callback(cellsAfter(p.Cell, app.startCol)) {
 				return
 			}
-			p = p.Next()
+			p = app.nextOrFetch(p)
 		}
 	}
 	style := &bodyColorStyle
@@ -539,14 +539,14 @@ func (app *application) readlineAndValidate(prompt, text string, row *RowPtr, co
 	}
 }
 
-func (app *application) tryQuit(fetch func() (bool, *uncsv.Row, error)) (*Result, error) {
+func (app *application) cmdQuit() (*Result, error) {
 	if !app.ReadOnly && app.isDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
 		if err != nil {
 			return nil, err
 		}
 		if ch == "y" || ch == "Y" {
-			message, err := app.trySave(fetch)
+			message, err := app.cmdSave()
 			if err != nil {
 				return nil, err
 			}
@@ -564,14 +564,20 @@ func (app *application) Fetch() (bool, *uncsv.Row, error) {
 	if app.fetch == nil {
 		return false, nil, nil
 	}
-	row, err := app.fetch()
-	if err != nil {
-		app.fetch = nil
-		if !errors.Is(err, io.EOF) || isEmptyRow(row) {
-			return false, nil, nil
-		}
+	return app.fetch()
+}
+
+func (app *application) nextOrFetch(p *RowPtr) *RowPtr {
+	if next := p.Next(); next != nil {
+		return next
 	}
-	return true, row, err
+	if ok, row, _ := app.Fetch(); ok {
+		if row != nil {
+			app.Push(row)
+		}
+		return p.Next()
+	}
+	return nil
 }
 
 func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
@@ -601,33 +607,16 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		cfg.Pilot = pilot
 	}
 	app := cfg.newApplication(out)
-	app.fetch = fetch
-
 	if fetch != nil {
-		for i := 0; i < 100; i++ {
-			row, err := fetch()
-			if err != nil {
-				if !errors.Is(err, io.EOF) {
-					return nil, err
-				}
-				fetch = nil
-				if isEmptyRow(row) {
-					break
-				}
-			}
+		if row, err := fetch(); err == nil && !isEmptyRow(row) {
 			app.Push(row)
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		} else {
+			newRow := uncsv.NewRow(mode)
+			app.Push(&newRow)
 		}
 	}
 	app.startRow = app.Front()
 	app.startCol = 0
-	if app.startRow == nil {
-		newRow := uncsv.NewRow(mode)
-		app.Push(&newRow)
-		app.startRow = app.Front()
-	}
 	app.cursorCol = 0
 	app.cursorRow = app.Front()
 
@@ -636,8 +625,22 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	lastWord := ""
 	var lastWidth, lastHeight int
 
-	keyWorker := nonblock.New(pilot.GetKey, app.Fetch)
+	keyWorker := nonblock.New(pilot.GetKey, func() (bool, *uncsv.Row, error) {
+		if fetch == nil {
+			return false, nil, nil
+		}
+		row, err := fetch()
+		if err != nil {
+			fetch = nil
+			if !errors.Is(err, io.EOF) || isEmptyRow(row) {
+				return false, nil, nil
+			}
+		}
+		return true, row, err
+	})
 	defer keyWorker.Close()
+
+	app.fetch = keyWorker.Fetch
 
 	var _screenHeight int
 	var err error
@@ -723,7 +726,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				app.resetSoftDirty()
 				app.clearCache()
 			case "q":
-				if rc, err := app.tryQuit(keyWorker.Fetch); err != nil {
+				if rc, err := app.cmdQuit(); err != nil {
 					message = err.Error()
 				} else if rc != nil {
 					return rc, nil
@@ -1069,7 +1072,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				modifiedAfter := cursor.Modified()
 				app.updateSoftDirty(modifiedBefore, modifiedAfter)
 			case "w":
-				if msg, err := app.trySave(keyWorker.Fetch); err != nil {
+				if msg, err := app.cmdSave(); err != nil {
 					message = err.Error()
 				} else {
 					message = msg
@@ -1093,7 +1096,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				switch ch {
 				case "q", "Q":
-					if rc, err := app.tryQuit(keyWorker.Fetch); err != nil {
+					if rc, err := app.cmdQuit(); err != nil {
 						message = err.Error()
 					} else if rc != nil {
 						return rc, nil
