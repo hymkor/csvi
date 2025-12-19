@@ -1,5 +1,9 @@
 package nonblock
 
+import (
+	"time"
+)
+
 type keyResponse struct {
 	key string
 	err error
@@ -75,11 +79,11 @@ func (w *NonBlock[T]) Fetch() (bool, T, error) {
 	return ok, res.val, res.err
 }
 
-func (w *NonBlock[T]) TryFetch() (bool, T, error) {
+func (w *NonBlock[T]) TryFetch(timeout time.Duration) (bool, T, error) {
 	select {
 	case res, ok := <-w.chDataRes:
 		return ok, res.val, res.err
-	default:
+	case <-time.After(timeout):
 		var zero T
 		return false, zero, nil
 	}

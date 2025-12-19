@@ -649,7 +649,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	defer keyWorker.Close()
 
 	app.fetch = keyWorker.Fetch
-	app.tryFetch = keyWorker.TryFetch
+	app.tryFetch = func() (bool, *uncsv.Row, error) {
+		return keyWorker.TryFetch(100 * time.Millisecond)
+	}
 
 	var _screenHeight int
 	var err error
