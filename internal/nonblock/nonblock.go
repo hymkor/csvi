@@ -46,6 +46,10 @@ func New[T any](keyGetter func() (string, error),
 			case <-w.chStopReq:
 				return
 			default:
+				if dataGetter == nil {
+					close(w.chDataRes)
+					return
+				}
 				data, err := dataGetter()
 				w.chDataRes <- dataResponse[T]{val: data, err: err}
 				if errors.Is(err, io.EOF) {

@@ -621,6 +621,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		} else {
 			newRow := uncsv.NewRow(mode)
 			app.Push(&newRow)
+			fetch = nil
 		}
 	}
 	app.startRow = app.Front()
