@@ -95,14 +95,13 @@ func (app *application) cmdSave() (string, error) {
 				case <-chStop:
 					return
 				default:
-					ok, row, err := app.fetch()
-					if !ok {
-						return
-					}
+					row, err := app.fetch()
 					if err != nil && !errors.Is(err, io.EOF) {
 						return
 					}
-					app.Push(row)
+					if row != nil {
+						app.Push(row)
+					}
 					if errors.Is(err, io.EOF) {
 						return
 					}

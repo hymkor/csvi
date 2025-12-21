@@ -248,8 +248,8 @@ type application struct {
 	headCache    map[int]string
 	bodyCache    map[int]string
 	lfCount      int
-	fetch        func() (bool, *uncsv.Row, error)
-	tryFetch     func() (bool, *uncsv.Row, error)
+	fetch        func() (*uncsv.Row, error)
+	tryFetch     func() (*uncsv.Row, error)
 	*Config
 }
 
@@ -561,16 +561,16 @@ func (app *application) cmdQuit() (*Result, error) {
 
 }
 
-func (app *application) Fetch() (bool, *uncsv.Row, error) {
+func (app *application) Fetch() (*uncsv.Row, error) {
 	if app.fetch == nil {
-		return false, nil, nil
+		return nil, io.EOF
 	}
 	return app.fetch()
 }
 
-func (app *application) TryFetch() (bool, *uncsv.Row, error) {
+func (app *application) TryFetch() (*uncsv.Row, error) {
 	if app.tryFetch == nil {
-		return false, nil, nil
+		return nil, io.EOF
 	}
 	return app.tryFetch()
 }
@@ -579,7 +579,7 @@ func (app *application) nextOrFetch(p *RowPtr) *RowPtr {
 	if next := p.Next(); next != nil {
 		return next
 	}
-	if ok, row, _ := app.TryFetch(); ok {
+	if row, err := app.TryFetch(); err == nil || errors.Is(err, io.EOF) {
 		if row != nil {
 			app.Push(row)
 		}
@@ -633,23 +633,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	lastWord := ""
 	var lastWidth, lastHeight int
 
-	keyWorker := nonblock.New(pilot.GetKey, func() (bool, *uncsv.Row, error) {
-		if fetch == nil {
-			return false, nil, nil
-		}
-		row, err := fetch()
-		if err != nil {
-			fetch = nil
-			if !errors.Is(err, io.EOF) || isEmptyRow(row) {
-				return false, nil, nil
-			}
-		}
-		return true, row, err
-	})
+	keyWorker := nonblock.New(pilot.GetKey, fetch)
 	defer keyWorker.Close()
 
 	app.fetch = keyWorker.Fetch
-	app.tryFetch = func() (bool, *uncsv.Row, error) {
+	app.tryFetch = func() (*uncsv.Row, error) {
 		return keyWorker.TryFetch(100 * time.Millisecond)
 	}
 
