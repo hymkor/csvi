@@ -3,7 +3,7 @@ Release notes
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Print the separator specified by `-ofs` in gray. (#33)
-- Previously, the tool was not operable until at least 100 lines were read. Now it becomes operable as soon as a single line is read. (#34)
+- Previously, the tool was not operable until at least 100 lines were read or EOF was reached. Now it becomes operable as soon as a single line is read. (#34)
 
 v1.18.0
 -------
