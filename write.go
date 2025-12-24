@@ -2,18 +2,19 @@ package csvi
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
-	"path/filepath"
+	"sync"
 
+	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/uncsv"
 )
 
 var overWritten = map[string]struct{}{}
 
-func dump(app *_Application, w io.Writer) {
+func (app *application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
@@ -29,44 +30,96 @@ func dump(app *_Application, w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func cmdWrite(app *_Application) (string, error) {
-	fname := "-"
-	var err error
-	if args := flag.Args(); len(args) >= 1 {
-		fname, err = filepath.Abs(args[0])
-		if err != nil {
-			return "", err
-		}
-	}
-	fname, err = app.GetFilename(app, "write to>", fname)
-	if err != nil {
-		return "", err
-	}
+func (app *application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
-		dump(app, os.Stdout)
+		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
 	}
-	fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
-	if os.IsExist(err) {
-		if _, ok := overWritten[fname]; ok {
-			os.Remove(fname)
-		} else {
-			if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
-				return "", errCanceled
-			}
-			backupName := fname + "~"
-			os.Remove(backupName)
-			os.Rename(fname, backupName)
-			overWritten[fname] = struct{}{}
+
+	perm := os.FileMode(0666)
+	openflag := os.O_WRONLY | os.O_EXCL | os.O_CREATE
+
+	fd, err := os.OpenFile(fname, openflag, perm)
+	if err == nil {
+		app.dump(fd)
+		if err := fd.Close(); err != nil {
+			return "", err
 		}
-		fd, err = os.OpenFile(fname, os.O_WRONLY|os.O_EXCL|os.O_CREATE, 0666)
+		return fmt.Sprintf("Saved as \"%s\"", fname), nil
 	}
+	if !errors.Is(err, os.ErrExist) {
+		return "", err
+	}
+	stat, err := os.Stat(fname)
 	if err != nil {
 		return "", err
 	}
-	dump(app, fd)
+	perm = stat.Mode().Perm()
+	if _, done := overWritten[fname]; done || !stat.Mode().IsRegular() {
+		openflag = os.O_WRONLY | os.O_CREATE | os.O_TRUNC
+	} else {
+		if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
+			return "", errCanceled
+		}
+		backup := fname + "~"
+		if err := os.Remove(backup); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return "", err
+		}
+		if err := os.Rename(fname, backup); err != nil {
+			return "", err
+		}
+		overWritten[fname] = struct{}{}
+	}
+	fd, err = os.OpenFile(fname, openflag, perm)
+	if err != nil {
+		return "", err
+	}
+	app.dump(fd)
 	if err := fd.Close(); err != nil {
 		return "", err
 	}
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
+}
+
+func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string, error) {
+	var wg sync.WaitGroup
+	chStop := make(chan struct{})
+	defer close(chStop)
+
+	if fetch != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-chStop:
+					return
+				default:
+					ok, row, err := fetch()
+					if !ok {
+						return
+					}
+					if err != nil && !errors.Is(err, io.EOF) {
+						return
+					}
+					app.Push(row)
+					if errors.Is(err, io.EOF) {
+						return
+					}
+				}
+			}
+		}()
+	}
+	fname, err := app.GetFilename(app, "write to>", app.getSavePath())
+	if err != nil {
+		return "", err
+	}
+	io.WriteString(app.out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+	wg.Wait()
+	message, err := app.cmdWrite(fname)
+	if err == nil {
+		app.ResetDirty()
+	}
+	app.lastSavePath = fname
+	return message, err
 }

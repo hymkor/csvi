@@ -2,14 +2,11 @@ package csvi_test
 
 import (
 	"errors"
-	"flag"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/hymkor/csvi/startup"
 )
 
 func TestFileIO(t *testing.T) {
@@ -20,9 +17,7 @@ func TestFileIO(t *testing.T) {
 }
 
 func TestPipelineIO(t *testing.T) {
-	fs := flag.NewFlagSet("test", flag.ContinueOnError)
-	instance := startup.NewFlag().Bind(fs)
-	err := fs.Parse([]string{"-auto", "w|-|q|y"})
+	instance, err := newTestOptions("-auto", "w|-|q|y")
 	if err != nil {
 		t.Fatal(err.Error())
 	}

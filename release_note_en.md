@@ -2,6 +2,18 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.18.0
+-------
+Dec 14, 2025
+
+- Prevent key input responsiveness from being blocked even when CSV data reading stalls. (#28)
+  ( e.g.: `pwsh -Command "Get-Content utf_ken_all.csv ; Start-Sleep 15" | csvi` )
+- Previously, the save operation waited to finish reading all remaining data before prompting for the file name. Now the file-name prompt is shown first, and the full data read runs in the background. (#28)
+- When saving, the default file name was previously taken from the file originally loaded, but it is now taken from the most recently loaded or saved file. (#31)
+- Preserved original file permissions when overwriting. (#31)
+- Skipped creating backups when writing to non-regular files. (#31)
+- Fix a bug where error checks were missing when removing or renaming existing backup files. (#31)
+
 v1.17.1
 -------
 Dec 9, 2025

@@ -1,12 +1,13 @@
-package startup
+package csviapp
 
 import (
 	"flag"
+	"path/filepath"
 
 	"github.com/hymkor/struct2flag"
 )
 
-type Flag struct {
+type Options struct {
 	CellWidth     string `flag:"w,set the \x60widths\x60 of cells like '-w DefaultWidth,COL0:WIDTH0,COL1:WIDTH1,...'. COLn is the index starting from 0"`
 	Header        uint   `flag:"h,the number of row-header"`
 	Tsv           bool   `flag:"t,use TAB as field-separator"`
@@ -24,24 +25,34 @@ type Flag struct {
 	Title         string `flag:"title,Set title string"`
 	ReverseVideo  bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
 	OutputSep     string `flag:"ofs,Output separator between cells"`
+	SavePath      string
 	flagSet       *flag.FlagSet
 }
 
-func NewFlag() *Flag {
-	return &Flag{
+func NewOptions() *Options {
+	return &Options{
 		CellWidth: "14",
 		Header:    1,
 	}
 }
 
-func (f *Flag) Bind(fs *flag.FlagSet) *Flag {
+func (f *Options) Bind(fs *flag.FlagSet) *Options {
 	f.flagSet = fs
 	struct2flag.Bind(fs, f)
 	return f
 }
 
 func Run() error {
-	f := NewFlag().Bind(flag.CommandLine)
+	f := NewOptions().Bind(flag.CommandLine)
 	flag.Parse()
+
+	if args := flag.Args(); len(args) >= 1 {
+		var err error
+		f.SavePath, err = filepath.Abs(args[0])
+		if err != nil {
+			return err
+		}
+	}
+
 	return f.Run()
 }
