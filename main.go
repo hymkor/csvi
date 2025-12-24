@@ -645,9 +645,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		return keyWorker.TryFetch(100 * time.Millisecond)
 	}
 
-	var _screenHeight int
+	var allScreenHeight int
 	var err error
-	app.screenWidth, _screenHeight, err = pilot.Size()
+	app.screenWidth, allScreenHeight, err = pilot.Size()
 	if err != nil {
 		return nil, err
 	}
@@ -658,7 +658,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	message := cfg.Message
 	var killbuffer pasteFunc
 	for {
-		app.screenHeight = _screenHeight - len(cfg.Titles)
+		app.screenHeight = allScreenHeight - len(cfg.Titles)
 		app.screenHeight -= cfg.HeaderLines
 		if lastWidth != app.screenWidth || lastHeight != app.screenHeight {
 			app.clearCache()
@@ -684,6 +684,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		ch, err := keyWorker.GetOr(func(row *uncsv.Row, err error) bool {
 			app.Push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
+				if app.csvLines.Len() <= allScreenHeight {
+					app.Repaint()
+				}
 				io.WriteString(out, "\r"+ansi.YELLOW)
 				app.printStatusLine()
 				io.WriteString(out, ansi.RESET)
