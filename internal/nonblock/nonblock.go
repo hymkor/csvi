@@ -1,5 +1,11 @@
 package nonblock
 
+import (
+	"errors"
+	"io"
+	"time"
+)
+
 type keyResponse struct {
 	key string
 	err error
@@ -18,7 +24,7 @@ type NonBlock[T any] struct {
 }
 
 func New[T any](keyGetter func() (string, error),
-	dataGetter func() (bool, T, error)) *NonBlock[T] {
+	dataGetter func() (T, error)) *NonBlock[T] {
 
 	w := &NonBlock[T]{
 		chKeyReq:  make(chan struct{}),
@@ -40,12 +46,16 @@ func New[T any](keyGetter func() (string, error),
 			case <-w.chStopReq:
 				return
 			default:
-				ok, data, err := dataGetter()
-				if !ok {
+				if dataGetter == nil {
 					close(w.chDataRes)
 					return
 				}
+				data, err := dataGetter()
 				w.chDataRes <- dataResponse[T]{val: data, err: err}
+				if errors.Is(err, io.EOF) {
+					close(w.chDataRes)
+					return
+				}
 			}
 		}
 	}()
@@ -62,7 +72,7 @@ func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
 				return res.key, res.err
 			}
 		case res, ok := <-w.chDataRes:
-			if ok && !work(res.val, res.err) {
+			if ok && work != nil && !work(res.val, res.err) {
 				res := <-w.chKeyRes
 				return res.key, res.err
 			}
@@ -70,9 +80,25 @@ func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
 	}
 }
 
-func (w *NonBlock[T]) Fetch() (bool, T, error) {
+func (w *NonBlock[T]) Fetch() (T, error) {
 	res, ok := <-w.chDataRes
-	return ok, res.val, res.err
+	if !ok {
+		var zero T
+		return zero, io.EOF
+	}
+	return res.val, res.err
+}
+
+func (w *NonBlock[T]) TryFetch(timeout time.Duration) (T, error) {
+	select {
+	case res, ok := <-w.chDataRes:
+		if ok {
+			return res.val, res.err
+		}
+	case <-time.After(timeout):
+	}
+	var zero T
+	return zero, io.EOF
 }
 
 func (w *NonBlock[T]) Close() {

@@ -2,6 +2,7 @@ package csvi_test
 
 import (
 	"fmt"
+	"io"
 	"path/filepath"
 	"testing"
 )
@@ -24,4 +25,19 @@ func TestCase3(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	checkResult(t, outputPath, "first\nsecond\nthird\n")
+}
+
+func TestDataStreamIsNil(t *testing.T) {
+	outputPath := filepath.Join(t.TempDir(), "nulltest.csv")
+	instance, err := newTestOptions("-auto", fmt.Sprintf("i|foo|w|%s|q|y", outputPath))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	enable := disableStdout(t)
+	err = instance.RunInOut(nil, io.Discard)
+	enable()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	checkResult(t, outputPath, "foo")
 }

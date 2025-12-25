@@ -81,12 +81,12 @@ func (app *application) cmdWrite(fname string) (string, error) {
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
-func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string, error) {
+func (app *application) cmdSave() (string, error) {
 	var wg sync.WaitGroup
 	chStop := make(chan struct{})
 	defer close(chStop)
 
-	if fetch != nil {
+	if app.fetch != nil {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -95,14 +95,13 @@ func (app *application) trySave(fetch func() (bool, *uncsv.Row, error)) (string,
 				case <-chStop:
 					return
 				default:
-					ok, row, err := fetch()
-					if !ok {
-						return
-					}
+					row, err := app.fetch()
 					if err != nil && !errors.Is(err, io.EOF) {
 						return
 					}
-					app.Push(row)
+					if row != nil {
+						app.Push(row)
+					}
 					if errors.Is(err, io.EOF) {
 						return
 					}
