@@ -11,8 +11,8 @@ import (
 var version string
 
 func main() {
-	fmt.Fprintf(os.Stderr, "%s %s-%s-%s built with %s\n",
-		os.Args[0], version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+	fmt.Fprintf(os.Stderr, "%s %s-%s-%s <https://hymkor.github.io/csvi>\n",
+		os.Args[0], version, runtime.GOOS, runtime.GOARCH)
 	if err := csviapp.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
