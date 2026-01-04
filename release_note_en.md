@@ -2,6 +2,10 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.19.1
+-------
+Jan 4, 2026
+
 - Fix panic when used as a library and `Config.CellWidth` is nil (#41)
 
 v1.19.0
