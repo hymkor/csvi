@@ -602,6 +602,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	cellWidth := cfg.CellWidth
 	if cellWidth == nil {
 		cellWidth = NewCellWidth()
+		cfg.CellWidth = cellWidth
 	}
 
 	pilot := cfg.Pilot
@@ -1140,6 +1141,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			cellWidth := cfg.CellWidth
 			if cellWidth == nil {
 				cellWidth = NewCellWidth()
+				cfg.CellWidth = cellWidth
 			}
 			for {
 				w := sum(cellWidth.Get, app.startCol, app.cursorCol+1)
