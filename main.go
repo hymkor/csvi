@@ -568,7 +568,7 @@ func (app *Application) Fetch() (*uncsv.Row, error) {
 	return app.fetch()
 }
 
-func (app *Application) TryFetch() (*uncsv.Row, error) {
+func (app *Application) tryFetch() (*uncsv.Row, error) {
 	if app.tryFetchFunc == nil {
 		return nil, io.EOF
 	}
@@ -579,7 +579,7 @@ func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 	if next := p.Next(); next != nil {
 		return next
 	}
-	if row, err := app.TryFetch(); err == nil || errors.Is(err, io.EOF) {
+	if row, err := app.tryFetch(); err == nil || errors.Is(err, io.EOF) {
 		if row != nil {
 			app.Push(row)
 		}
