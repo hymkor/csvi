@@ -123,6 +123,7 @@ Options
 * `-readonly` Read Only Mode
 * `-rv` Enable reverse-video display (invert foreground and background colors)
 * `-ofs string` String used as the separator between cells in the output
+* `-exteditor string` External editor used with `Shift`+`R`
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -150,7 +151,8 @@ Key-binding
 * Edit
     * `i` (insert a new cell before the current one)
     * `a` (append a new cell after the current one)
-    * `r` (replace the current cell)
+    * `r`,`ALT`+`F2` (replace the current cell with the built-in readline)
+    * `R` (replace the current cell with the external editor)
     * `x` (clear the current cell)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv` (delete cell and shift cells on the right)
     * `dd`, `dr`, `D` (delete the current line)

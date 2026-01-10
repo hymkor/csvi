@@ -124,6 +124,7 @@ Options
 * `-readonly` 読み取り専用モード
 * `-rv` 反転表示を有効にする（文字色と背景色を反転）
 * `-ofs string` セル間の区切り文字
+* `-exteditor string` `Shift`+`R` で使用する外部エディター
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -151,7 +152,8 @@ Options
 * 編集
     * `i` (現在のセルの前に新セルを挿入)
     * `a` (現在のセルの右に新セルを挿入)
-    * `r` (現在のセルを置換)
+    * `r` (現在のセルを内蔵readlineで編集)
+    * `R` (現在のセルを外部エディターで編集)
     * `x` (現在のセルを空にする)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`  (現在のセルを削除して右のセルで詰める)
     * `dd`, `dr`, `D` (現在の行を削除する)
