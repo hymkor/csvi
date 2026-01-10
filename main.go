@@ -278,10 +278,10 @@ func (app *Application) rewind() {
 
 func (app *Application) repaint() {
 	app.rewind()
-	app.Draw()
+	app.draw()
 }
 
-func (app *Application) Draw() int {
+func (app *Application) draw() int {
 	// print header
 	app.lfCount = 0
 	header := app.Front()
@@ -660,7 +660,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			io.WriteString(out, ansi.CURSOR_OFF)
 		}
 
-		app.Draw()
+		app.draw()
 
 		io.WriteString(out, ansi.YELLOW)
 		if message != "" {
