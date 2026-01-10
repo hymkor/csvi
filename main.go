@@ -276,7 +276,7 @@ func (app *Application) rewind() {
 	up(app.lfCount, app.out)
 }
 
-func (app *Application) Repaint() {
+func (app *Application) repaint() {
 	app.rewind()
 	app.Draw()
 }
@@ -678,7 +678,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			app.Push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				if app.csvLines.Len() <= allScreenHeight {
-					app.Repaint()
+					app.repaint()
 				}
 				io.WriteString(out, "\r"+ansi.YELLOW)
 				app.printStatusLine()
@@ -870,7 +870,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					}
 				}
 				app.cursorRow = app.cursorRow.InsertAfter(&newRow)
-				app.Repaint()
+				app.repaint()
 				app.clearCache()
 				newCol := app.cursorCol
 				if app.cursorCol >= len(app.cursorRow.Cell) {
@@ -898,7 +898,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				} else {
 					app.startRow = app.Front()
 				}
-				app.Repaint()
+				app.repaint()
 				app.clearCache()
 				newCol := app.cursorCol
 				if app.cursorCol >= len(app.cursorRow.Cell) {
@@ -914,7 +914,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					break
 				}
 				killbuffer = app.removeCurrentRow(&app.startRow, &app.cursorRow)
-				app.Repaint()
+				app.repaint()
 				app.clearCache()
 				app.setHardDirty()
 			case "i":
@@ -946,7 +946,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				} else {
 					app.cursorCol++
 					app.cursorRow.Insert(app.cursorCol, "", mode)
-					app.Repaint()
+					app.repaint()
 					app.clearCache()
 					if text, err := app.readlineAndValidate("append cell>", "", app.cursorRow, app.cursorCol); err != nil {
 						// cancel
@@ -1017,7 +1017,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					killbuffer = app.removeCurrentCell(app.cursorRow, app.cursorCol)
 				case "d", "r":
 					killbuffer = app.removeCurrentRow(&app.startRow, &app.cursorRow)
-					app.Repaint()
+					app.repaint()
 					app.clearCache()
 				case "|", "c":
 					if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
@@ -1025,7 +1025,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						break
 					}
 					killbuffer = app.removeCurrentColumn(app.cursorCol)
-					app.Repaint()
+					app.repaint()
 					app.clearCache()
 				}
 				app.setHardDirty()
@@ -1043,7 +1043,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					message = err.Error()
 					break
 				}
-				app.Repaint()
+				app.repaint()
 				app.clearCache()
 				app.setHardDirty()
 			case "x":
@@ -1109,7 +1109,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						break
 					}
 					app.setHardDirty()
-					app.Repaint()
+					app.repaint()
 					app.clearCache()
 				}
 			}
