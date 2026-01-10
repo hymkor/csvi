@@ -449,6 +449,7 @@ type Config struct {
 	Titles          []string
 	OutputSep       string
 	SavePath        string
+	ExtEditor       func(string, *Application) (string, error)
 }
 
 func (cfg Config) validate(row *RowPtr, col int, text string) (string, error) {
@@ -957,23 +958,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					}
 				}
 				app.setHardDirty()
-			case "r", "R", keys.F2:
-				if m := cfg.checkWriteProtect(app.cursorRow); m != "" {
-					message = m
-					break
-				}
-				cursor := &app.cursorRow.Cell[app.cursorCol]
-				modifiedBefore := cursor.Modified()
-				q := cursor.IsQuoted()
-				app.clearCache()
-				if text, err := app.readlineAndValidate("replace cell>", cursor.Text(), app.cursorRow, app.cursorCol); err == nil {
-					app.cursorRow.Replace(app.cursorCol, text, mode)
-					if q {
-						*cursor = cursor.Quote(mode)
-					}
-				}
-				modifiedAfter := cursor.Modified()
-				app.updateSoftDirty(modifiedBefore, modifiedAfter)
+			case "R":
+				message = cmdEditCellExtEditor(app)
+			case "r", keys.F2:
+				message = cmdEditCell(app)
 			case "u":
 				modifiedBefore := app.cursorRow.Cell[app.cursorCol].Modified()
 				app.cursorRow.Cell[app.cursorCol].Restore(mode)
