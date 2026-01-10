@@ -248,7 +248,7 @@ type Application struct {
 	headCache    map[int]string
 	bodyCache    map[int]string
 	lfCount      int
-	fetch        func() (*uncsv.Row, error)
+	fetchFunc    func() (*uncsv.Row, error)
 	tryFetchFunc func() (*uncsv.Row, error)
 	*Config
 }
@@ -562,10 +562,10 @@ func (app *Application) cmdQuit() (*Result, error) {
 }
 
 func (app *Application) Fetch() (*uncsv.Row, error) {
-	if app.fetch == nil {
+	if app.fetchFunc == nil {
 		return nil, io.EOF
 	}
-	return app.fetch()
+	return app.fetchFunc()
 }
 
 func (app *Application) tryFetch() (*uncsv.Row, error) {
@@ -641,7 +641,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	keyWorker := nonblock.New(pilot.GetKey, fetch)
 	defer keyWorker.Close()
 
-	app.fetch = keyWorker.Fetch
+	app.fetchFunc = keyWorker.Fetch
 	app.tryFetchFunc = func() (*uncsv.Row, error) {
 		return keyWorker.TryFetch(100 * time.Millisecond)
 	}

@@ -86,7 +86,7 @@ func (app *Application) cmdSave() (string, error) {
 	chStop := make(chan struct{})
 	defer close(chStop)
 
-	if app.fetch != nil {
+	if app.fetchFunc != nil {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -95,7 +95,7 @@ func (app *Application) cmdSave() (string, error) {
 				case <-chStop:
 					return
 				default:
-					row, err := app.fetch()
+					row, err := app.fetchFunc()
 					if err != nil && !errors.Is(err, io.EOF) {
 						return
 					}
