@@ -25,6 +25,7 @@ type Options struct {
 	Title         string `flag:"title,Set title string"`
 	ReverseVideo  bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
 	OutputSep     string `flag:"ofs,Output separator between cells"`
+	ExtEditor     string `flag:"exteditor,External editor used with Shift+R"`
 	SavePath      string
 	flagSet       *flag.FlagSet
 }

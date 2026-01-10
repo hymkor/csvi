@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/mattn/go-colorable"
@@ -94,6 +95,35 @@ func (f *Options) Run() error {
 	return f.RunInOut(f.dataSourceAndTtyOut())
 }
 
+func (f *Options) callExtEditor(text string, app *csvi.Application) (string, error) {
+	fd, err := os.CreateTemp("", "csvi*.txt")
+	if err != nil {
+		return text, err
+	}
+	fname := fd.Name()
+	_, err1 := io.WriteString(fd, text)
+	err2 := fd.Close()
+	if err1 != nil {
+		return text, err1
+	}
+	if err2 != nil {
+		return text, err2
+	}
+	defer func() {
+		os.Remove(fname)
+	}()
+	fmt.Fprintf(app, "%s\r%v %v%s", ansi.YELLOW, f.ExtEditor, fname, ansi.ERASE_LINE)
+	cmd := exec.Command(f.ExtEditor, fname)
+	if err := cmd.Run(); err != nil {
+		return text, err
+	}
+	output, err := os.ReadFile(fname)
+	if err != nil {
+		return text, err
+	}
+	return string(output), nil
+}
+
 func (f *Options) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 	io.WriteString(ttyOut, ansi.CURSOR_OFF)
 	defer io.WriteString(ttyOut, ansi.CURSOR_ON)
@@ -112,6 +142,11 @@ func (f *Options) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 		titles = []string{f.Title}
 	}
 
+	var extEditor func(string, *csvi.Application) (string, error)
+	if f.ExtEditor != "" {
+		extEditor = f.callExtEditor
+	}
+
 	_, err = csvi.Config{
 		Mode:          mode,
 		Pilot:         f.pilot(),
@@ -123,6 +158,7 @@ func (f *Options) RunInOut(dataSource io.Reader, ttyOut io.Writer) error {
 		Titles:        titles,
 		OutputSep:     f.OutputSep,
 		SavePath:      f.SavePath,
+		ExtEditor:     extEditor,
 	}.Edit(dataSource, ttyOut)
 
 	return err
