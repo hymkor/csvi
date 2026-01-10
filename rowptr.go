@@ -75,7 +75,7 @@ func (app *Application) getSavePath() string {
 	return "-"
 }
 
-func (app *Application) ResetDirty() {
+func (app *Application) resetDirty() {
 	app.dirty = 0
 }
 

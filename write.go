@@ -117,7 +117,7 @@ func (app *Application) cmdSave() (string, error) {
 	wg.Wait()
 	message, err := app.cmdWrite(fname)
 	if err == nil {
-		app.ResetDirty()
+		app.resetDirty()
 	}
 	app.lastSavePath = fname
 	return message, err
