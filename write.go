@@ -14,7 +14,7 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func (app *application) dump(w io.Writer) {
+func (app *Application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
@@ -30,7 +30,7 @@ func (app *application) dump(w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func (app *application) cmdWrite(fname string) (string, error) {
+func (app *Application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
 		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
@@ -81,7 +81,7 @@ func (app *application) cmdWrite(fname string) (string, error) {
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
-func (app *application) cmdSave() (string, error) {
+func (app *Application) cmdSave() (string, error) {
 	var wg sync.WaitGroup
 	chStop := make(chan struct{})
 	defer close(chStop)

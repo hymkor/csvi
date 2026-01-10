@@ -65,7 +65,7 @@ func (r *RowPtr) Index() int {
 	return r.lnum
 }
 
-func (app *application) getSavePath() string {
+func (app *Application) getSavePath() string {
 	if app.lastSavePath != "" {
 		return app.lastSavePath
 	}
@@ -75,29 +75,29 @@ func (app *application) getSavePath() string {
 	return "-"
 }
 
-func (app *application) ResetDirty() {
+func (app *Application) ResetDirty() {
 	app.dirty = 0
 }
 
-func (app *application) isDirty() bool {
+func (app *Application) isDirty() bool {
 	return app.dirty != 0
 }
 
-func (app *application) setHardDirty() {
+func (app *Application) setHardDirty() {
 	app.dirty |= 1
 }
 
-func (app *application) increaseSoftDirty() {
+func (app *Application) increaseSoftDirty() {
 	app.dirty += 2
 }
 
-func (app *application) decreaseSoftDirty() {
+func (app *Application) decreaseSoftDirty() {
 	if app.dirty >= 2 {
 		app.dirty -= 2
 	}
 }
 
-func (app *application) updateSoftDirty(before, after bool) {
+func (app *Application) updateSoftDirty(before, after bool) {
 	if before == after {
 		return
 	}
@@ -108,35 +108,35 @@ func (app *application) updateSoftDirty(before, after bool) {
 	}
 }
 
-func (app *application) resetSoftDirty() {
+func (app *Application) resetSoftDirty() {
 	app.dirty &= 1
 }
 
 type Result struct {
-	*application
+	*Application
 }
 
-func (app *application) Write(data []byte) (int, error) {
+func (app *Application) Write(data []byte) (int, error) {
 	return app.out.Write(data)
 }
 
-func (app *application) Front() *RowPtr {
+func (app *Application) Front() *RowPtr {
 	return frontPtr(app.csvLines)
 }
 
-func (app *application) Back() *RowPtr {
+func (app *Application) Back() *RowPtr {
 	return backPtr(app.csvLines)
 }
 
-func (app *application) Len() int {
+func (app *Application) Len() int {
 	return app.csvLines.Len()
 }
 
-func (app *application) Push(row *uncsv.Row) {
+func (app *Application) Push(row *uncsv.Row) {
 	app.csvLines.PushBack(row)
 }
 
-func (app *application) Each(callback func(*uncsv.Row) bool) {
+func (app *Application) Each(callback func(*uncsv.Row) bool) {
 	for p := app.Front(); p != nil; p = p.Next() {
 		if !callback(p.Row) {
 			break
@@ -144,7 +144,7 @@ func (app *application) Each(callback func(*uncsv.Row) bool) {
 	}
 }
 
-func (app *application) RemovedRows(callback func(*uncsv.Row) bool) {
+func (app *Application) RemovedRows(callback func(*uncsv.Row) bool) {
 	for _, p := range app.removedRows {
 		if !callback(p) {
 			break

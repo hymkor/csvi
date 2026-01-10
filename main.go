@@ -233,7 +233,7 @@ func cellsAfter(cells []uncsv.Cell, n int) []uncsv.Cell {
 	}
 }
 
-type application struct {
+type Application struct {
 	csvLines     *list.List
 	removedRows  []*uncsv.Row
 	out          io.Writer
@@ -253,8 +253,8 @@ type application struct {
 	*Config
 }
 
-func (cfg *Config) newApplication(out io.Writer) *application {
-	return &application{
+func (cfg *Config) newApplication(out io.Writer) *Application {
+	return &Application{
 		headCache: map[int]string{},
 		bodyCache: map[int]string{},
 		Config:    cfg,
@@ -263,7 +263,7 @@ func (cfg *Config) newApplication(out io.Writer) *application {
 	}
 }
 
-func (app *application) clearCache() {
+func (app *Application) clearCache() {
 	for k := range app.headCache {
 		delete(app.headCache, k)
 	}
@@ -272,16 +272,16 @@ func (app *application) clearCache() {
 	}
 }
 
-func (app *application) Rewind() {
+func (app *Application) Rewind() {
 	up(app.lfCount, app.out)
 }
 
-func (app *application) Repaint() {
+func (app *Application) Repaint() {
 	app.Rewind()
 	app.Draw()
 }
 
-func (app *application) Draw() int {
+func (app *Application) Draw() int {
 	// print header
 	app.lfCount = 0
 	header := app.Front()
@@ -343,7 +343,7 @@ func (app *application) Draw() int {
 	return app.lfCount
 }
 
-func (app *application) MessageAndGetKey(message string) (string, error) {
+func (app *Application) MessageAndGetKey(message string) (string, error) {
 	fmt.Fprintf(app, "%s\r%s%s ", ansi.YELLOW, message, ansi.ERASE_LINE)
 	io.WriteString(app, ansi.CURSOR_ON)
 	ch, err := app.GetKey()
@@ -351,7 +351,7 @@ func (app *application) MessageAndGetKey(message string) (string, error) {
 	return ch, err
 }
 
-func (app *application) YesNo(message string) bool {
+func (app *Application) YesNo(message string) bool {
 	ch, err := app.MessageAndGetKey(message)
 	return err == nil && ch == "y"
 }
@@ -360,7 +360,7 @@ func first[T any](value T, _ error) T {
 	return value
 }
 
-func (app *application) printStatusLine() {
+func (app *Application) printStatusLine() {
 	n := 0
 	if app.isDirty() {
 		n += first(app.out.Write([]byte{'*'}))
@@ -430,7 +430,7 @@ type CellValidatedEvent struct {
 }
 
 type KeyEventArgs struct {
-	*application
+	*Application
 	CursorRow *RowPtr
 	CursorCol int
 }
@@ -524,7 +524,7 @@ func (cfg *Config) checkWriteProtectAndColumn(cursorRow *RowPtr) string {
 	return ""
 }
 
-func (app *application) readlineAndValidate(prompt, text string, row *RowPtr, col int) (string, error) {
+func (app *Application) readlineAndValidate(prompt, text string, row *RowPtr, col int) (string, error) {
 	candidates := makeCandidate(row.lnum-1, col, row)
 	for {
 		var err error
@@ -540,7 +540,7 @@ func (app *application) readlineAndValidate(prompt, text string, row *RowPtr, co
 	}
 }
 
-func (app *application) cmdQuit() (*Result, error) {
+func (app *Application) cmdQuit() (*Result, error) {
 	if !app.ReadOnly && app.isDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
 		if err != nil {
@@ -557,25 +557,25 @@ func (app *application) cmdQuit() (*Result, error) {
 		}
 	}
 	io.WriteString(app.out, "\n")
-	return &Result{application: app}, nil
+	return &Result{Application: app}, nil
 
 }
 
-func (app *application) Fetch() (*uncsv.Row, error) {
+func (app *Application) Fetch() (*uncsv.Row, error) {
 	if app.fetch == nil {
 		return nil, io.EOF
 	}
 	return app.fetch()
 }
 
-func (app *application) TryFetch() (*uncsv.Row, error) {
+func (app *Application) TryFetch() (*uncsv.Row, error) {
 	if app.tryFetch == nil {
 		return nil, io.EOF
 	}
 	return app.tryFetch()
 }
 
-func (app *application) nextOrFetch(p *RowPtr) *RowPtr {
+func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 	if next := p.Next(); next != nil {
 		return next
 	}
@@ -705,11 +705,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			e := &KeyEventArgs{
 				CursorRow:   app.cursorRow,
 				CursorCol:   app.cursorCol,
-				application: app,
+				Application: app,
 			}
 			cmdResult, err := handler(e)
 			if err != nil || cmdResult.Quit {
-				return &Result{application: app}, err
+				return &Result{Application: app}, err
 			}
 			message = cmdResult.Message
 		} else {
