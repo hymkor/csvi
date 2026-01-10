@@ -132,7 +132,7 @@ func (app *Application) Len() int {
 	return app.csvLines.Len()
 }
 
-func (app *Application) Push(row *uncsv.Row) {
+func (app *Application) push(row *uncsv.Row) {
 	app.csvLines.PushBack(row)
 }
 

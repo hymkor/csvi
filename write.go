@@ -100,7 +100,7 @@ func (app *Application) cmdSave() (string, error) {
 						return
 					}
 					if row != nil {
-						app.Push(row)
+						app.push(row)
 					}
 					if errors.Is(err, io.EOF) {
 						return

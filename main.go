@@ -573,7 +573,7 @@ func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 	}
 	if row, err := app.tryFetch(); err == nil || errors.Is(err, io.EOF) {
 		if row != nil {
-			app.Push(row)
+			app.push(row)
 		}
 		return p.Next()
 	}
@@ -610,15 +610,15 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	app := cfg.newApplication(out)
 	if fetch != nil {
 		if row, err := fetch(); err == nil && !isEmptyRow(row) {
-			app.Push(row)
+			app.push(row)
 		} else {
 			newRow := uncsv.NewRow(mode)
-			app.Push(&newRow)
+			app.push(&newRow)
 			fetch = nil
 		}
 	} else {
 		newRow := uncsv.NewRow(mode)
-		app.Push(&newRow)
+		app.push(&newRow)
 	}
 	app.startRow = app.Front()
 	app.startCol = 0
@@ -675,7 +675,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		displayUpdateTime := time.Now().Add(time.Second / interval)
 
 		ch, err := keyWorker.GetOr(func(row *uncsv.Row, err error) bool {
-			app.Push(row)
+			app.push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				if app.csvLines.Len() <= allScreenHeight {
 					app.repaint()
