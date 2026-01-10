@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Pressing `Shift`+`R` now edits the current cell using the editor specified by the `-exteditor` option. If not specified, it behaves the same as `r` and uses the built-in readline. (#43)
+
 v1.19.1
 -------
 Jan 4, 2026

@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- `Shift`+`R` を押下すると、オプション `-exteditor` で指定されたエディターによりセル内容を編集できるようにした。指定なしの場合は `r` と同様に内蔵 readline で編集する (#43)
+
 v1.19.1
 -------
 Jan 4, 2026
