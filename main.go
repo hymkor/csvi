@@ -272,12 +272,12 @@ func (app *Application) clearCache() {
 	}
 }
 
-func (app *Application) Rewind() {
+func (app *Application) rewind() {
 	up(app.lfCount, app.out)
 }
 
 func (app *Application) Repaint() {
-	app.Rewind()
+	app.rewind()
 	app.Draw()
 }
 
@@ -1143,7 +1143,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				app.startCol++
 			}
 		}
-		app.Rewind()
+		app.rewind()
 	}
 }
 
