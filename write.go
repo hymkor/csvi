@@ -58,7 +58,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 	if _, done := overWritten[fname]; done || !stat.Mode().IsRegular() {
 		openflag = os.O_WRONLY | os.O_CREATE | os.O_TRUNC
 	} else {
-		if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
+		if !app.yesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
 			return "", errCanceled
 		}
 		backup := fname + "~"

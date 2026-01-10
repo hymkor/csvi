@@ -351,7 +351,7 @@ func (app *Application) MessageAndGetKey(message string) (string, error) {
 	return ch, err
 }
 
-func (app *Application) YesNo(message string) bool {
+func (app *Application) yesNo(message string) bool {
 	ch, err := app.MessageAndGetKey(message)
 	return err == nil && ch == "y"
 }
