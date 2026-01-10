@@ -249,7 +249,7 @@ type Application struct {
 	bodyCache    map[int]string
 	lfCount      int
 	fetch        func() (*uncsv.Row, error)
-	tryFetch     func() (*uncsv.Row, error)
+	tryFetchFunc func() (*uncsv.Row, error)
 	*Config
 }
 
@@ -569,10 +569,10 @@ func (app *Application) Fetch() (*uncsv.Row, error) {
 }
 
 func (app *Application) TryFetch() (*uncsv.Row, error) {
-	if app.tryFetch == nil {
+	if app.tryFetchFunc == nil {
 		return nil, io.EOF
 	}
-	return app.tryFetch()
+	return app.tryFetchFunc()
 }
 
 func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
@@ -642,7 +642,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	defer keyWorker.Close()
 
 	app.fetch = keyWorker.Fetch
-	app.tryFetch = func() (*uncsv.Row, error) {
+	app.tryFetchFunc = func() (*uncsv.Row, error) {
 		return keyWorker.TryFetch(100 * time.Millisecond)
 	}
 
