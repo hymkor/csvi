@@ -558,14 +558,6 @@ func (app *Application) cmdQuit() (*Result, error) {
 	}
 	io.WriteString(app.out, "\n")
 	return &Result{Application: app}, nil
-
-}
-
-func (app *Application) Fetch() (*uncsv.Row, error) {
-	if app.fetchFunc == nil {
-		return nil, io.EOF
-	}
-	return app.fetchFunc()
 }
 
 func (app *Application) tryFetch() (*uncsv.Row, error) {
