@@ -67,6 +67,8 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
+Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your $PATH to execute `csvi`.
+
 ### Use [eget] installer (cross-platform)"
 
 ```
