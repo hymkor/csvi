@@ -1206,6 +1206,7 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 <h3 id="go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E8%A6%81go%E8%A8%80%E8%AA%9E%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83">&quot;go install&quot; を使う場合 (要Go言語開発環境)</h3>
 <pre><code>go install github.com/hymkor/csvi@latest
 </code></pre>
+<p><code>go install</code> は <code>$HOME/go/bin</code> もしくは <code>$GOPATH/bin</code> へ実行ファイルを導入するので、<code>csvi</code> を実行するにはそのディレクトリを <code>$PATH</code> に追加する必要があります。</p>
 <h3 id="eget-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E3%82%AF%E3%83%AD%E3%82%B9%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0"><a href="https://github.com/zyedidia/eget">eget</a> インストーラーを使う場合 (クロスプラットフォーム)</h3>
 <pre><code>cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
@@ -1224,6 +1225,7 @@ scoop install csvi
 <p>or</p>
 <pre><code>$ cat FILENAME | csvi {options}
 </code></pre>
+<p>※標準入力からデータを読み込んだ場合は <code>w</code> キーなどによる保存先のデフォルトは <code>-</code> (=標準出力) となります</p>
 <p>Options</p>
 <ul>
 <li><code>-help</code> 本ヘルプを表示</li>

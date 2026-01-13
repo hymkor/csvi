@@ -1142,6 +1142,28 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
+<h2 id="v1191">v1.19.1</h2>
+<p>Jan 4, 2026</p>
+<ul>
+<li>Fix panic when used as a library and <code>Config.CellWidth</code> is nil (#41)</li>
+</ul>
+<h2 id="v1190">v1.19.0</h2>
+<p>Dec 25, 2025</p>
+<ul>
+<li>Print the separator specified by <code>-ofs</code> in gray. (#33)</li>
+<li>Previously, the tool was not operable until at least 100 lines were read or EOF was reached. Now it becomes operable as soon as a single line is read. (#34)</li>
+</ul>
+<h2 id="v1180">v1.18.0</h2>
+<p>Dec 14, 2025</p>
+<ul>
+<li>Prevent key input responsiveness from being blocked even when CSV data reading stalls. (#28)
+( e.g.: <code>pwsh -Command &quot;Get-Content utf_ken_all.csv ; Start-Sleep 15&quot; | csvi</code> )</li>
+<li>Previously, the save operation waited to finish reading all remaining data before prompting for the file name. Now the file-name prompt is shown first, and the full data read runs in the background. (#28)</li>
+<li>When saving, the default file name was previously taken from the file originally loaded, but it is now taken from the most recently loaded or saved file. (#31)</li>
+<li>Preserved original file permissions when overwriting. (#31)</li>
+<li>Skipped creating backups when writing to non-regular files. (#31)</li>
+<li>Fix a bug where error checks were missing when removing or renaming existing backup files. (#31)</li>
+</ul>
 <h2 id="v1171">v1.17.1</h2>
 <p>Dec 9, 2025</p>
 <ul>
@@ -1588,6 +1610,9 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1191">v1.19.1</a></li>
+<li><a href="#v1190">v1.19.0</a></li>
+<li><a href="#v1180">v1.18.0</a></li>
 <li><a href="#v1171">v1.17.1</a></li>
 <li><a href="#v1170">v1.17.0</a>
 <ul>

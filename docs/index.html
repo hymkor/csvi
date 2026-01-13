@@ -1206,6 +1206,7 @@ Please let us know if you encounter any issues!</p>
 <h3 id="use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</h3>
 <pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
 </code></pre>
+<p>Because <code>go install</code> introduces the executable into <code>$HOME/go/bin</code> or <code>$GOPATH/bin</code>, you need to add this directory to your $PATH to execute <code>csvi</code>.</p>
 <h3 id="use-eget-installer-cross-platform">Use <a href="https://github.com/zyedidia/eget">eget</a> installer (cross-platform)&quot;</h3>
 <pre><code>cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
@@ -1224,6 +1225,7 @@ scoop install csvi
 <p>or</p>
 <pre><code>$ cat FILENAME | csvi {options}
 </code></pre>
+<p>Note: When reading from standard input, saving commands like <code>w</code> write to <code>-</code> (standard output) by default.</p>
 <p>Options</p>
 <ul>
 <li><code>-help</code> this help</li>
