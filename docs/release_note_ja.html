@@ -1142,6 +1142,28 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1191">v1.19.1</h2>
+<p>Jan 4, 2026</p>
+<ul>
+<li>ライブラリとして使用する際、<code>Config.CellWidth</code> が nil の時に panic する問題を修正 (#41)</li>
+</ul>
+<h2 id="v1190">v1.19.0</h2>
+<p>Dec 25, 2025</p>
+<ul>
+<li><code>-ofs</code> で指定する区切り文字を灰色で表示するようにした(#33)</li>
+<li>100行読み込むか、EOF に到達するまで操作できない問題を修正し、1行でも読み込めれば操作可能になるようにした。(#34)</li>
+</ul>
+<h2 id="v1180">v1.18.0</h2>
+<p>Dec 14, 2025</p>
+<ul>
+<li>CSVデータ読み込みが滞っても、キー入力に対する応答が止まらないようにした (#28)
+( e.g.: <code>pwsh -Command &quot;Get-Content utf_ken_all.csv ; Start-Sleep 15&quot; | csvi</code> )</li>
+<li>セーブ処理で従来はファイル名入力よりも先に、未読データの読み込み完了を待っていたが、今はファイル名入力を優先し、その裏でデータ読み込みを継続するようにした (#28)</li>
+<li>セーブする際のデフォルトファイル名として、最初にロードした時のファイル名を使っていたが、最後にロード/セーブした時のファイル名を使うようにした (#31)</li>
+<li>上書き時に既存ファイルのパーミッションを変更しないようにした (#31)</li>
+<li>書き込み対象が非 regular ファイルの場合、バックアップを作らないようにした (#31)</li>
+<li>既存バックアップの削除・リネーム時のエラーチェックが漏れていた問題を修正 (#31)</li>
+</ul>
 <h2 id="v1171">v1.17.1</h2>
 <p>Dec 9, 2025</p>
 <ul>
@@ -1583,6 +1605,9 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1191">v1.19.1</a></li>
+<li><a href="#v1190">v1.19.0</a></li>
+<li><a href="#v1180">v1.18.0</a></li>
 <li><a href="#v1171">v1.17.1</a></li>
 <li><a href="#v1170">v1.17.0</a>
 <ul>

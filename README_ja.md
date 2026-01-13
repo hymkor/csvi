@@ -67,6 +67,8 @@ Install
 go install github.com/hymkor/csvi@latest
 ```
 
+`go install` は `$HOME/go/bin` もしくは `$GOPATH/bin` へ実行ファイルを導入するので、`csvi` を実行するにはそのディレクトリを `$PATH` に追加する必要があります。
+
 ### [eget] インストーラーを使う場合 (クロスプラットフォーム)
 
 ```
@@ -105,6 +107,8 @@ or
 ```
 $ cat FILENAME | csvi {options}
 ```
+
+※標準入力からデータを読み込んだ場合は `w` キーなどによる保存先のデフォルトは `-` (=標準出力) となります
 
 Options
 
