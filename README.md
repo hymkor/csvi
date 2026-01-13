@@ -107,6 +107,8 @@ or
 $ cat FILENAME | csvi {options}
 ```
 
+Note: When reading from standard input, saving commands like `w` write to `-` (standard output) by default.
+
 Options
 
 * `-help` this help
