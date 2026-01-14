@@ -126,6 +126,7 @@ Options
 * `-ofs string` セル間の区切り文字
 * `-exteditor string` `Shift`+`R` で使用する外部エディター
 * `-o filename` 保存時に表示されるファイル名の初期値を指定する（標準入力から読み取った場合）
+* `-delimiter string` 区切り文字を指定する
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
