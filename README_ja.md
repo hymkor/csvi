@@ -125,6 +125,7 @@ Options
 * `-rv` 反転表示を有効にする（文字色と背景色を反転）
 * `-ofs string` セル間の区切り文字
 * `-exteditor string` `Shift`+`R` で使用する外部エディター
+* `-o filename` 保存時に表示されるファイル名の初期値を指定する（標準入力から読み取った場合）
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
