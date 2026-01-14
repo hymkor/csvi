@@ -69,10 +69,7 @@ func (app *Application) getSavePath() string {
 	if app.lastSavePath != "" {
 		return app.lastSavePath
 	}
-	if app.Config.SavePath != "" {
-		return app.Config.SavePath
-	}
-	return "-"
+	return app.Config.SavePath
 }
 
 func (app *Application) resetDirty() {
