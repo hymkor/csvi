@@ -1,6 +1,7 @@
 package csviapp
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -15,6 +16,8 @@ import (
 
 	"github.com/hymkor/csvi/internal/ansi"
 )
+
+var errNotSingleChar = errors.New("delimiter must be a single character")
 
 func (f *Options) mode() (*uncsv.Mode, error) {
 	mode := &uncsv.Mode{}
@@ -49,6 +52,13 @@ func (f *Options) mode() (*uncsv.Mode, error) {
 		}
 		if f.Semicolon {
 			mode.Comma = ';'
+		}
+		switch len(f.Delimiter) {
+		case 0:
+		case 1:
+			mode.Comma = f.Delimiter[0]
+		default:
+			return nil, errNotSingleChar
 		}
 	}
 	return mode, nil
