@@ -5,6 +5,8 @@ Release notes
 - Pressing `Shift`+`R` now edits the current cell using the editor specified by the `-exteditor` option. If not specified, it behaves the same as `r` and uses the built-in readline. (#43)
 - Add `-o` option that specifies the filename to write when reading csv from standard input (#45)
 - Change the save prompt default filename from `-` to empty and require explicit input for standard input (#46)
+- Add `-delimiter` option that specifies the field separator (#47)
+
 v1.19.1
 -------
 Jan 4, 2026
