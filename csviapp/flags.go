@@ -26,7 +26,7 @@ type Options struct {
 	ReverseVideo  bool   `flag:"rv,Enable reverse-video display (invert foreground and background colors)"`
 	OutputSep     string `flag:"ofs,Output separator between cells"`
 	ExtEditor     string `flag:"exteditor,External editor used with Shift+R"`
-	SavePath      string
+	SavePath      string `flag:"o,preset output filename in the save prompt (used with standard input)"`
 	flagSet       *flag.FlagSet
 }
 
