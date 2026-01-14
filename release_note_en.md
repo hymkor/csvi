@@ -3,6 +3,7 @@ Release notes
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Pressing `Shift`+`R` now edits the current cell using the editor specified by the `-exteditor` option. If not specified, it behaves the same as `r` and uses the built-in readline. (#43)
+- Add `-o` option that specifies the filename to write when reading csv from standard input (#45)
 
 v1.19.1
 -------
