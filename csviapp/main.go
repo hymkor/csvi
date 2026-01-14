@@ -17,7 +17,10 @@ import (
 	"github.com/hymkor/csvi/internal/ansi"
 )
 
-var errNotSingleChar = errors.New("delimiter must be a single character")
+var (
+	errNotSingleChar = errors.New("delimiter must be a single character")
+	errMultipleSep   = errors.New("multiple field separator options specified")
+)
 
 func (f *Options) mode() (*uncsv.Mode, error) {
 	mode := &uncsv.Mode{}
@@ -35,6 +38,7 @@ func (f *Options) mode() (*uncsv.Mode, error) {
 	if f.Utf16be {
 		mode.SetUTF16BE()
 	}
+	delimiterCount := 0
 	if len(f.flagSet.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
 		// Start with one empty line
 		mode.Comma = '\t'
@@ -46,20 +50,27 @@ func (f *Options) mode() (*uncsv.Mode, error) {
 		}
 		if f.Tsv {
 			mode.Comma = '\t'
+			delimiterCount++
 		}
 		if f.Csv {
 			mode.Comma = ','
+			delimiterCount++
 		}
 		if f.Semicolon {
 			mode.Comma = ';'
+			delimiterCount++
 		}
 		switch len(f.Delimiter) {
 		case 0:
 		case 1:
 			mode.Comma = f.Delimiter[0]
+			delimiterCount++
 		default:
 			return nil, errNotSingleChar
 		}
+	}
+	if delimiterCount >= 2 {
+		return nil, errMultipleSep
 	}
 	return mode, nil
 }
