@@ -27,6 +27,7 @@ type Options struct {
 	OutputSep     string `flag:"ofs,Output separator between cells"`
 	ExtEditor     string `flag:"exteditor,External editor used with Shift+R"`
 	SavePath      string `flag:"o,preset output filename in the save prompt (used with standard input)"`
+	Delimiter     string `flag:"delimiter,Specify the field separator"`
 	flagSet       *flag.FlagSet
 }
 
