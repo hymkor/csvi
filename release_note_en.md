@@ -6,6 +6,7 @@ Release notes
 - Add `-o` option that specifies the filename to write when reading csv from standard input (#45)
 - Change the save prompt default filename from `-` to empty and require explicit input for standard input (#46)
 - Add `-delimiter` option that specifies the field separator (#47)
+- Fix display overflow caused by halfwidth kana with voiced/semi-voiced sound marks (#48)
 
 v1.19.1
 -------
