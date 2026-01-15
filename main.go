@@ -152,7 +152,7 @@ func (style lineStyle) drawLine(
 				io.WriteString(out, style.Even.On)
 			}
 		}
-		text = runewidth.Truncate(text, cw-sepLen, "\u2026")
+		text = truncate(text, cw-sepLen, "\u2026")
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
 		}
@@ -406,7 +406,7 @@ func (app *Application) printStatusLine() {
 		} else { // EOF
 			buffer.WriteString("\u2592")
 		}
-		io.WriteString(app.out, runewidth.Truncate(replaceTable.Replace(buffer.String()), app.screenWidth-n, "..."))
+		io.WriteString(app.out, truncate(replaceTable.Replace(buffer.String()), app.screenWidth-n, "..."))
 	}
 }
 
@@ -665,7 +665,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 
 		io.WriteString(out, ansi.YELLOW)
 		if message != "" {
-			io.WriteString(out, runewidth.Truncate(message, app.screenWidth-1, ""))
+			io.WriteString(out, truncate(message, app.screenWidth-1, ""))
 		} else if 0 <= app.cursorRow.lnum && app.cursorRow.lnum < app.Len() {
 			app.printStatusLine()
 		}
