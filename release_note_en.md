@@ -6,7 +6,7 @@ v1.19.2
 -------
 Jan 16, 2026
 
-- Handle a case where CPU spins after data loading is finished (#49,#50)
+- Handle a case where CPU spins after data loading is finished (#49,#50, Thanks to @presianbg)
 
 v1.19.1
 -------
