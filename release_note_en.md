@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Handle a case where CPU spins after data loading is finished (#49,#50)
+
 v1.19.1
 -------
 Jan 4, 2026

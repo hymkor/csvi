@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- データ読み込みが終わると、CPU が空回りになる問題に対処 (#49,#50)
+
 v1.19.1
 -------
 Jan 4, 2026
