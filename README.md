@@ -280,6 +280,7 @@ Acknowledgements
 - [rinodrops (Rino)](https://github.com/rinodrops)
 - [toolleeo](https://github.com/toolleeo)
 - [wumfi](https://github.com/wumfi)
+- [presianbg (Presian Yankulov)](https://github.com/presianbg)
 
 Author
 ------
