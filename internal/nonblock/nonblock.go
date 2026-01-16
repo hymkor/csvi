@@ -17,10 +17,11 @@ type dataResponse[T any] struct {
 }
 
 type NonBlock[T any] struct {
-	chKeyReq  chan struct{}
-	chKeyRes  chan keyResponse
-	chDataRes chan dataResponse[T]
-	chStopReq chan struct{}
+	chKeyReq   chan struct{}
+	chKeyRes   chan keyResponse
+	chDataRes  chan dataResponse[T]
+	chStopReq  chan struct{}
+	noMoreData bool
 }
 
 func New[T any](keyGetter func() (string, error),
@@ -65,6 +66,13 @@ func New[T any](keyGetter func() (string, error),
 
 func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
 	w.chKeyReq <- struct{}{}
+	if w.noMoreData {
+		res, ok := <-w.chKeyRes
+		if ok {
+			return res.key, res.err
+		}
+		return "", io.EOF
+	}
 	for {
 		select {
 		case res, ok := <-w.chKeyRes:
@@ -74,6 +82,7 @@ func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
 		case res, ok := <-w.chDataRes:
 			if ok && work != nil && !work(res.val, res.err) {
 				res := <-w.chKeyRes
+				w.noMoreData = true
 				return res.key, res.err
 			}
 		}
