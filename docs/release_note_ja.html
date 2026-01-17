@@ -1142,6 +1142,15 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1200">v1.20.0</h2>
+<p>Jan 17, 2026</p>
+<ul>
+<li><code>Shift</code>+<code>R</code> を押下すると、オプション <code>-exteditor</code> で指定されたエディターによりセル内容を編集できるようにした。指定なしの場合は <code>r</code> と同様に内蔵 readline で編集する (#43)</li>
+<li>標準入力から読み取った時の保存ファイル名を指定するオプション <code>-o</code> を追加 (#45)</li>
+<li>標準入力から読み取った時の保存プロンプトで表示されるデフォルトのファイル名を <code>-</code> から空に変更し、入力を必須とした (#46)</li>
+<li>区切り文字を指定する <code>-delimiter string</code> オプションを追加 (#47)</li>
+<li>半角カナの濁音・半濁音記号が含まれていると表示桁数が超過して表示が乱れる問題を修正 (#48)</li>
+</ul>
 <h2 id="v1192">v1.19.2</h2>
 <p>Jan 16, 2026</p>
 <ul>
@@ -1610,6 +1619,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1200">v1.20.0</a></li>
 <li><a href="#v1192">v1.19.2</a></li>
 <li><a href="#v1191">v1.19.1</a></li>
 <li><a href="#v1190">v1.19.0</a></li>
