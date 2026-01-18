@@ -2,6 +2,10 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.19.3
+-------
+Jan 18, 2026
+
 - CSV が画面行数よりも短い場合に CPU が空回しになってしまう問題を修正 (#52)
 
 v1.19.2
