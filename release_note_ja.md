@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- CSVデータ読み込み途中で保存操作を行うと、以後のキー入力待ちの間に CPU が空回りしてしまう問題を修正 (#54)
+
 v1.19.3
 -------
 Jan 18, 2026

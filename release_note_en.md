@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Fix CPU spinning when saving while CSV data is still being loaded (#54)
+
 v1.19.3
 -------
 Jan 18, 2026
