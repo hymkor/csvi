@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Fix CPU spinning when the CSV has fewer rows than the screen height (#52)
+
 v1.19.2
 -------
 Jan 16, 2026
