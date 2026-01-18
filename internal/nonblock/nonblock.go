@@ -104,6 +104,7 @@ func (w *NonBlock[T]) TryFetch(timeout time.Duration) (T, error) {
 		if ok {
 			return res.val, res.err
 		}
+		w.noMoreData = true
 	case <-time.After(timeout):
 	}
 	var zero T
