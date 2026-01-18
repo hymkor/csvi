@@ -1244,6 +1244,9 @@ scoop install csvi
 <li><code>-readonly</code> Read Only Mode</li>
 <li><code>-rv</code> Enable reverse-video display (invert foreground and background colors)</li>
 <li><code>-ofs string</code> String used as the separator between cells in the output</li>
+<li><code>-exteditor string</code> External editor used with <code>Shift</code>+<code>R</code></li>
+<li><code>-o filename</code> preset output filename in the save prompt (used with standard input)</li>
+<li><code>-delimiter string</code> Specify the field separator</li>
 </ul>
 <h2 id="key-binding">Key-binding</h2>
 <ul>
@@ -1275,7 +1278,8 @@ scoop install csvi
 <ul>
 <li><code>i</code> (insert a new cell before the current one)</li>
 <li><code>a</code> (append a new cell after the current one)</li>
-<li><code>r</code> (replace the current cell)</li>
+<li><code>r</code>,<code>ALT</code>+<code>F2</code> (replace the current cell with the built-in readline)</li>
+<li><code>R</code> (replace the current cell with the external editor)</li>
 <li><code>x</code> (clear the current cell)</li>
 <li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code> (delete cell and shift cells on the right)</li>
 <li><code>dd</code>, <code>dr</code>, <code>D</code> (delete the current line)</li>

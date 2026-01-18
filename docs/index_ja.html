@@ -1244,6 +1244,9 @@ scoop install csvi
 <li><code>-readonly</code> 読み取り専用モード</li>
 <li><code>-rv</code> 反転表示を有効にする（文字色と背景色を反転）</li>
 <li><code>-ofs string</code> セル間の区切り文字</li>
+<li><code>-exteditor string</code> <code>Shift</code>+<code>R</code> で使用する外部エディター</li>
+<li><code>-o filename</code> 保存時に表示されるファイル名の初期値を指定する（標準入力から読み取った場合）</li>
+<li><code>-delimiter string</code> 区切り文字を指定する</li>
 </ul>
 <h2 id="%E3%82%AD%E3%83%BC%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89">キーバインド</h2>
 <ul>
@@ -1275,7 +1278,8 @@ scoop install csvi
 <ul>
 <li><code>i</code> (現在のセルの前に新セルを挿入)</li>
 <li><code>a</code> (現在のセルの右に新セルを挿入)</li>
-<li><code>r</code> (現在のセルを置換)</li>
+<li><code>r</code> (現在のセルを内蔵readlineで編集)</li>
+<li><code>R</code> (現在のセルを外部エディターで編集)</li>
 <li><code>x</code> (現在のセルを空にする)</li>
 <li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>  (現在のセルを削除して右のセルで詰める)</li>
 <li><code>dd</code>, <code>dr</code>, <code>D</code> (現在の行を削除する)</li>

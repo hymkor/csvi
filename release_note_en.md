@@ -2,6 +2,16 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.20.0
+-------
+Jan 17, 2026
+
+- Pressing `Shift`+`R` now edits the current cell using the editor specified by the `-exteditor` option. If not specified, it behaves the same as `r` and uses the built-in readline. (#43)
+- Add `-o` option that specifies the filename to write when reading csv from standard input (#45)
+- Change the save prompt default filename from `-` to empty and require explicit input for standard input (#46)
+- Add `-delimiter` option that specifies the field separator (#47)
+- Fix display overflow caused by halfwidth kana with voiced/semi-voiced sound marks (#48)
+
 v1.19.4
 -------
 Jan 18, 2026
