@@ -80,7 +80,7 @@ func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
 				return res.key, res.err
 			}
 		case res, ok := <-w.chDataRes:
-			if ok && work != nil && !work(res.val, res.err) {
+			if !ok || work == nil || !work(res.val, res.err) {
 				res := <-w.chKeyRes
 				w.noMoreData = true
 				return res.key, res.err
@@ -92,8 +92,12 @@ func (w *NonBlock[T]) GetOr(work func(val T, err error) bool) (string, error) {
 func (w *NonBlock[T]) Fetch() (T, error) {
 	res, ok := <-w.chDataRes
 	if !ok {
+		w.noMoreData = true
 		var zero T
 		return zero, io.EOF
+	}
+	if errors.Is(res.err, io.EOF) {
+		w.noMoreData = true
 	}
 	return res.val, res.err
 }
@@ -102,8 +106,12 @@ func (w *NonBlock[T]) TryFetch(timeout time.Duration) (T, error) {
 	select {
 	case res, ok := <-w.chDataRes:
 		if ok {
+			if errors.Is(res.err, io.EOF) {
+				w.noMoreData = true
+			}
 			return res.val, res.err
 		}
+		w.noMoreData = true
 	case <-time.After(timeout):
 	}
 	var zero T

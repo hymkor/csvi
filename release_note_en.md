@@ -2,6 +2,15 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.20.1
+-------
+Jan 18, 2026
+
+- Merge bug fixes from v1.19.x series
+  - Fix CPU spinning when saving while CSV data is still being loaded (#54,v1.19.4)
+  - Fix CPU spinning when the CSV has fewer rows than the screen height (#52,v1.19.3)
+  - Fix CPU spinning after CSV loading completed (#49, #50,v1.19.2)
+
 v1.20.0
 -------
 Jan 17, 2026
@@ -11,6 +20,18 @@ Jan 17, 2026
 - Change the save prompt default filename from `-` to empty and require explicit input for standard input (#46)
 - Add `-delimiter` option that specifies the field separator (#47)
 - Fix display overflow caused by halfwidth kana with voiced/semi-voiced sound marks (#48)
+
+v1.19.4
+-------
+Jan 18, 2026
+
+- Fix CPU spinning when saving while CSV data is still being loaded (#54)
+
+v1.19.3
+-------
+Jan 18, 2026
+
+- Fix CPU spinning when the CSV has fewer rows than the screen height (#52)
 
 v1.19.2
 -------

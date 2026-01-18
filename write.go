@@ -97,12 +97,16 @@ func (app *Application) cmdSave() (string, error) {
 				default:
 					row, err := app.fetchFunc()
 					if err != nil && !errors.Is(err, io.EOF) {
+						app.fetchFunc = nil
+						app.tryFetchFunc = nil
 						return
 					}
 					if row != nil {
 						app.push(row)
 					}
 					if errors.Is(err, io.EOF) {
+						app.fetchFunc = nil
+						app.tryFetchFunc = nil
 						return
 					}
 				}
