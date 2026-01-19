@@ -3,6 +3,8 @@ Release notes
 ( [English](release_note_en.md) / **Japanese** )
 
 - `-delimiter` で設定した値を、ステータスラインに表示するようにした (#57)
+- README: アプリケーション名としては「Csvi」、コマンド名としては csvi に統一 (#58)
+- 起動時メッセージでは「csvi」ではなく「Csvi」を使うようにした (#58)
 
 v1.20.1
 -------

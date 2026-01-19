@@ -3,6 +3,8 @@ Release notes
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Print the value of `-delimiter` on the status line (#57)
+- README: Normalize naming: use "Csvi" for the application name and `csvi` for the command (#58)
+- Update startup message to use "Csvi" instead of "csvi" (#58)
 
 v1.20.1
 -------
