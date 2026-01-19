@@ -1,4 +1,4 @@
-"CSVI" - Terminal CSV Editor
+Csvi - A terminal CSV editor 
 ============================
 
 <!-- pwsh -Command "badges.ps1" | -->
@@ -9,19 +9,19 @@
 
 ( **\<English\>** / [\<Japanese\>](./README_ja.md) )
 
-**CSVI** is a terminal-based CSV editor for UNIX-like systems and Windows.
+**Csvi** is a terminal-based CSV editor for UNIX-like systems and Windows.
 
 ## Key Features
 
 - **Minimal changes on save**  
-  CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
+  Csvi keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
   Only actual edits are saved—making it ideal for clean diffs and safe edits to production data.
 
 - **vi-style and Emacs-style keybindings**  
   Move the cursor like in vi, and edit cells like in Emacs.
 
 - **Reads from both file and standard input**  
-  You can pipe CSV data into CSVI or open a file directly.
+  You can pipe CSV data into Csvi or open a file directly.
 
 - **Fast startup and background loading**  
   Opens large files quickly without blocking the interface.
@@ -187,7 +187,7 @@ Environment Variables
 ### NO\_COLOR
 
 If the environment variable `NO_COLOR` is set to any value with at least one character,
-csvi disables colored output.
+Csvi disables colored output.
 This follows the standard proposed by [NO\_COLOR](https://no-color.org).
 
 ### RUNEWIDTH\_EASTASIAN
@@ -200,9 +200,9 @@ Specifies the display width for Unicode characters classified as ambiguous width
 ### COLORFGBG
 
 When the environment variable is defined in the form `(FG);(BG)` and the foreground `(FG)` is less than the background `(BG)`,
-csvi automatically uses color settings suitable for light backgrounds (equivalent to the `-rv` option).
+Csvi automatically uses color settings suitable for light backgrounds (equivalent to the `-rv` option).
 
-csvi normally uses the terminal's default colors via the escape sequences `ESC[39m` and `ESC[49m`.
+Csvi normally uses the terminal's default colors via the escape sequences `ESC[39m` and `ESC[49m`.
 Thus, the `(FG);(BG)` values are **not** directly applied; they are only used to determine whether gray background lines should be adjusted toward light or dark shades.
 
 ### GOREADLINESKK
