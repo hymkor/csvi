@@ -371,6 +371,8 @@ func (app *Application) printStatusLine() {
 		n += first(io.WriteString(app.out, "[TSV]"))
 	} else if app.Mode.Comma == ',' {
 		n += first(io.WriteString(app.out, "[CSV]"))
+	} else {
+		n += first(fmt.Fprintf(app.out, `["%c"]`, app.Mode.Comma))
 	}
 	switch app.cursorRow.Term {
 	case "\r\n":

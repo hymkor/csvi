@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- `-delimiter` で設定した値を、ステータスラインに表示するようにした (#57)
+
 v1.20.1
 -------
 Jan 18, 2026

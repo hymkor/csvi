@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Print the value of `-delimiter` on the status line (#57)
+
 v1.20.1
 -------
 Jan 18, 2026
