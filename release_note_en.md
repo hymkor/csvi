@@ -5,6 +5,8 @@ Release notes
 - Print the value of `-delimiter` on the status line (#57)
 - README: Normalize naming: use "Csvi" for the application name and `csvi` for the command (#58)
 - Update startup message to use "Csvi" instead of "csvi" (#58)
+- Internal: slightly improved handling of halfwidth voiced sound marks during truncation. (#59)
+  - Work around width miscalculation by inserting U+007F before them
 
 v1.20.1
 -------
