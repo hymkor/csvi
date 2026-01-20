@@ -7,6 +7,7 @@ Release notes
 - 起動時メッセージでは「csvi」ではなく「Csvi」を使うようにした (#58)
 - 内部変更: 半角カナの濁音を含む文字列の切り詰め処理をわずかに改善 (#59)
   - 濁音記号の前に U+007F を挿入し、幅の誤計測を回避
+- 内部変更: "internal/nonblock": `(*NonBlock) TryFetch` がタイムアウト時に `io.EOF` ではなく `os.ErrDeadlineExceeded` を返すように変更 (#61)
 
 v1.20.1
 -------
