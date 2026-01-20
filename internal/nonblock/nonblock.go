@@ -3,6 +3,7 @@ package nonblock
 import (
 	"errors"
 	"io"
+	"os"
 	"time"
 )
 
@@ -102,7 +103,13 @@ func (w *NonBlock[T]) Fetch() (T, error) {
 	return res.val, res.err
 }
 
+// TryFetch reads a single data item with a timeout.
+// This method is intended for use cases where only data retrieval is needed
+// and no key input is involved.
+// If the timeout expires, it returns os.ErrDeadlineExceeded.
+// If the data input channel is closed, it returns io.EOF.
 func (w *NonBlock[T]) TryFetch(timeout time.Duration) (T, error) {
+	var zero T
 	select {
 	case res, ok := <-w.chDataRes:
 		if ok {
@@ -112,10 +119,10 @@ func (w *NonBlock[T]) TryFetch(timeout time.Duration) (T, error) {
 			return res.val, res.err
 		}
 		w.noMoreData = true
+		return zero, io.EOF
 	case <-time.After(timeout):
+		return zero, os.ErrDeadlineExceeded
 	}
-	var zero T
-	return zero, io.EOF
 }
 
 func (w *NonBlock[T]) Close() {
