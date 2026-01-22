@@ -8,6 +8,7 @@ Release notes
 - Internal: slightly improved handling of halfwidth voiced sound marks during truncation. (#59)
   - Work around width miscalculation by inserting U+007F before them
 - Internal: "internal/nonblock": `(*NonBlock) TryFetch` now returns `os.ErrDeadlineExceeded` instead of `io.EOF` when a timeout occurs. (#61)
+- Display a text animation while waiting for a save operation to complete. (#62)
 
 v1.20.1
 -------

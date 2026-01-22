@@ -7,6 +7,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-runewidth v0.0.19
+	github.com/nyaosorg/go-inline-animation v0.3.0
 	github.com/nyaosorg/go-readline-ny v1.12.3
 	github.com/nyaosorg/go-readline-skk v0.6.1
 	github.com/nyaosorg/go-ttyadapter v0.2.0
