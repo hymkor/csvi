@@ -1142,6 +1142,17 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1201">v1.20.1</h2>
+<p>Jan 18, 2026</p>
+<ul>
+<li>v1.19.2 〜 v1.19.4 で行った不具合修正をv1.20 系へ反映
+<ul>
+<li>CSVデータ読み込み途中で保存操作を行うと、以後のキー入力待ちの間に CPU が空回りしてしまう問題を修正 (#54,v1.19.4)</li>
+<li>CSV が画面行数よりも短い場合に CPU が空回しになってしまう問題を修正 (#52,v1.19.3)</li>
+<li>データ読み込みが終わると、CPU が空回りになる問題に対処 (#49,#50,v1.19.2)</li>
+</ul>
+</li>
+</ul>
 <h2 id="v1200">v1.20.0</h2>
 <p>Jan 17, 2026</p>
 <ul>
@@ -1629,6 +1640,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1201">v1.20.1</a></li>
 <li><a href="#v1200">v1.20.0</a></li>
 <li><a href="#v1194">v1.19.4</a></li>
 <li><a href="#v1193">v1.19.3</a></li>
