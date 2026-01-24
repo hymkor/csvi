@@ -61,17 +61,13 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 
 <!-- pwsh -Command "readme-install.ps1" | -->
 
-### Use "go install" (requires Go toolchain)
+### Use [eget] installer (cross-platform)
 
-```
-go install github.com/hymkor/csvi/cmd/csvi@latest
-```
+```sh
+brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
 
-Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your $PATH to execute `csvi`.
-
-### Use [eget] installer (cross-platform)"
-
-```
 cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
 ```
@@ -92,6 +88,14 @@ scoop install csvi
 ```
 
 [scoop]: https://scoop.sh/
+
+### Use "go install" (requires Go toolchain)
+
+```
+go install github.com/hymkor/csvi/cmd/csvi@latest
+```
+
+Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your `$PATH` to execute `csvi`.
 <!-- -->
 
 Usage

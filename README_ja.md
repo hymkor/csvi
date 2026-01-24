@@ -59,19 +59,15 @@ Install
 > &#9888;&#65039; Note: macOS用バイナリは実験的ビルドで、検証できていません。
 > もし何らかの問題を確認されましたらお知らせください！
 
-<!-- pwsh -Command "readme-install.ps1 'ja'" -->
-
-### "go install" を使う場合 (要Go言語開発環境)
-
-```
-go install github.com/hymkor/csvi@latest
-```
-
-`go install` は `$HOME/go/bin` もしくは `$GOPATH/bin` へ実行ファイルを導入するので、`csvi` を実行するにはそのディレクトリを `$PATH` に追加する必要があります。
+<!-- pwsh -Command "readme-install.ps1 'ja'" | -->
 
 ### [eget] インストーラーを使う場合 (クロスプラットフォーム)
 
-```
+```sh
+brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
 cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
 ```
@@ -93,6 +89,13 @@ scoop install csvi
 
 [scoop]: https://scoop.sh/
 
+### "go install" を使う場合 (要Go言語開発環境)
+
+```
+go install github.com/hymkor/csvi/cmd/csvi@latest
+```
+
+`go install` は `$HOME/go/bin` もしくは `$GOPATH/bin` へ実行ファイルを導入するので、`csvi` を実行するにはそのディレクトリを `$PATH` に追加する必要があります。
 <!-- -->
 
 Usage
