@@ -1142,6 +1142,15 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
+<h2 id="v1200">v1.20.0</h2>
+<p>Jan 17, 2026</p>
+<ul>
+<li>Pressing <code>Shift</code>+<code>R</code> now edits the current cell using the editor specified by the <code>-exteditor</code> option. If not specified, it behaves the same as <code>r</code> and uses the built-in readline. (#43)</li>
+<li>Add <code>-o</code> option that specifies the filename to write when reading csv from standard input (#45)</li>
+<li>Change the save prompt default filename from <code>-</code> to empty and require explicit input for standard input (#46)</li>
+<li>Add <code>-delimiter</code> option that specifies the field separator (#47)</li>
+<li>Fix display overflow caused by halfwidth kana with voiced/semi-voiced sound marks (#48)</li>
+</ul>
 <h2 id="v1194">v1.19.4</h2>
 <p>Jan 18, 2026</p>
 <ul>
@@ -1625,6 +1634,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1200">v1.20.0</a></li>
 <li><a href="#v1194">v1.19.4</a></li>
 <li><a href="#v1193">v1.19.3</a></li>
 <li><a href="#v1192">v1.19.2</a></li>

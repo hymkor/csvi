@@ -14,7 +14,7 @@ import (
 
 var overWritten = map[string]struct{}{}
 
-func (app *application) dump(w io.Writer) {
+func (app *Application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
 		func() *uncsv.Row {
@@ -30,7 +30,7 @@ func (app *application) dump(w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
-func (app *application) cmdWrite(fname string) (string, error) {
+func (app *Application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
 		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
@@ -58,7 +58,7 @@ func (app *application) cmdWrite(fname string) (string, error) {
 	if _, done := overWritten[fname]; done || !stat.Mode().IsRegular() {
 		openflag = os.O_WRONLY | os.O_CREATE | os.O_TRUNC
 	} else {
-		if !app.YesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
+		if !app.yesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
 			return "", errCanceled
 		}
 		backup := fname + "~"
@@ -81,12 +81,12 @@ func (app *application) cmdWrite(fname string) (string, error) {
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
-func (app *application) cmdSave() (string, error) {
+func (app *Application) cmdSave() (string, error) {
 	var wg sync.WaitGroup
 	chStop := make(chan struct{})
 	defer close(chStop)
 
-	if app.fetch != nil {
+	if app.fetchFunc != nil {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -95,18 +95,18 @@ func (app *application) cmdSave() (string, error) {
 				case <-chStop:
 					return
 				default:
-					row, err := app.fetch()
+					row, err := app.fetchFunc()
 					if err != nil && !errors.Is(err, io.EOF) {
-						app.fetch = nil
-						app.tryFetch = nil
+						app.fetchFunc = nil
+						app.tryFetchFunc = nil
 						return
 					}
 					if row != nil {
-						app.Push(row)
+						app.push(row)
 					}
 					if errors.Is(err, io.EOF) {
-						app.fetch = nil
-						app.tryFetch = nil
+						app.fetchFunc = nil
+						app.tryFetchFunc = nil
 						return
 					}
 				}
@@ -121,7 +121,7 @@ func (app *application) cmdSave() (string, error) {
 	wg.Wait()
 	message, err := app.cmdWrite(fname)
 	if err == nil {
-		app.ResetDirty()
+		app.resetDirty()
 	}
 	app.lastSavePath = fname
 	return message, err
