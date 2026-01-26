@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Removed the line deletion assigned to the uppercase `D` key. This was done because the escape sequence for the left arrow key (`\x1B[D`) could be split in some environments, causing unintended behavior. Line deletion is still available via `dd`.(#65)
+
 v1.21.0
 -------
 Jan 24, 2026
