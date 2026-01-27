@@ -3,7 +3,7 @@ Release notes
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Removed the line deletion assigned to the uppercase `D` key. This was done because the escape sequence for the left arrow key (`\x1B[D`) could be split in some environments, causing unintended behavior. Line deletion is still available via `dd`.(#65)
-- Added buffering for incomplete escape sequences to prevent misinterpretation of split ESC inputs. (#66)
+- Changed the Escape key handling to treat it as a prefix key, preventing misbehavior caused by split ESC sequences. (#66,#67)
 
 v1.21.0
 -------
