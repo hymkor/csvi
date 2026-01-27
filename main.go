@@ -653,6 +653,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	}
 	message := cfg.Message
 	var killbuffer pasteFunc
+
+	// Some terminals may split escape sequences (e.g. ESC + '[' + 'D').
+	// To avoid misinterpreting partial input, we buffer prefix keys here.
+	var pendingEscape string
+
 	for {
 		app.screenHeight = allScreenHeight - len(cfg.Titles)
 		app.screenHeight -= cfg.HeaderLines
@@ -708,7 +713,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			}
 			message = cmdResult.Message
 		} else {
+			ch = pendingEscape + ch
+			pendingEscape = ""
 			switch ch {
+			case "\x1B[":
+				pendingEscape = "\x1B["
 			case keys.CtrlL:
 				app.clearCache()
 			case "L":
@@ -1075,6 +1084,8 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					break
 				}
 				switch ch {
+				case "[":
+					pendingEscape = "\x1B["
 				case "q", "Q":
 					if rc, err := app.cmdQuit(); err != nil {
 						message = err.Error()
