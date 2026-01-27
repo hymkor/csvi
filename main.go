@@ -653,11 +653,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	}
 	message := cfg.Message
 	var killbuffer pasteFunc
-
-	// Some terminals may split escape sequences (e.g. ESC + '[' + 'D').
-	// To avoid misinterpreting partial input, we buffer prefix keys here.
-	var pendingEscape string
-
 	for {
 		app.screenHeight = allScreenHeight - len(cfg.Titles)
 		app.screenHeight -= cfg.HeaderLines
@@ -713,11 +708,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			}
 			message = cmdResult.Message
 		} else {
-			ch = pendingEscape + ch
-			pendingEscape = ""
 			switch ch {
-			case "\x1B[":
-				pendingEscape = "\x1B["
 			case keys.CtrlL:
 				app.clearCache()
 			case "L":
@@ -736,7 +727,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				app.resetSoftDirty()
 				app.clearCache()
-			case "q":
+			case "q", keys.AltQ:
 				if rc, err := app.cmdQuit(); err != nil {
 					message = err.Error()
 				} else if rc != nil {
@@ -1077,33 +1068,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					cellWidth.Set(app.cursorCol, w)
 				}
 				app.clearCache()
-			case keys.Escape:
-				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste]`)
-				if err != nil {
-					message = err.Error()
-					break
-				}
-				switch ch {
-				case "[":
-					pendingEscape = "\x1B["
-				case "q", "Q":
-					if rc, err := app.cmdQuit(); err != nil {
-						message = err.Error()
-					} else if rc != nil {
-						return rc, nil
-					}
-				case "p", "P":
-					if killbuffer == nil {
-						break
-					}
-					if err := killbuffer(&app.startRow, &app.cursorRow, &app.cursorCol, pasteOver); err != nil {
-						message = err.Error()
-						break
-					}
-					app.setHardDirty()
-					app.repaint()
-					app.clearCache()
-				}
 			}
 		}
 		if L := len(app.cursorRow.Cell); L <= 0 {

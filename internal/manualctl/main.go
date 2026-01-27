@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/nyaosorg/go-ttyadapter"
 	"github.com/nyaosorg/go-ttyadapter/tty8"
 
 	"github.com/nyaosorg/go-readline-ny"
@@ -34,13 +35,13 @@ func (c *clipBoard) Write(text string) error {
 }
 
 type ManualCtl struct {
-	*tty8.Tty
+	ttyadapter.Tty
 	clipBoard
 }
 
 func New() (*ManualCtl, error) {
 	mc := &ManualCtl{
-		Tty: &tty8.Tty{},
+		Tty: &PendingEscTty{Tty: &tty8.Tty{}},
 	}
 	return mc, mc.Open(nil)
 }
