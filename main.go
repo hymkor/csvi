@@ -911,15 +911,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					app.cursorRow.Replace(newCol, text, mode)
 				}
 				app.setHardDirty()
-			case "D":
-				if m := cfg.checkWriteProtect(app.cursorRow); m != "" {
-					message = m
-					break
-				}
-				killbuffer = app.removeCurrentRow(&app.startRow, &app.cursorRow)
-				app.repaint()
-				app.clearCache()
-				app.setHardDirty()
 			case "i":
 				if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
 					message = m

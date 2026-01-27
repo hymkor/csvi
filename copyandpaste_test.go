@@ -14,9 +14,9 @@ func TestDeleteCell(t *testing.T) { // `x`
 	testCase(t, src, op, src, "-readonly") // can not update
 }
 
-func TestDeleteRow(t *testing.T) { // `D`
+func TestDeleteRow(t *testing.T) { // `dd`
 	src := "あ,い,う,え,お\nか,き,く,け,こ"
-	op := "<|D"
+	op := "<|d|d"
 	exp := "か,き,く,け,こ"
 
 	testCase(t, src, op, exp)

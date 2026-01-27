@@ -165,7 +165,7 @@ Key-binding
     * `R` (replace the current cell with the external editor)
     * `x` (clear the current cell)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv` (delete cell and shift cells on the right)
-    * `dd`, `dr`, `D` (delete the current line)
+    * `dd`, `dr` (delete the current line)
     * `dc`, `d|` (delete the current column)
     * `w` (write to a file or STDOUT(`'-'`))
     * `o` (append a new line after the current one)

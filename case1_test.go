@@ -140,7 +140,7 @@ func TestHeadSmallO(t *testing.T) {
 }
 
 func TestTailD(t *testing.T) {
-	op := ">|D"
+	op := ">|d|d"
 	exp := `あ,い,う,え,お
 か,き,く,け,こ
 さ,し,す,せ,そ
@@ -154,7 +154,7 @@ func TestTailD(t *testing.T) {
 }
 
 func TestHeadLargeD(t *testing.T) {
-	op := "<|D"
+	op := "<|d|d"
 	exp := `か,き,く,け,こ
 さ,し,す,せ,そ
 た,ち,つ,て,と
