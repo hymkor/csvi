@@ -4,9 +4,10 @@ Release notes
 
 - 英大文字の`D`キーから行削除の機能を除いた（左矢印キーを表すキーシーケンス `\x1B[D` の入力が分断された場合に、誤動作することがあったため。行削除は `dd` でも利用可能）(#65)
 - Escapeキーをプレフィックスキーとして扱うように変更し、分断された ESC シーケンスによる誤動作を防止した (#66,#67)
-- go-readline-ny を v1.12.3 から v1.14.0 へ更新
+- go-readline-ny を v1.12.3 から v1.14.0 へ更新 (#68)
   - [Release v1.13.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.13.0)
   - [Release v1.14.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.0)
+  - `Esc` がプリフィクス専用となり、セル編集時のキャンセルとして使えなくなったため、かわりに Emacs同様 `Ctrl-G` をセル編集のキャンセルキーとして用いるようにした。 (#68)
 
 v1.21.0
 -------

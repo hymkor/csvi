@@ -4,9 +4,10 @@ Release notes
 
 - Removed the line deletion assigned to the uppercase `D` key. This was done because the escape sequence for the left arrow key (`\x1B[D`) could be split in some environments, causing unintended behavior. Line deletion is still available via `dd`.(#65)
 - Changed the Escape key handling to treat it as a prefix key, preventing misbehavior caused by split ESC sequences. (#66,#67)
-- Update go-readline-ny from v1.12.3 to v1.14.0
+- Update go-readline-ny from v1.12.3 to v1.14.0 (#68)
   - [Release v1.13.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.13.0)
   - [Release v1.14.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.0)
+  - Since `Esc` is now used as a prefix key, it can no longer be used to cancel cell editing. `Ctrl-G` is now used instead, following Emacs behavior. (#68)
 
 v1.21.0
 -------
