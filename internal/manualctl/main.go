@@ -41,7 +41,7 @@ type ManualCtl struct {
 
 func New() (*ManualCtl, error) {
 	mc := &ManualCtl{
-		Tty: &PendingEscTty{Tty: &tty8.Tty{}},
+		Tty: pendingEscTty{Tty: &tty8.Tty{}},
 	}
 	return mc, mc.Open(nil)
 }
