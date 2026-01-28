@@ -18,7 +18,8 @@ Csvi - A terminal CSV editor
   Only actual edits are saved—making it ideal for clean diffs and safe edits to production data.
 
 - **vi-style and Emacs-style keybindings**  
-  Move the cursor like in vi, and edit cells like in Emacs.
+  Move the cursor like in vi, and edit cells using Emacs-style key bindings.  
+  (Since v1.21.1, `Ctrl-G` is used instead of `Esc` to cancel cell editing.)
 
 - **Reads from both file and standard input**  
   You can pipe CSV data into Csvi or open a file directly.
