@@ -4,10 +4,11 @@ Release notes
 
 - 英大文字の`D`キーから行削除の機能を除いた（左矢印キーを表すキーシーケンス `\x1B[D` の入力が分断された場合に、誤動作することがあったため。行削除は `dd` でも利用可能）(#65)
 - Escapeキーをプレフィックスキーとして扱うように変更し、分断された ESC シーケンスによる誤動作を防止した (#66,#67)
-- go-readline-ny を v1.12.3 から v1.14.0 へ更新 (#68)
+- go-readline-ny を v1.12.3 から v1.14.1 へ更新 (#68,#71)
   - [Release v1.13.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.13.0)
   - [Release v1.14.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.0)
-  - `Esc` がプリフィクス専用となり、セル編集時のキャンセルとして使えなくなったため、かわりに Emacs同様 `Ctrl-G` をセル編集のキャンセルキーとして用いるようにした。 (#68)
+  - `Esc` がプリフィクス専用となり、セル編集時のキャンセルとして使えなくなったため、かわりに Emacs同様 `Ctrl-G` をセル編集のキャンセルキーとして用いるようにした。
+  - [Release v1.14.1 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.1)
 - go-ttyadapter を v0.2.0 からv0.3.0 へ更新 (#70)
   - `Esc` 対応のため、サブパッケージ `tty8` ではなく `tty8pe` を用いるようにした。
 
