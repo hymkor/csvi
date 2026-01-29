@@ -8,6 +8,8 @@ Release notes
   - [Release v1.13.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.13.0)
   - [Release v1.14.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.0)
   - `Esc` がプリフィクス専用となり、セル編集時のキャンセルとして使えなくなったため、かわりに Emacs同様 `Ctrl-G` をセル編集のキャンセルキーとして用いるようにした。 (#68)
+- go-ttyadapter を v0.2.0 からv0.3.0 へ更新 (#70)
+  - `Esc` 対応のため、サブパッケージ `tty8` ではなく `tty8pe` を用いるようにした。
 
 v1.21.0
 -------
