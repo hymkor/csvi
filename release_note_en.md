@@ -8,6 +8,8 @@ Release notes
   - [Release v1.13.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.13.0)
   - [Release v1.14.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.0)
   - Since `Esc` is now used as a prefix key, it can no longer be used to cancel cell editing. `Ctrl-G` is now used instead, following Emacs behavior. (#68)
+- Update go-ttyadapter from v0.2.0 to v0.3.0 (#70)
+  - Use `go-ttyadapter/tty8pe` instead of `go-ttyadapter/tty8` for `Esc` sequences
 
 v1.21.0
 -------
