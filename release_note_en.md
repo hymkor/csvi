@@ -3,14 +3,15 @@ Release notes
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Removed the line deletion assigned to the uppercase `D` key. This was done because the escape sequence for the left arrow key (`\x1B[D`) could be split in some environments, causing unintended behavior. Line deletion is still available via `dd`.(#65)
-- Changed the Escape key handling to treat it as a prefix key, preventing misbehavior caused by split ESC sequences. (#66,#67)
-- Update go-readline-ny from v1.12.3 to v1.14.1 (#68,#71)
-  - [Release v1.13.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.13.0)
-  - [Release v1.14.0 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.0)
-  - Since `Esc` is now used as a prefix key, it can no longer be used to cancel cell editing. `Ctrl-G` is now used instead, following Emacs behavior.
-  - [Release v1.14.1 · nyaosorg/go-readline-ny](https://github.com/nyaosorg/go-readline-ny/releases/tag/v1.14.1)
-- Update go-ttyadapter from v0.2.0 to v0.3.0 (#70)
-  - Use `go-ttyadapter/tty8pe` instead of `go-ttyadapter/tty8` for `Esc` sequences
+- Improved handling of the Escape key by treating it as a prefix key, preventing misinterpretation of split ESC sequences. (#66, #67)
+- As a result, the key used to cancel cell editing has changed:
+  - Previously: `Esc`
+  - Now: `Ctrl-G` (consistent with Emacs behavior)
+- The following internal libraries were updated as part of this change:
+  - go-readline-ny: v1.12.3 → v1.14.1 (#68, #71)
+    - Improved ESC prefix handling
+  - go-ttyadapter: v0.2.0 → v0.3.0 (#70)
+    - Switched to `tty8pe` for proper ESC sequence handling
 
 v1.21.0
 -------
