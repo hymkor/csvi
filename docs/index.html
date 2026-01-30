@@ -1140,28 +1140,29 @@ a.permalink:hover{
 </style>
 </head><body>
 <div class="main markdown-body">
-<h1 id="csvi---terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor</h1>
+<h1 id="csvi---a-terminal-csv-editor">Csvi - A terminal CSV editor</h1>
 <!-- raw HTML omitted -->
 <p><a href="https://github.com/hymkor/csvi/actions/workflows/go.yml"><img src="https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
 <a href="https://github.com/hymkor/csvi/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
 <a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi.svg" alt="Go Reference" /></a></p>
 <!-- raw HTML omitted -->
 <p>( <strong>&lt;English&gt;</strong> / <a href="./index_ja.html">&lt;Japanese&gt;</a> )</p>
-<p><strong>CSVI</strong> is a terminal-based CSV editor for UNIX-like systems and Windows.</p>
+<p><strong>Csvi</strong> is a terminal-based CSV editor for UNIX-like systems and Windows.</p>
 <h2 id="key-features">Key Features</h2>
 <ul>
 <li>
 <p><strong>Minimal changes on save</strong><br />
-CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.<br />
+Csvi keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.<br />
 Only actual edits are saved—making it ideal for clean diffs and safe edits to production data.</p>
 </li>
 <li>
 <p><strong>vi-style and Emacs-style keybindings</strong><br />
-Move the cursor like in vi, and edit cells like in Emacs.</p>
+Move the cursor like in vi, and edit cells using Emacs-style key bindings.<br />
+(Since v1.21.1, <code>Ctrl-G</code> is used instead of <code>Esc</code> to cancel cell editing.)</p>
 </li>
 <li>
 <p><strong>Reads from both file and standard input</strong><br />
-You can pipe CSV data into CSVI or open a file directly.</p>
+You can pipe CSV data into Csvi or open a file directly.</p>
 </li>
 <li>
 <p><strong>Fast startup and background loading</strong><br />
@@ -1203,12 +1204,12 @@ The bottom line of the screen shows technical info: quoting, encoding, field sep
 Please let us know if you encounter any issues!</p>
 </blockquote>
 <!-- raw HTML omitted -->
-<h3 id="use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</h3>
-<pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
-</code></pre>
-<p>Because <code>go install</code> introduces the executable into <code>$HOME/go/bin</code> or <code>$GOPATH/bin</code>, you need to add this directory to your $PATH to execute <code>csvi</code>.</p>
-<h3 id="use-eget-installer-cross-platform">Use <a href="https://github.com/zyedidia/eget">eget</a> installer (cross-platform)&quot;</h3>
-<pre><code>cd (YOUR-BIN-DIRECTORY)
+<h3 id="use-eget-installer-cross-platform">Use <a href="https://github.com/zyedidia/eget">eget</a> installer (cross-platform)</h3>
+<pre><code class="language-sh">brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
+cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
 </code></pre>
 <h3 id="use-scoop-installer-windows-only">Use <a href="https://scoop.sh/">scoop</a>-installer (Windows only)</h3>
@@ -1218,6 +1219,10 @@ eget hymkor/csvi
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 </code></pre>
+<h3 id="use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</h3>
+<pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
+</code></pre>
+<p>Because <code>go install</code> introduces the executable into <code>$HOME/go/bin</code> or <code>$GOPATH/bin</code>, you need to add this directory to your <code>$PATH</code> to execute <code>csvi</code>.</p>
 <!-- raw HTML omitted -->
 <h2 id="usage">Usage</h2>
 <pre><code>$ csvi {options} FILENAME(...)
@@ -1282,7 +1287,7 @@ scoop install csvi
 <li><code>R</code> (replace the current cell with the external editor)</li>
 <li><code>x</code> (clear the current cell)</li>
 <li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code> (delete cell and shift cells on the right)</li>
-<li><code>dd</code>, <code>dr</code>, <code>D</code> (delete the current line)</li>
+<li><code>dd</code>, <code>dr</code> (delete the current line)</li>
 <li><code>dc</code>, <code>d|</code> (delete the current column)</li>
 <li><code>w</code> (write to a file or STDOUT(<code>'-'</code>))</li>
 <li><code>o</code> (append a new line after the current one)</li>
@@ -1310,7 +1315,7 @@ scoop install csvi
 <h2 id="environment-variables">Environment Variables</h2>
 <h3 id="no-color">NO_COLOR</h3>
 <p>If the environment variable <code>NO_COLOR</code> is set to any value with at least one character,
-csvi disables colored output.
+Csvi disables colored output.
 This follows the standard proposed by <a href="https://no-color.org">NO_COLOR</a>.</p>
 <h3 id="runewidth-eastasian">RUNEWIDTH_EASTASIAN</h3>
 <p>Specifies the display width for Unicode characters classified as ambiguous width.</p>
@@ -1320,8 +1325,8 @@ This follows the standard proposed by <a href="https://no-color.org">NO_COLOR</a
 </ul>
 <h3 id="colorfgbg">COLORFGBG</h3>
 <p>When the environment variable is defined in the form <code>(FG);(BG)</code> and the foreground <code>(FG)</code> is less than the background <code>(BG)</code>,
-csvi automatically uses color settings suitable for light backgrounds (equivalent to the <code>-rv</code> option).</p>
-<p>csvi normally uses the terminal's default colors via the escape sequences <code>ESC[39m</code> and <code>ESC[49m</code>.
+Csvi automatically uses color settings suitable for light backgrounds (equivalent to the <code>-rv</code> option).</p>
+<p>Csvi normally uses the terminal's default colors via the escape sequences <code>ESC[39m</code> and <code>ESC[49m</code>.
 Thus, the <code>(FG);(BG)</code> values are <strong>not</strong> directly applied; they are only used to determine whether gray background lines should be adjusted toward light or dark shades.</p>
 <h3 id="goreadlineskk">GOREADLINESKK</h3>
 <p>When the environment variable <code>GOREADLINESKK</code> specifies dictionary files,
@@ -1413,15 +1418,15 @@ func main() {
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
-<li><a href="#csvi-terminal-csv-editor">&quot;CSVI&quot; - Terminal CSV Editor</a>
+<li><a href="#csvi-a-terminal-csv-editor">Csvi - A terminal CSV editor </a>
 <ul>
 <li><a href="#key-features">Key Features</a></li>
 <li><a href="#install">Install</a>
 <ul>
 <li><a href="#manual-installation">Manual Installation</a></li>
-<li><a href="#use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</a></li>
-<li><a href="#use-eget-installer-cross-platform">Use [eget] installer (cross-platform)&quot;</a></li>
+<li><a href="#use-eget-installer-cross-platform">Use [eget] installer (cross-platform)</a></li>
 <li><a href="#use-scoop-installer-windows-only">Use [scoop]-installer (Windows only)</a></li>
+<li><a href="#use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</a></li>
 </ul>
 </li>
 <li><a href="#usage">Usage</a></li>

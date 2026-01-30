@@ -1140,14 +1140,14 @@ a.permalink:hover{
 </style>
 </head><body>
 <div class="main markdown-body">
-<h1 id="csvi---%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8csv%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">&quot;CSVI&quot; - ターミナル用CSVエディタ</h1>
+<h1 id="csvi---%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8-csv-%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">Csvi - ターミナル用 CSV エディタ</h1>
 <!-- raw HTML omitted -->
 <p><a href="https://github.com/hymkor/csvi/actions/workflows/go.yml"><img src="https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
 <a href="https://github.com/hymkor/csvi/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
 <a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi.svg" alt="Go Reference" /></a></p>
 <!-- raw HTML omitted -->
 <p>( <a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong> )</p>
-<p><strong>CSVI</strong> は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。</p>
+<p><strong>Csvi</strong> は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。</p>
 <h2 id="%E4%B8%BB%E3%81%AA%E7%89%B9%E5%BE%B4">主な特徴</h2>
 <ul>
 <li>
@@ -1157,7 +1157,8 @@ a.permalink:hover{
 </li>
 <li>
 <p><strong>vi風のカーソル移動、Emacs風のセル編集</strong><br />
-<code>h/j/k/l</code> などで移動、<code>Ctrl</code> 系のキーで編集できます。</p>
+<code>h/j/k/l</code> などで移動、<code>Ctrl</code> 系のキーで編集できます。<br />
+（v1.21.1 より、セル編集の中止は <code>Esc</code> から <code>Ctrl-G</code> にかわりました）</p>
 </li>
 <li>
 <p><strong>ファイル／標準入力の両方に対応</strong><br />
@@ -1203,12 +1204,12 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 もし何らかの問題を確認されましたらお知らせください！</p>
 </blockquote>
 <!-- raw HTML omitted -->
-<h3 id="go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E8%A6%81go%E8%A8%80%E8%AA%9E%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83">&quot;go install&quot; を使う場合 (要Go言語開発環境)</h3>
-<pre><code>go install github.com/hymkor/csvi@latest
-</code></pre>
-<p><code>go install</code> は <code>$HOME/go/bin</code> もしくは <code>$GOPATH/bin</code> へ実行ファイルを導入するので、<code>csvi</code> を実行するにはそのディレクトリを <code>$PATH</code> に追加する必要があります。</p>
 <h3 id="eget-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E3%82%AF%E3%83%AD%E3%82%B9%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0"><a href="https://github.com/zyedidia/eget">eget</a> インストーラーを使う場合 (クロスプラットフォーム)</h3>
-<pre><code>cd (YOUR-BIN-DIRECTORY)
+<pre><code class="language-sh">brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
+cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
 </code></pre>
 <h3 id="scoop-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-windows%E3%81%AE%E3%81%BF"><a href="https://scoop.sh/">scoop</a> インストーラーを使う場合 (Windowsのみ)</h3>
@@ -1218,6 +1219,10 @@ eget hymkor/csvi
 <pre><code>scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install csvi
 </code></pre>
+<h3 id="go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E8%A6%81go%E8%A8%80%E8%AA%9E%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83">&quot;go install&quot; を使う場合 (要Go言語開発環境)</h3>
+<pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
+</code></pre>
+<p><code>go install</code> は <code>$HOME/go/bin</code> もしくは <code>$GOPATH/bin</code> へ実行ファイルを導入するので、<code>csvi</code> を実行するにはそのディレクトリを <code>$PATH</code> に追加する必要があります。</p>
 <!-- raw HTML omitted -->
 <h2 id="usage">Usage</h2>
 <pre><code>$ csvi {options} FILENAME(...)
@@ -1282,7 +1287,7 @@ scoop install csvi
 <li><code>R</code> (現在のセルを外部エディターで編集)</li>
 <li><code>x</code> (現在のセルを空にする)</li>
 <li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>  (現在のセルを削除して右のセルで詰める)</li>
-<li><code>dd</code>, <code>dr</code>, <code>D</code> (現在の行を削除する)</li>
+<li><code>dd</code>, <code>dr</code> (現在の行を削除する)</li>
 <li><code>dc</code>, <code>d|</code> (現在の列を削除する)</li>
 <li><code>w</code> (ファイルもしくは標準出力(<code>'-'</code>)に出力する)</li>
 <li><code>o</code> (現在の行の後に新しい行を追加する)</li>
@@ -1309,7 +1314,7 @@ scoop install csvi
 </ul>
 <h2 id="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0">環境変数</h2>
 <h3 id="no-color">NO_COLOR</h3>
-<p>環境変数 <code>NO_COLOR</code> が 1 文字以上設定されている場合、csvi の色付け出力を無効化します。これは <a href="https://no-color.org">NO_COLOR</a> で提唱されている標準仕様に従った挙動です。</p>
+<p>環境変数 <code>NO_COLOR</code> が 1 文字以上設定されている場合、Csvi の色付け出力を無効化します。これは <a href="https://no-color.org">NO_COLOR</a> で提唱されている標準仕様に従った挙動です。</p>
 <h3 id="runewidth-eastasian">RUNEWIDTH_EASTASIAN</h3>
 <p>Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定します。</p>
 <ul>
@@ -1318,7 +1323,7 @@ scoop install csvi
 </ul>
 <h3 id="colorfgbg">COLORFGBG</h3>
 <p><code>(FG);(BG)</code> 形式で色が定義されている場合、前景色の値が背景色より小さいとき、白背景を前提とした配色（<code>-rv</code> オプション相当）を自動的に使用します。</p>
-<p>なお、csvi は通常、端末のデフォルト色を示すエスケープコード <code>ESC[39m</code> および <code>ESC[49m</code> を使用します。そのため、<code>(FG);(BG)</code> で指定された色そのものを直接採用するわけではありません。この設定は主に、灰色背景行の濃淡を白寄り・黒寄りのどちらにするかの判定に用いられます。</p>
+<p>なお、Csvi は通常、端末のデフォルト色を示すエスケープコード <code>ESC[39m</code> および <code>ESC[49m</code> を使用します。そのため、<code>(FG);(BG)</code> で指定された色そのものを直接採用するわけではありません。この設定は主に、灰色背景行の濃淡を白寄り・黒寄りのどちらにするかの判定に用いられます。</p>
 <h3 id="goreadlineskk">GOREADLINESKK</h3>
 <p>環境変数 <code>GOREADLINESKK</code> に辞書ファイルを指定すると、<a href="https://github.com/nyaosorg/go-readline-skk">go-readline-skk</a> を利用した内蔵 SKK かな漢字変換<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>が有効になります。</p>
 <ul>
@@ -1406,15 +1411,15 @@ func main() {
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
 <ul>
-<li><a href="#csvi-%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8csv%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">&quot;CSVI&quot; - ターミナル用CSVエディタ</a>
+<li><a href="#csvi-%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8-csv-%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">Csvi - ターミナル用 CSV エディタ</a>
 <ul>
 <li><a href="#%E4%B8%BB%E3%81%AA%E7%89%B9%E5%BE%B4">主な特徴</a></li>
 <li><a href="#install">Install</a>
 <ul>
 <li><a href="#manual-installation">Manual Installation</a></li>
-<li><a href="#go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E8%A6%81go%E8%A8%80%E8%AA%9E%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83">&quot;go install&quot; を使う場合 (要Go言語開発環境)</a></li>
 <li><a href="#eget-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E3%82%AF%E3%83%AD%E3%82%B9%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0">[eget] インストーラーを使う場合 (クロスプラットフォーム)</a></li>
 <li><a href="#scoop-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-windows%E3%81%AE%E3%81%BF">[scoop] インストーラーを使う場合 (Windowsのみ)</a></li>
+<li><a href="#go-install-%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E8%A6%81go%E8%A8%80%E8%AA%9E%E9%96%8B%E7%99%BA%E7%92%B0%E5%A2%83">&quot;go install&quot; を使う場合 (要Go言語開発環境)</a></li>
 </ul>
 </li>
 <li><a href="#usage">Usage</a></li>

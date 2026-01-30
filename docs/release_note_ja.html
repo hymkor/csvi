@@ -1142,6 +1142,58 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1211">v1.21.1</h2>
+<p>Jan 31, 2026</p>
+<ul>
+<li>英大文字の<code>D</code>キーから行削除の機能を除いた（左矢印キーを表すキーシーケンス <code>\x1B[D</code> の入力が分断された場合に、誤動作することがあったため。行削除は <code>dd</code> でも利用可能）(#65)</li>
+<li>Escape キーをプレフィックスキーとして扱うように変更し、
+分断された ESC シーケンス（例: <code>\x1B[</code>）による誤動作を防止した。 (#66, #67)</li>
+<li>これに伴い、セル編集中のキャンセル操作を以下のように変更した。
+<ul>
+<li>旧：<code>Esc</code></li>
+<li>新：<code>Ctrl-G</code>（Emacs と同様）</li>
+</ul>
+</li>
+<li>内部的には以下のライブラリを更新した：
+<ul>
+<li>go-readline-ny: v1.12.3 → v1.14.1 (#68, #71)
+<ul>
+<li>ESC をプレフィックスとして扱う挙動に変更</li>
+</ul>
+</li>
+<li>go-ttyadapter: v0.2.0 → v0.3.0 (#70)
+<ul>
+<li>ESC シーケンス処理の改善（<code>tty8</code> → <code>tty8pe</code>）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="v1210">v1.21.0</h2>
+<p>Jan 24, 2026</p>
+<ul>
+<li><code>-delimiter</code> で設定した値を、ステータスラインに表示するようにした (#57)</li>
+<li>README: アプリケーション名としては「Csvi」、コマンド名としては csvi に統一 (#58)</li>
+<li>起動時メッセージでは「csvi」ではなく「Csvi」を使うようにした (#58)</li>
+<li>内部変更: 半角カナの濁音を含む文字列の切り詰め処理をわずかに改善 (#59)
+<ul>
+<li>濁音記号の前に U+007F を挿入し、幅の誤計測を回避</li>
+</ul>
+</li>
+<li>内部変更: &quot;internal/nonblock&quot;: <code>(*NonBlock) TryFetch</code> がタイムアウト時に <code>io.EOF</code> ではなく <code>os.ErrDeadlineExceeded</code> を返すように変更 (#61)</li>
+<li>保存処理の待ち時間中にテキストアニメーションを表示するようにした (#62)</li>
+</ul>
+<h2 id="v1201">v1.20.1</h2>
+<p>Jan 18, 2026</p>
+<ul>
+<li>v1.19.2 〜 v1.19.4 で行った不具合修正をv1.20 系へ反映
+<ul>
+<li>CSVデータ読み込み途中で保存操作を行うと、以後のキー入力待ちの間に CPU が空回りしてしまう問題を修正 (#54,v1.19.4)</li>
+<li>CSV が画面行数よりも短い場合に CPU が空回しになってしまう問題を修正 (#52,v1.19.3)</li>
+<li>データ読み込みが終わると、CPU が空回りになる問題に対処 (#49,#50,v1.19.2)</li>
+</ul>
+</li>
+</ul>
 <h2 id="v1200">v1.20.0</h2>
 <p>Jan 17, 2026</p>
 <ul>
@@ -1629,6 +1681,9 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1211">v1.21.1</a></li>
+<li><a href="#v1210">v1.21.0</a></li>
+<li><a href="#v1201">v1.20.1</a></li>
 <li><a href="#v1200">v1.20.0</a></li>
 <li><a href="#v1194">v1.19.4</a></li>
 <li><a href="#v1193">v1.19.3</a></li>
