@@ -9,39 +9,33 @@ import (
 const (
 	voicedSoundMark     = "\uFF9E"
 	semiVoicedSoundMark = "\uFF9F"
-	privateUse1         = "\uE000"
-	privateUse2         = "\uE001"
+	delChar             = "\x7F"
 )
 
-var rewindTable = strings.NewReplacer(
-	privateUse1, voicedSoundMark,
-	privateUse2, semiVoicedSoundMark,
-)
+func insDel(s string, mark string) string {
+	var buffer strings.Builder
+	for {
+		at := strings.Index(s, mark)
+		if at < 0 {
+			if buffer.Len() > 0 {
+				buffer.WriteString(s)
+				return buffer.String()
+			}
+			return s
+		}
+		buffer.WriteString(s[:at])
+		buffer.WriteString(delChar)
+		buffer.WriteString(mark)
+		s = s[at+len(mark):]
+	}
+}
 
-// Temporarily replace halfwidth voiced/semi-voiced sound marks
-// with private-use characters to avoid width underestimation
-// in runewidth.Truncate.
+// Temporarily insert DEL (U+007F) before halfwidth voiced/semi-voiced marks
+// to prevent runewidth from treating them as emoji-like ligatures.
+// DEL is chosen because it has zero width and no terminal side effects.
 func truncate(s string, w int, tail string) string {
-	rewind := false
-	for {
-		at := strings.Index(s, voicedSoundMark)
-		if at < 0 {
-			break
-		}
-		s = s[:at] + privateUse1 + s[at+len(voicedSoundMark):]
-		rewind = true
-	}
-	for {
-		at := strings.Index(s, semiVoicedSoundMark)
-		if at < 0 {
-			break
-		}
-		s = s[:at] + privateUse2 + s[at+len(semiVoicedSoundMark):]
-		rewind = true
-	}
+	s = insDel(s, voicedSoundMark)
+	s = insDel(s, semiVoicedSoundMark)
 	s = runewidth.Truncate(s, w, tail)
-	if rewind {
-		s = rewindTable.Replace(s)
-	}
 	return s
 }

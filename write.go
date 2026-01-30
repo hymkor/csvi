@@ -8,6 +8,8 @@ import (
 	"os"
 	"sync"
 
+	"github.com/nyaosorg/go-inline-animation"
+
 	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/uncsv"
 )
@@ -32,6 +34,8 @@ var errCanceled = errors.New("canceled")
 
 func (app *Application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
+		end := animation.Dots.Progress(app.out)
+		defer end()
 		app.dump(os.Stdout)
 		return "Output to STDOUT", nil
 	}
@@ -41,6 +45,8 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 
 	fd, err := os.OpenFile(fname, openflag, perm)
 	if err == nil {
+		end := animation.Dots.Progress(app.out)
+		defer end()
 		app.dump(fd)
 		if err := fd.Close(); err != nil {
 			return "", err
@@ -74,6 +80,8 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	end := animation.Dots.Progress(app.out)
+	defer end()
 	app.dump(fd)
 	if err := fd.Close(); err != nil {
 		return "", err
@@ -118,7 +126,9 @@ func (app *Application) cmdSave() (string, error) {
 		return "", err
 	}
 	io.WriteString(app.out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+	end := animation.Dots.Progress(app.out)
 	wg.Wait()
+	end()
 	message, err := app.cmdWrite(fname)
 	if err == nil {
 		app.resetDirty()

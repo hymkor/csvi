@@ -2,6 +2,33 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.21.1
+-------
+Jan 31, 2026
+
+- Removed the line deletion assigned to the uppercase `D` key. This was done because the escape sequence for the left arrow key (`\x1B[D`) could be split in some environments, causing unintended behavior. Line deletion is still available via `dd`.(#65)
+- Improved handling of the Escape key by treating it as a prefix key, preventing misinterpretation of split ESC sequences. (#66, #67)
+- As a result, the key used to cancel cell editing has changed:
+  - Previously: `Esc`
+  - Now: `Ctrl-G` (consistent with Emacs behavior)
+- The following internal libraries were updated as part of this change:
+  - go-readline-ny: v1.12.3 → v1.14.1 (#68, #71)
+    - Improved ESC prefix handling
+  - go-ttyadapter: v0.2.0 → v0.3.0 (#70)
+    - Switched to `tty8pe` for proper ESC sequence handling
+
+v1.21.0
+-------
+Jan 24, 2026
+
+- Print the value of `-delimiter` on the status line (#57)
+- README: Normalize naming: use "Csvi" for the application name and `csvi` for the command (#58)
+- Update startup message to use "Csvi" instead of "csvi" (#58)
+- Internal: slightly improved handling of halfwidth voiced sound marks during truncation. (#59)
+  - Work around width miscalculation by inserting U+007F before them
+- Internal: "internal/nonblock": `(*NonBlock) TryFetch` now returns `os.ErrDeadlineExceeded` instead of `io.EOF` when a timeout occurs. (#61)
+- Display a text animation while waiting for a save operation to complete. (#62)
+
 v1.20.1
 -------
 Jan 18, 2026

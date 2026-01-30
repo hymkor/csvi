@@ -1,4 +1,4 @@
-"CSVI" - ターミナル用CSVエディタ
+Csvi - ターミナル用 CSV エディタ
 ============================
 
 <!-- pwsh -Command "badges.ps1" | -->
@@ -9,7 +9,7 @@
 
 ( [\<English\>](./README.md) / **\<Japanese\>** )
 
-**CSVI** は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。
+**Csvi** は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。
 
 ## 主な特徴
 
@@ -18,7 +18,8 @@
   そのため、本当に加えた変更だけが差分として現れます。実データを安全に編集したい場合に最適です。
 
 - **vi風のカーソル移動、Emacs風のセル編集**  
-  `h/j/k/l` などで移動、`Ctrl` 系のキーで編集できます。
+  `h/j/k/l` などで移動、`Ctrl` 系のキーで編集できます。  
+  （v1.21.1 より、セル編集の中止は `Esc` から `Ctrl-G` にかわりました）
 
 - **ファイル／標準入力の両方に対応**  
   CSVファイルを直接開くだけでなく、パイプ経由のデータも読み込めます。
@@ -59,19 +60,15 @@ Install
 > &#9888;&#65039; Note: macOS用バイナリは実験的ビルドで、検証できていません。
 > もし何らかの問題を確認されましたらお知らせください！
 
-<!-- pwsh -Command "readme-install.ps1 'ja'" -->
-
-### "go install" を使う場合 (要Go言語開発環境)
-
-```
-go install github.com/hymkor/csvi@latest
-```
-
-`go install` は `$HOME/go/bin` もしくは `$GOPATH/bin` へ実行ファイルを導入するので、`csvi` を実行するにはそのディレクトリを `$PATH` に追加する必要があります。
+<!-- pwsh -Command "readme-install.ps1 'ja'" | -->
 
 ### [eget] インストーラーを使う場合 (クロスプラットフォーム)
 
-```
+```sh
+brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
+
 cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
 ```
@@ -93,6 +90,13 @@ scoop install csvi
 
 [scoop]: https://scoop.sh/
 
+### "go install" を使う場合 (要Go言語開発環境)
+
+```
+go install github.com/hymkor/csvi/cmd/csvi@latest
+```
+
+`go install` は `$HOME/go/bin` もしくは `$GOPATH/bin` へ実行ファイルを導入するので、`csvi` を実行するにはそのディレクトリを `$PATH` に追加する必要があります。
 <!-- -->
 
 Usage
@@ -162,7 +166,7 @@ Options
     * `R` (現在のセルを外部エディターで編集)
     * `x` (現在のセルを空にする)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv`  (現在のセルを削除して右のセルで詰める)
-    * `dd`, `dr`, `D` (現在の行を削除する)
+    * `dd`, `dr` (現在の行を削除する)
     * `dc`, `d|` (現在の列を削除する)
     * `w` (ファイルもしくは標準出力(`'-'`)に出力する)
     * `o` (現在の行の後に新しい行を追加する)
@@ -187,7 +191,7 @@ Options
 
 ### NO\_COLOR
 
-環境変数 `NO_COLOR` が 1 文字以上設定されている場合、csvi の色付け出力を無効化します。これは [NO\_COLOR](https://no-color.org) で提唱されている標準仕様に従った挙動です。
+環境変数 `NO_COLOR` が 1 文字以上設定されている場合、Csvi の色付け出力を無効化します。これは [NO\_COLOR](https://no-color.org) で提唱されている標準仕様に従った挙動です。
 
 ### RUNEWIDTH\_EASTASIAN
 
@@ -200,7 +204,7 @@ Unicode で「曖昧幅」とされる文字の表示桁数を明示的に指定
 
 `(FG);(BG)` 形式で色が定義されている場合、前景色の値が背景色より小さいとき、白背景を前提とした配色（`-rv` オプション相当）を自動的に使用します。
 
-なお、csvi は通常、端末のデフォルト色を示すエスケープコード `ESC[39m` および `ESC[49m` を使用します。そのため、`(FG);(BG)` で指定された色そのものを直接採用するわけではありません。この設定は主に、灰色背景行の濃淡を白寄り・黒寄りのどちらにするかの判定に用いられます。
+なお、Csvi は通常、端末のデフォルト色を示すエスケープコード `ESC[39m` および `ESC[49m` を使用します。そのため、`(FG);(BG)` で指定された色そのものを直接採用するわけではありません。この設定は主に、灰色背景行の濃淡を白寄り・黒寄りのどちらにするかの判定に用いられます。
 
 ### GOREADLINESKK
 

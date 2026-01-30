@@ -8,7 +8,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/nyaosorg/go-ttyadapter/tty8"
+	"github.com/nyaosorg/go-ttyadapter"
+	"github.com/nyaosorg/go-ttyadapter/tty8pe"
 
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/completion"
@@ -34,13 +35,13 @@ func (c *clipBoard) Write(text string) error {
 }
 
 type ManualCtl struct {
-	*tty8.Tty
+	ttyadapter.Tty
 	clipBoard
 }
 
 func New() (*ManualCtl, error) {
 	mc := &ManualCtl{
-		Tty: &tty8.Tty{},
+		Tty: &tty8pe.Tty{},
 	}
 	return mc, mc.Open(nil)
 }
@@ -94,7 +95,7 @@ func (m *ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candida
 	}
 
 	defer io.WriteString(out, ansi.CURSOR_OFF)
-	editor.BindKey(keys.Escape, readline.CmdInterrupt)
+	editor.BindKey(keys.CtrlG, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }
 
@@ -123,6 +124,6 @@ func (m *ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (strin
 	})
 
 	defer io.WriteString(out, ansi.CURSOR_OFF)
-	editor.BindKey(keys.Escape, readline.CmdInterrupt)
+	editor.BindKey(keys.CtrlG, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }

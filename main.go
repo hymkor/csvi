@@ -371,6 +371,8 @@ func (app *Application) printStatusLine() {
 		n += first(io.WriteString(app.out, "[TSV]"))
 	} else if app.Mode.Comma == ',' {
 		n += first(io.WriteString(app.out, "[CSV]"))
+	} else {
+		n += first(fmt.Fprintf(app.out, `["%c"]`, app.Mode.Comma))
 	}
 	switch app.cursorRow.Term {
 	case "\r\n":
@@ -725,7 +727,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				app.resetSoftDirty()
 				app.clearCache()
-			case "q":
+			case "q", keys.AltQ:
 				if rc, err := app.cmdQuit(); err != nil {
 					message = err.Error()
 				} else if rc != nil {
@@ -909,15 +911,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					app.cursorRow.Replace(newCol, text, mode)
 				}
 				app.setHardDirty()
-			case "D":
-				if m := cfg.checkWriteProtect(app.cursorRow); m != "" {
-					message = m
-					break
-				}
-				killbuffer = app.removeCurrentRow(&app.startRow, &app.cursorRow)
-				app.repaint()
-				app.clearCache()
-				app.setHardDirty()
 			case "i":
 				if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
 					message = m
@@ -1075,31 +1068,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					cellWidth.Set(app.cursorCol, w)
 				}
 				app.clearCache()
-			case keys.Escape:
-				ch, err = app.MessageAndGetKey(`Esc- ["q": quit, "p": paste]`)
-				if err != nil {
-					message = err.Error()
-					break
-				}
-				switch ch {
-				case "q", "Q":
-					if rc, err := app.cmdQuit(); err != nil {
-						message = err.Error()
-					} else if rc != nil {
-						return rc, nil
-					}
-				case "p", "P":
-					if killbuffer == nil {
-						break
-					}
-					if err := killbuffer(&app.startRow, &app.cursorRow, &app.cursorCol, pasteOver); err != nil {
-						message = err.Error()
-						break
-					}
-					app.setHardDirty()
-					app.repaint()
-					app.clearCache()
-				}
 			}
 		}
 		if L := len(app.cursorRow.Cell); L <= 0 {

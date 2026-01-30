@@ -1142,6 +1142,47 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <strong>English</strong> / <a href="release_note_ja.html">Japanese</a> )</p>
+
+<h2 id="v1211">v1.21.1</h2>
+<p>Jan 31, 2026</p>
+<ul>
+<li>Removed the line deletion assigned to the uppercase <code>D</code> key. This was done because the escape sequence for the left arrow key (<code>\x1B[D</code>) could be split in some environments, causing unintended behavior. Line deletion is still available via <code>dd</code>.(#65)</li>
+<li>Improved handling of the Escape key by treating it as a prefix key, preventing misinterpretation of split ESC sequences. (#66, #67)</li>
+<li>As a result, the key used to cancel cell editing has changed:
+<ul>
+<li>Previously: <code>Esc</code></li>
+<li>Now: <code>Ctrl-G</code> (consistent with Emacs behavior)</li>
+</ul>
+</li>
+<li>The following internal libraries were updated as part of this change:
+<ul>
+<li>go-readline-ny: v1.12.3 → v1.14.1 (#68, #71)
+<ul>
+<li>Improved ESC prefix handling</li>
+</ul>
+</li>
+<li>go-ttyadapter: v0.2.0 → v0.3.0 (#70)
+<ul>
+<li>Switched to <code>tty8pe</code> for proper ESC sequence handling</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="v1210">v1.21.0</h2>
+<p>Jan 24, 2026</p>
+<ul>
+<li>Print the value of <code>-delimiter</code> on the status line (#57)</li>
+<li>README: Normalize naming: use &quot;Csvi&quot; for the application name and <code>csvi</code> for the command (#58)</li>
+<li>Update startup message to use &quot;Csvi&quot; instead of &quot;csvi&quot; (#58)</li>
+<li>Internal: slightly improved handling of halfwidth voiced sound marks during truncation. (#59)
+<ul>
+<li>Work around width miscalculation by inserting U+007F before them</li>
+</ul>
+</li>
+<li>Internal: &quot;internal/nonblock&quot;: <code>(*NonBlock) TryFetch</code> now returns <code>os.ErrDeadlineExceeded</code> instead of <code>io.EOF</code> when a timeout occurs. (#61)</li>
+<li>Display a text animation while waiting for a save operation to complete. (#62)</li>
+</ul>
 <h2 id="v1201">v1.20.1</h2>
 <p>Jan 18, 2026</p>
 <ul>
@@ -1645,6 +1686,8 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1211">v1.21.1</a></li>
+<li><a href="#v1210">v1.21.0</a></li>
 <li><a href="#v1201">v1.20.1</a></li>
 <li><a href="#v1200">v1.20.0</a></li>
 <li><a href="#v1194">v1.19.4</a></li>

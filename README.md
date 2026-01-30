@@ -1,4 +1,4 @@
-"CSVI" - Terminal CSV Editor
+Csvi - A terminal CSV editor 
 ============================
 
 <!-- pwsh -Command "badges.ps1" | -->
@@ -9,19 +9,20 @@
 
 ( **\<English\>** / [\<Japanese\>](./README_ja.md) )
 
-**CSVI** is a terminal-based CSV editor for UNIX-like systems and Windows.
+**Csvi** is a terminal-based CSV editor for UNIX-like systems and Windows.
 
 ## Key Features
 
 - **Minimal changes on save**  
-  CSVI keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
+  Csvi keeps the original formatting for every unmodified cell: quotes, line endings (LF/CRLF), BOM, encoding, and field/record separators.  
   Only actual edits are saved—making it ideal for clean diffs and safe edits to production data.
 
 - **vi-style and Emacs-style keybindings**  
-  Move the cursor like in vi, and edit cells like in Emacs.
+  Move the cursor like in vi, and edit cells using Emacs-style key bindings.  
+  (Since v1.21.1, `Ctrl-G` is used instead of `Esc` to cancel cell editing.)
 
 - **Reads from both file and standard input**  
-  You can pipe CSV data into CSVI or open a file directly.
+  You can pipe CSV data into Csvi or open a file directly.
 
 - **Fast startup and background loading**  
   Opens large files quickly without blocking the interface.
@@ -61,17 +62,13 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 
 <!-- pwsh -Command "readme-install.ps1" | -->
 
-### Use "go install" (requires Go toolchain)
+### Use [eget] installer (cross-platform)
 
-```
-go install github.com/hymkor/csvi/cmd/csvi@latest
-```
+```sh
+brew install eget        # Unix-like systems
+# or
+scoop install eget       # Windows
 
-Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your $PATH to execute `csvi`.
-
-### Use [eget] installer (cross-platform)"
-
-```
 cd (YOUR-BIN-DIRECTORY)
 eget hymkor/csvi
 ```
@@ -92,6 +89,14 @@ scoop install csvi
 ```
 
 [scoop]: https://scoop.sh/
+
+### Use "go install" (requires Go toolchain)
+
+```
+go install github.com/hymkor/csvi/cmd/csvi@latest
+```
+
+Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your `$PATH` to execute `csvi`.
 <!-- -->
 
 Usage
@@ -161,7 +166,7 @@ Key-binding
     * `R` (replace the current cell with the external editor)
     * `x` (clear the current cell)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv` (delete cell and shift cells on the right)
-    * `dd`, `dr`, `D` (delete the current line)
+    * `dd`, `dr` (delete the current line)
     * `dc`, `d|` (delete the current column)
     * `w` (write to a file or STDOUT(`'-'`))
     * `o` (append a new line after the current one)
@@ -187,7 +192,7 @@ Environment Variables
 ### NO\_COLOR
 
 If the environment variable `NO_COLOR` is set to any value with at least one character,
-csvi disables colored output.
+Csvi disables colored output.
 This follows the standard proposed by [NO\_COLOR](https://no-color.org).
 
 ### RUNEWIDTH\_EASTASIAN
@@ -200,9 +205,9 @@ Specifies the display width for Unicode characters classified as ambiguous width
 ### COLORFGBG
 
 When the environment variable is defined in the form `(FG);(BG)` and the foreground `(FG)` is less than the background `(BG)`,
-csvi automatically uses color settings suitable for light backgrounds (equivalent to the `-rv` option).
+Csvi automatically uses color settings suitable for light backgrounds (equivalent to the `-rv` option).
 
-csvi normally uses the terminal's default colors via the escape sequences `ESC[39m` and `ESC[49m`.
+Csvi normally uses the terminal's default colors via the escape sequences `ESC[39m` and `ESC[49m`.
 Thus, the `(FG);(BG)` values are **not** directly applied; they are only used to determine whether gray background lines should be adjusted toward light or dark shades.
 
 ### GOREADLINESKK
