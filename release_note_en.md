@@ -2,6 +2,10 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.21.1
+-------
+Jan 31, 2026
+
 - Removed the line deletion assigned to the uppercase `D` key. This was done because the escape sequence for the left arrow key (`\x1B[D`) could be split in some environments, causing unintended behavior. Line deletion is still available via `dd`.(#65)
 - Improved handling of the Escape key by treating it as a prefix key, preventing misinterpretation of split ESC sequences. (#66, #67)
 - As a result, the key used to cancel cell editing has changed:
