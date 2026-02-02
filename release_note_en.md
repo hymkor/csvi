@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Readline: `Meta`+`Ctrl`+`G` can now be used to cancel input (#74)
+
 v1.21.1
 -------
 Jan 31, 2026

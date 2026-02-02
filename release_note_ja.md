@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- Readline: `Meta`+`Ctrl`+`G` で入力をキャンセルできるようにした。 (#74)
+
 v1.21.1
 -------
 Jan 31, 2026
