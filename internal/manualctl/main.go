@@ -96,6 +96,7 @@ func (m *ManualCtl) ReadLine(out io.Writer, prompt, defaultStr string, c candida
 
 	defer io.WriteString(out, ansi.CURSOR_OFF)
 	editor.BindKey(keys.CtrlG, readline.CmdInterrupt)
+	editor.BindKey(keys.Escape+keys.CtrlG, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }
 
@@ -125,5 +126,6 @@ func (m *ManualCtl) GetFilename(out io.Writer, prompt, defaultStr string) (strin
 
 	defer io.WriteString(out, ansi.CURSOR_OFF)
 	editor.BindKey(keys.CtrlG, readline.CmdInterrupt)
+	editor.BindKey(keys.Escape+keys.CtrlG, readline.CmdInterrupt)
 	return editor.ReadLine(context.Background())
 }
