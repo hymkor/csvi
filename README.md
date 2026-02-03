@@ -162,7 +162,7 @@ Key-binding
 * Edit
     * `i` (insert a new cell before the current one)
     * `a` (append a new cell after the current one)
-    * `r`,`ALT`+`F2` (replace the current cell with the built-in readline)
+    * `r`,`Meta`+`F2` (replace the current cell with the built-in readline)
     * `R` (replace the current cell with the external editor)
     * `x` (clear the current cell)
     * `dl`, `d`+`SPACE`, `d`+`TAB`, `dv` (delete cell and shift cells on the right)
@@ -178,13 +178,15 @@ Key-binding
     * `yc`, `y|` (copy the values of the current column to kill-buffer)
     * `p` (paste the values of kill-buffer after the current cell, row or column)
     * `P` (paste the values of kill-buffer before the current cell, row or column)
-    * `ALT`+`p`, `ESC`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
+    * `Meta`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
 * Display settings
     * `L` (reload the file using a specified encoding)
     * `Ctrl`+`L` (Repaint)
     * `]` (widen the column at the cursor)
     * `[` (narrow the column at the cursor)
-* Quit: `q` or `ESC`+`q`
+* Quit: `q` or `Meta`+`q`
+
+`Meta` means either `Alt`+`key` or `Esc` followed by key.
 
 Environment Variables
 ---------------------
