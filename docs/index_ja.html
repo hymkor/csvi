@@ -1283,7 +1283,7 @@ scoop install csvi
 <ul>
 <li><code>i</code> (現在のセルの前に新セルを挿入)</li>
 <li><code>a</code> (現在のセルの右に新セルを挿入)</li>
-<li><code>r</code> (現在のセルを内蔵readlineで編集)</li>
+<li><code>r</code>, <code>Meta</code>+<code>F2</code> (現在のセルを内蔵readlineで編集)</li>
 <li><code>R</code> (現在のセルを外部エディターで編集)</li>
 <li><code>x</code> (現在のセルを空にする)</li>
 <li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code>  (現在のセルを削除して右のセルで詰める)</li>
@@ -1299,7 +1299,7 @@ scoop install csvi
 <li><code>yc</code>, <code>y|</code> (現在の列を内部クリップボードへコピー)</li>
 <li><code>p</code> (現在のセル/列/行の直後に内部クリップボードの値をペースト)</li>
 <li><code>P</code> (現在のセル/列/行の直前に内部クリップボードの値をペースト)</li>
-<li><code>ALT</code>+<code>p</code>, <code>ESC</code>+<code>p</code> (現在のセル/列/行を内部クリップボードの値で上書き)</li>
+<li><code>Meta</code>+<code>p</code> (現在のセル/列/行を内部クリップボードの値で上書き)</li>
 </ul>
 </li>
 <li>表示設定
@@ -1310,8 +1310,9 @@ scoop install csvi
 <li><code>[</code> (カーソルのある列の幅を縮める)</li>
 </ul>
 </li>
-<li>終了: <code>q</code> or <code>ESC</code>+<code>q</code></li>
+<li>終了: <code>q</code> or <code>Meta</code>+<code>q</code></li>
 </ul>
+<p><code>Meta</code>は<code>Alt</code>+<code>key</code>もしくは、<code>Esc</code> の後に<code>key</code>を押下することを意味します。</p>
 <h2 id="%E7%92%B0%E5%A2%83%E5%A4%89%E6%95%B0">環境変数</h2>
 <h3 id="no-color">NO_COLOR</h3>
 <p>環境変数 <code>NO_COLOR</code> が 1 文字以上設定されている場合、Csvi の色付け出力を無効化します。これは <a href="https://no-color.org">NO_COLOR</a> で提唱されている標準仕様に従った挙動です。</p>

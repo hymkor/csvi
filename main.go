@@ -677,6 +677,20 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		const interval = 4
 		displayUpdateTime := time.Now().Add(time.Second / interval)
 
+		/*
+			if p, ok := pilot.(*manualctl.ManualCtl); ok {
+				if t, ok := p.Tty.(interface {
+					SetOnPrefix(func(string)) func(string)
+				}); ok {
+					save := t.SetOnPrefix(func(s string) {
+						n, _ := io.WriteString(out, strings.ReplaceAll(s, "\x1B", "ESC-"))
+						fmt.Fprintf(out, "\x1B[%dD", n)
+					})
+					defer t.SetOnPrefix(save)
+				}
+			}
+		*/
+
 		ch, err := keyWorker.GetOr(func(row *uncsv.Row, err error) bool {
 			app.push(row)
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {

@@ -1283,7 +1283,7 @@ scoop install csvi
 <ul>
 <li><code>i</code> (insert a new cell before the current one)</li>
 <li><code>a</code> (append a new cell after the current one)</li>
-<li><code>r</code>,<code>ALT</code>+<code>F2</code> (replace the current cell with the built-in readline)</li>
+<li><code>r</code>,<code>Meta</code>+<code>F2</code> (replace the current cell with the built-in readline)</li>
 <li><code>R</code> (replace the current cell with the external editor)</li>
 <li><code>x</code> (clear the current cell)</li>
 <li><code>dl</code>, <code>d</code>+<code>SPACE</code>, <code>d</code>+<code>TAB</code>, <code>dv</code> (delete cell and shift cells on the right)</li>
@@ -1299,7 +1299,7 @@ scoop install csvi
 <li><code>yc</code>, <code>y|</code> (copy the values of the current column to kill-buffer)</li>
 <li><code>p</code> (paste the values of kill-buffer after the current cell, row or column)</li>
 <li><code>P</code> (paste the values of kill-buffer before the current cell, row or column)</li>
-<li><code>ALT</code>+<code>p</code>, <code>ESC</code>+<code>p</code> (overwrite the current cell/row/column with the content of the kill-buffer)</li>
+<li><code>Meta</code>+<code>p</code> (overwrite the current cell/row/column with the content of the kill-buffer)</li>
 </ul>
 </li>
 <li>Display settings
@@ -1310,8 +1310,9 @@ scoop install csvi
 <li><code>[</code> (narrow the column at the cursor)</li>
 </ul>
 </li>
-<li>Quit: <code>q</code> or <code>ESC</code>+<code>q</code></li>
+<li>Quit: <code>q</code> or <code>Meta</code>+<code>q</code></li>
 </ul>
+<p><code>Meta</code> means either <code>Alt</code>+<code>key</code> or <code>Esc</code> followed by key.</p>
 <h2 id="environment-variables">Environment Variables</h2>
 <h3 id="no-color">NO_COLOR</h3>
 <p>If the environment variable <code>NO_COLOR</code> is set to any value with at least one character,
