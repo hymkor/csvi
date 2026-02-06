@@ -1106,42 +1106,47 @@
   min-height: 52px;
 }
 
-.markdown-body {
-  box-sizing: border-box;
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 45px;
-}
-body{
-  display:flex;
-  overflow-y: scroll;
-}
-@media screen{
-  div.sidebar{ width:30% }
-  div.main{ width:70% }
-}
-
-@media print{
-  div.sidebar,div.footer{ display:none }
-  div.main{ width:100% }
-}
-a.permalink{
-  font-size: 0.75em;
-  vertical-align: super;
-  text-decoration: none;
-  margin-left: 0.3em;
-  color: #888;
-}
-a.permalink:hover{
-  color: #000;
-  text-decoration: underline;
-}
+.markdown-body {
+  box-sizing: border-box;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+}
+body{
+  display:flex;
+  overflow-y: scroll;
+}
+@media screen{
+  div.sidebar{ width:30% }
+  div.main{ width:70% }
+}
+
+@media print{
+  div.sidebar,div.footer{ display:none }
+  div.main{ width:100% }
+}
+a.permalink{
+  font-size: 0.75em;
+  vertical-align: super;
+  text-decoration: none;
+  margin-left: 0.3em;
+  color: #888;
+}
+a.permalink:hover{
+  color: #000;
+  text-decoration: underline;
+}
 
 </style>
 </head><body>
 <div class="main markdown-body">
 <h1 id="release-notes">Release notes</h1>
 <p>( <a href="release_note_en.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1212">v1.21.2</h2>
+<p>Feb 6, 2026</p>
+<ul>
+<li>Readline: <code>Meta</code>+<code>Ctrl</code>+<code>G</code> でも入力をキャンセルできるようにした。 (#74)</li>
+</ul>
 <h2 id="v1211">v1.21.1</h2>
 <p>Jan 31, 2026</p>
 <ul>
@@ -1315,7 +1320,7 @@ a.permalink:hover{
 <h3 id="%E4%B8%8D%E5%85%B7%E5%90%88%E4%BF%AE%E6%AD%A3-1">不具合修正</h3>
 <ul>
 <li><code>echo &quot;ihihi&quot; | csvi -auto &quot;w|-|q|y&quot; &gt; file</code> 実行時に、出力の先頭へ
-<pre><code>\r   Calibrating terminal... (press any key to skip)\r
+<pre><code>\r   Calibrating terminal... (press any key to skip)\r
 </code></pre>
 が混入する問題を修正しました。原因は、曖昧幅実測が失敗した際のフォロー処理によるもので、この機構の廃止により再発しません。</li>
 </ul>
@@ -1681,6 +1686,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#release-notes">Release notes</a>
 <ul>
+<li><a href="#v1212">v1.21.2</a></li>
 <li><a href="#v1211">v1.21.1</a></li>
 <li><a href="#v1210">v1.21.0</a></li>
 <li><a href="#v1201">v1.20.1</a></li>
