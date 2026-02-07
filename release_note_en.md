@@ -2,6 +2,8 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+- Prevent creation of empty lines at EOF without newline characters. (#79)
+
 v1.21.2
 -------
 Feb 6, 2026
