@@ -2,6 +2,8 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+- EOF に到達した際、改行を含まない 0 バイト行を生成しないようにした。 (#79)
+
 v1.21.2
 -------
 Feb 6, 2026

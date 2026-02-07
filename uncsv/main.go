@@ -203,6 +203,22 @@ type Row struct {
 	Term string
 }
 
+func (r *Row) IsZero() bool {
+	if r == nil {
+		return true
+	}
+	if r.Term != "" {
+		return false
+	}
+	if len(r.Cell) <= 0 {
+		return true
+	}
+	if len(r.Cell) != 1 {
+		return false
+	}
+	return len(r.Cell[0].Original()) == 0
+}
+
 func ReadLine(br *bufio.Reader, mode *Mode) (*Row, error) {
 	row := &Row{}
 	quoted := false
@@ -348,7 +364,9 @@ func ReadAll(r io.Reader, mode *Mode) ([]Row, error) {
 		if err != nil && err != io.EOF {
 			return rows, err
 		}
-		rows = append(rows, *row)
+		if !row.IsZero() {
+			rows = append(rows, *row)
+		}
 		if err == io.EOF {
 			return rows, nil
 		}
