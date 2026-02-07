@@ -489,18 +489,6 @@ func (cfg Config) EditFromStringSlice(fetch func() ([]string, bool), ttyOut io.W
 	}, ttyOut)
 }
 
-func isEmptyRow(row *uncsv.Row) bool {
-	switch len(row.Cell) {
-	case 0:
-		return true
-	case 1:
-		if len(row.Cell[0].Original()) <= 0 {
-			return true
-		}
-	}
-	return false
-}
-
 const (
 	msgReadOnly      = "Read Only Mode !"
 	msgProtectHeader = "Header is protected"
@@ -575,7 +563,7 @@ func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 		return next
 	}
 	if row, err := app.tryFetch(); err == nil || errors.Is(err, io.EOF) {
-		if row != nil {
+		if row != nil && !row.IsZero() {
 			app.push(row)
 		}
 		return p.Next()
@@ -612,7 +600,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	}
 	app := cfg.newApplication(out)
 	if fetch != nil {
-		if row, err := fetch(); err == nil && !isEmptyRow(row) {
+		if row, err := fetch(); err == nil && !row.IsZero() {
 			app.push(row)
 		} else {
 			newRow := uncsv.NewRow(mode)
@@ -692,7 +680,9 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		*/
 
 		ch, err := keyWorker.GetOr(func(row *uncsv.Row, err error) bool {
-			app.push(row)
+			if !row.IsZero() {
+				app.push(row)
+			}
 			if message == "" && (errors.Is(err, io.EOF) || time.Now().After(displayUpdateTime)) {
 				if app.csvLines.Len() <= allScreenHeight {
 					app.repaint()
