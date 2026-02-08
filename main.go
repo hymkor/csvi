@@ -253,6 +253,9 @@ type Application struct {
 	*Config
 }
 
+func (app *Application) CurrentRow() *RowPtr { return app.cursorRow }
+func (app *Application) CurrentCol() int     { return app.cursorCol }
+
 func (cfg *Config) newApplication(out io.Writer) *Application {
 	return &Application{
 		headCache: map[int]string{},
@@ -433,7 +436,11 @@ type CellValidatedEvent struct {
 
 type KeyEventArgs struct {
 	*Application
+
+	// Deprecated: use CurrentRow() instead
 	CursorRow *RowPtr
+
+	// Deprecated: use CurrentCol() instead
 	CursorCol int
 }
 
