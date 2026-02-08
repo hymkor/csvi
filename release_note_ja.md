@@ -3,6 +3,7 @@ Release notes
 ( [English](release_note_en.md) / **Japanese** )
 
 - EOF に到達した際、改行を含まない 0 バイト行を生成しないようにした。 (#79)
+- `KeyEventArgs.CursorRow`, `CursorCol` を Deprecated とした。今後は、かわりに `CurrentRow()`, `CurrentCol()` を使用のこと (#80)
 
 v1.21.2
 -------
