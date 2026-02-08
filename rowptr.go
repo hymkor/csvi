@@ -76,7 +76,7 @@ func (app *Application) resetDirty() {
 	app.dirty = 0
 }
 
-func (app *Application) isDirty() bool {
+func (app *Application) IsDirty() bool {
 	return app.dirty != 0
 }
 

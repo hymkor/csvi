@@ -365,7 +365,7 @@ func first[T any](value T, _ error) T {
 
 func (app *Application) printStatusLine() {
 	n := 0
-	if app.isDirty() {
+	if app.IsDirty() {
 		n += first(app.out.Write([]byte{'*'}))
 	} else {
 		n += first(app.out.Write([]byte{' '}))
@@ -539,7 +539,7 @@ func (app *Application) readlineAndValidate(prompt, text string, row *RowPtr, co
 }
 
 func (app *Application) cmdQuit() (*Result, error) {
-	if !app.ReadOnly && app.isDirty() {
+	if !app.ReadOnly && app.IsDirty() {
 		ch, err := app.MessageAndGetKey(`Quit: Save changes ? ["y": save, "n": quit without saving, other: cancel]`)
 		if err != nil {
 			return nil, err
