@@ -3,6 +3,8 @@ Release notes
 ( **English** / [Japanese](release_note_ja.md) )
 
 - Prevent creation of empty lines at EOF without newline characters. (#79)
+- Deprecate `KeyEventArgs.CursorRow` and `CursorCol`; use `CurrentRow()` and `CurrentCol()` instead. (#80)
+
 
 v1.21.2
 -------
