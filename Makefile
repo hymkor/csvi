@@ -23,11 +23,10 @@ EXE:=$(shell $(GO) env GOEXE)
 
 all:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT)
-	$(SET) "CGO_ENABLED=0" && cd "cmd/csvi" && $(GO) build -o "$(CURDIR)" $(GOOPT) && cd "../.."
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "cmd/csvi" -o "$(CURDIR)" $(GOOPT)
 
 _dist:
-	$(MAKE) all
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "cmd/csvi" -o "$(CURDIR)" $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
@@ -43,7 +42,7 @@ clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
 release:
-	pwsh -Command "latest-notes.ps1" | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
+	$(GO) run github.com/hymkor/latest-notes@master | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
 	make-scoop-manifest -all *-windows-*.zip > $(NAME).json
