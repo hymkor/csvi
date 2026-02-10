@@ -54,8 +54,8 @@ benchmark:
 	pwsh test/benchmark.ps1
 
 readme:
-	example-into-readme
-	example-into-readme -target README_ja.md
+	$(GO) run github.com/hymkor/example-into-readme@master
+	$(GO) run github.com/hymkor/example-into-readme@master -target README_ja.md
 
 docs:
 	minipage -title "\"CSVI\" Terminal CSV Editor" -outline-in-sidebar -readme-to-index README.md > docs\index.html

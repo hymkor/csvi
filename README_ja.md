@@ -1,7 +1,7 @@
 Csvi - ターミナル用 CSV エディタ
 ============================
 
-<!-- pwsh -Command "badges.ps1" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/badges@master | -->
 [![Go Test](https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/csvi/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/csvi/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
@@ -60,7 +60,7 @@ Install
 > &#9888;&#65039; Note: macOS用バイナリは実験的ビルドで、検証できていません。
 > もし何らかの問題を確認されましたらお知らせください！
 
-<!-- pwsh -Command "readme-install.ps1 'ja'" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master ja | -->
 
 ### [eget] インストーラーを使う場合 (クロスプラットフォーム)
 
