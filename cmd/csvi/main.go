@@ -8,8 +8,6 @@ import (
 	"github.com/hymkor/csvi/csviapp"
 )
 
-var version string
-
 func main() {
 	fmt.Fprintf(os.Stderr, "Csvi %s-%s-%s <https://hymkor.github.io/csvi>\n",
 		version, runtime.GOOS, runtime.GOARCH)

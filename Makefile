@@ -38,6 +38,9 @@ dist:
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=386"   && $(MAKE) _dist
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
+bump:
+	$(GO) run bump.go -suffix "-goinstall" -gosource main release_note*.md > cmd/csvi/version.go
+
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
