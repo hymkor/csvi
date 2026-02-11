@@ -5,6 +5,7 @@ Release notes
 - Prevent creation of empty lines at EOF without newline characters. (#79)
 - Deprecate `KeyEventArgs.CursorRow` and `CursorCol`; use `CurrentRow()` and `CurrentCol()` instead. (#80)
 - Export `Application.isDirty` as `IsDirty` (#81)
+- Improved build portability by replacing local helper tools with 'go run' (make release, make manifest and make readme). 
 
 v1.21.2
 -------
