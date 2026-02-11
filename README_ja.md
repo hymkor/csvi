@@ -285,6 +285,7 @@ Acknowledgements
 - [toolleeo](https://github.com/toolleeo)
 - [wumfi](https://github.com/wumfi)
 - [presianbg (Presian Yankulov)](https://github.com/presianbg)
+- [gsmitheidw (Graham Smith)](https://github.com/gsmitheidw)
 
 Author
 ------
