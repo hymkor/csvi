@@ -107,6 +107,9 @@ func (f *Options) Run() error {
 		f.flagSet.Usage()
 		return nil
 	}
+	if f.Version {
+		return nil
+	}
 	disable := colorable.EnableColorsStdout(nil)
 	if disable != nil {
 		defer disable()
