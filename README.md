@@ -135,6 +135,7 @@ Options
 * `-exteditor string` External editor used with `Shift`+`R`
 * `-o filename` preset output filename in the save prompt (used with standard input)
 * `-delimiter string` Specify the field separator
+* `-version` Print version and exit
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
