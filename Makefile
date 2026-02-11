@@ -45,7 +45,7 @@ release:
 	$(GO) run github.com/hymkor/latest-notes@master | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
-	make-scoop-manifest -all *-windows-*.zip > $(NAME).json
+	$(GO) run github.com/hymkor/make-scoop-manifest@master -all *-windows-*.zip > $(NAME).json
 
 test:
 	$(GO) test -v ./...
@@ -54,8 +54,8 @@ benchmark:
 	pwsh test/benchmark.ps1
 
 readme:
-	example-into-readme
-	example-into-readme -target README_ja.md
+	$(GO) run github.com/hymkor/example-into-readme@master
+	$(GO) run github.com/hymkor/example-into-readme@master -target README_ja.md
 
 docs:
 	minipage -title "\"CSVI\" Terminal CSV Editor" -outline-in-sidebar -readme-to-index README.md > docs\index.html

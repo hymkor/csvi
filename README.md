@@ -1,7 +1,7 @@
 Csvi - A terminal CSV editor 
 ============================
 
-<!-- pwsh -Command "badges.ps1" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/badges@master | -->
 [![Go Test](https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/csvi/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/csvi/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
@@ -60,7 +60,7 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 > &#9888;&#65039; Note: The macOS build is experimental and not yet tested.
 > Please let us know if you encounter any issues!
 
-<!-- pwsh -Command "readme-install.ps1" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master | -->
 
 ### Use [eget] installer (cross-platform)
 
@@ -96,7 +96,7 @@ scoop install csvi
 go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
-Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your `$PATH` to execute `csvi`.
+Note: `go install` places the executable in `$HOME/go/bin` or `$GOPATH/bin`, so you need to add this directory to your `$PATH` to run `csvi`.
 <!-- -->
 
 Usage
