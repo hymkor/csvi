@@ -11,6 +11,8 @@ Csvi - A terminal CSV editor
 
 **Csvi** is a terminal-based CSV editor for UNIX-like systems and Windows.
 
+![image](./csvi.gif)
+
 ## Key Features
 
 - **Minimal changes on save**  
@@ -45,8 +47,6 @@ Csvi - A terminal CSV editor
   - Use `-rv` for light backgrounds, or set `NO_COLOR` to disable color output (https://no-color.org/ )
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
-
-![image](./csvi.gif)
 
 [Video](https://www.youtube.com/watch?v=_cxBQKpfUds) by [@emisjerry](https://github.com/emisjerry)
 
