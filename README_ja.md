@@ -11,6 +11,8 @@ Csvi - ターミナル用 CSV エディタ
 
 **Csvi** は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。
 
+![image](./csvi.gif)
+
 ## 主な特徴
 
 - **保存時の差分が最小**  
@@ -45,8 +47,6 @@ Csvi - ターミナル用 CSV エディタ
   - 環境変数 `NO_COLOR` が定義されている場合はカラー表示を抑制します( https://no-color.org/ )
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
-
-![image](./csvi.gif)
 
 [@emisjerry](https://github.com/emisjerry) さんによる [紹介動画](https://www.youtube.com/watch?v=_cxBQKpfUds)
 
