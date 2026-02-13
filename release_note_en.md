@@ -2,12 +2,24 @@ Release notes
 =============
 ( **English** / [Japanese](release_note_ja.md) )
 
+v1.22.0
+-------
+Feb 13, 2026
+
+### User-Facing Changes
+
 - Prevent creation of empty lines at EOF without newline characters. (#79)
-- Deprecate `KeyEventArgs.CursorRow` and `CursorCol`; use `CurrentRow()` and `CurrentCol()` instead. (#80)
-- Export `Application.isDirty` as `IsDirty` (#81)
-- Improved build portability by replacing local helper tools with `go run` (`make release`, `make manifest`, `make readme` and `make docs`). (#83, #87)
 - Fixed an issue where the version string was empty when installed via 'go install'. (#82, #84; Thanks to @gsmitheidw)
 - Add `-version` option (#82, #85; Thanks to @gsmitheidw)
+
+### API Changes & Deprecations
+
+- Deprecate `KeyEventArgs.CursorRow` and `CursorCol`; use `CurrentRow()` and `CurrentCol()` instead. (#80)
+- Export `Application.isDirty` as `IsDirty` (#81)
+
+### Internal & Build Improvements
+
+- Improved build portability by replacing local helper tools with `go run` (`make release`, `make manifest`, `make readme` and `make docs`). (#83, #87)
 
 v1.21.2
 -------
