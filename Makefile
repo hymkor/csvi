@@ -61,10 +61,10 @@ readme:
 	$(GO) run github.com/hymkor/example-into-readme@master -target README_ja.md
 
 docs:
-	minipage -title "\"CSVI\" Terminal CSV Editor" -outline-in-sidebar -readme-to-index logo.md README.md > docs\index.html
-	minipage -title "\"CSVI\" Terminal CSV Editor" -outline-in-sidebar -readme-to-index logo.md README_ja.md > docs\index_ja.html
-	minipage -title "\"CSVI\" Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs\release_note_en.html
-	minipage -title "\"CSVI\" Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs\release_note_ja.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README.md > docs\index.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README_ja.md > docs\index_ja.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs\release_note_en.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs\release_note_ja.html
 
 get:
 	$(GO) get -u
