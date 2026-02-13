@@ -2,6 +2,25 @@ Release notes
 =============
 ( [English](release_note_en.md) / **Japanese** )
 
+v1.22.0
+-------
+Feb 13, 2026
+
+### ユーザインターフェイス変更
+
+- EOF に到達した際、改行を含まない 0 バイト行を生成しないようにした。 (#79)
+- go install でインストールした際に、バージョン情報が表示されない問題を修正した (#82, #84; Thanks to @gsmitheidw)
+- `-version` オプションを追加 (#82, #85; Thanks to @gsmitheidw)
+
+### API 変更
+
+- `KeyEventArgs.CursorRow`, `CursorCol` を Deprecated とした。今後は、かわりに `CurrentRow()`, `CurrentCol()` を使用のこと (#80)
+- `Application.isDirty` を `IsDirty` として公開とした (#81)
+
+### 内部/保守改善
+
+- `go run` の活用により、外部ツール不要でビルド・メンテナンスができるよう改善した (`make release`, `make manifest`, `make readme`, `make docs`) (#83, #87)
+
 v1.21.2
 -------
 Feb 6, 2026

@@ -28,6 +28,7 @@ type Options struct {
 	ExtEditor     string `flag:"exteditor,External editor used with Shift+R"`
 	SavePath      string `flag:"o,preset output filename in the save prompt (used with standard input)"`
 	Delimiter     string `flag:"delimiter,Specify the field separator"`
+	Version       bool   `flag:"version,print version and exit"`
 	flagSet       *flag.FlagSet
 }
 

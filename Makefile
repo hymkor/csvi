@@ -23,11 +23,10 @@ EXE:=$(shell $(GO) env GOEXE)
 
 all:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT)
-	$(SET) "CGO_ENABLED=0" && cd "cmd/csvi" && $(GO) build -o "$(CURDIR)" $(GOOPT) && cd "../.."
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "cmd/csvi" -o "$(CURDIR)" $(GOOPT)
 
 _dist:
-	$(MAKE) all
+	$(SET) "CGO_ENABLED=0" && $(GO) build -C "cmd/csvi" -o "$(CURDIR)" $(GOOPT)
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
@@ -39,14 +38,17 @@ dist:
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=386"   && $(MAKE) _dist
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
+bump:
+	$(GO) run bump.go -suffix "-goinstall" -gosource main release_note*.md > cmd/csvi/version.go
+
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
 release:
-	pwsh -Command "latest-notes.ps1" | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
+	$(GO) run github.com/hymkor/latest-notes@master | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
-	make-scoop-manifest -all *-windows-*.zip > $(NAME).json
+	$(GO) run github.com/hymkor/make-scoop-manifest@master -all *-windows-*.zip > $(NAME).json
 
 test:
 	$(GO) test -v ./...
@@ -55,20 +57,13 @@ benchmark:
 	pwsh test/benchmark.ps1
 
 readme:
-	example-into-readme
-	example-into-readme -target README_ja.md
+	$(GO) run github.com/hymkor/example-into-readme@master
+	$(GO) run github.com/hymkor/example-into-readme@master -target README_ja.md
 
 docs:
-	minipage -title "\"CSVI\" Terminal CSV Editor" -outline-in-sidebar -readme-to-index README.md > docs\index.html
-	minipage -title "\"CSVI\" Terminal CSV Editor" -outline-in-sidebar -readme-to-index README_ja.md > docs\index_ja.html
-	minipage -title "\"CSVI\" Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs\release_note_en.html
-	minipage -title "\"CSVI\" Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs\release_note_ja.html
-
-get:
-	$(GO) get -u
-	$(GO) get golang.org/x/sys@v0.30.0
-	$(GO) get golang.org/x/text@v0.22.0
-	$(GO) get golang.org/x/term@v0.29.0 
-	$(GO) mod tidy
+	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README.md > docs/index.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README_ja.md > docs/index_ja.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs/release_note_en.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs/release_note_ja.html
 
 .PHONY: all test dist _dist clean release manifest readme docs

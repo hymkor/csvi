@@ -1,7 +1,7 @@
 Csvi - A terminal CSV editor 
 ============================
 
-<!-- pwsh -Command "badges.ps1" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/badges@master | -->
 [![Go Test](https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/csvi/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/csvi/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
@@ -10,6 +10,8 @@ Csvi - A terminal CSV editor
 ( **\<English\>** / [\<Japanese\>](./README_ja.md) )
 
 **Csvi** is a terminal-based CSV editor for UNIX-like systems and Windows.
+
+![image](./csvi.gif)
 
 ## Key Features
 
@@ -46,8 +48,6 @@ Csvi - A terminal CSV editor
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
-![image](./csvi.gif)
-
 [Video](https://www.youtube.com/watch?v=_cxBQKpfUds) by [@emisjerry](https://github.com/emisjerry)
 
 Install
@@ -60,7 +60,7 @@ Download the binary package from [Releases](https://github.com/hymkor/csvi/relea
 > &#9888;&#65039; Note: The macOS build is experimental and not yet tested.
 > Please let us know if you encounter any issues!
 
-<!-- pwsh -Command "readme-install.ps1" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master | -->
 
 ### Use [eget] installer (cross-platform)
 
@@ -96,7 +96,7 @@ scoop install csvi
 go install github.com/hymkor/csvi/cmd/csvi@latest
 ```
 
-Because `go install` introduces the executable into `$HOME/go/bin` or `$GOPATH/bin`, you need to add this directory to your `$PATH` to execute `csvi`.
+Note: `go install` places the executable in `$HOME/go/bin` or `$GOPATH/bin`, so you need to add this directory to your `$PATH` to run `csvi`.
 <!-- -->
 
 Usage
@@ -135,6 +135,7 @@ Options
 * `-exteditor string` External editor used with `Shift`+`R`
 * `-o filename` preset output filename in the save prompt (used with standard input)
 * `-delimiter string` Specify the field separator
+* `-version` Print version and exit
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -292,6 +293,7 @@ Acknowledgements
 - [toolleeo](https://github.com/toolleeo)
 - [wumfi](https://github.com/wumfi)
 - [presianbg (Presian Yankulov)](https://github.com/presianbg)
+- [gsmitheidw (Graham Smith)](https://github.com/gsmitheidw)
 
 Author
 ------

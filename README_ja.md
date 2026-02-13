@@ -1,7 +1,7 @@
 Csvi - ターミナル用 CSV エディタ
 ============================
 
-<!-- pwsh -Command "badges.ps1" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/badges@master | -->
 [![Go Test](https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg)](https://github.com/hymkor/csvi/actions/workflows/go.yml)
 [![License](https://img.shields.io/badge/License-MIT-red)](https://github.com/hymkor/csvi/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hymkor/csvi.svg)](https://pkg.go.dev/github.com/hymkor/csvi)
@@ -10,6 +10,8 @@ Csvi - ターミナル用 CSV エディタ
 ( [\<English\>](./README.md) / **\<Japanese\>** )
 
 **Csvi** は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。
+
+![image](./csvi.gif)
 
 ## 主な特徴
 
@@ -46,8 +48,6 @@ Csvi - ターミナル用 CSV エディタ
 
 [IANA registry]: http://www.iana.org/assignments/character-sets/character-sets.xhtml
 
-![image](./csvi.gif)
-
 [@emisjerry](https://github.com/emisjerry) さんによる [紹介動画](https://www.youtube.com/watch?v=_cxBQKpfUds)
 
 Install
@@ -60,7 +60,7 @@ Install
 > &#9888;&#65039; Note: macOS用バイナリは実験的ビルドで、検証できていません。
 > もし何らかの問題を確認されましたらお知らせください！
 
-<!-- pwsh -Command "readme-install.ps1 'ja'" | -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master ja | -->
 
 ### [eget] インストーラーを使う場合 (クロスプラットフォーム)
 
@@ -135,6 +135,7 @@ Options
 * `-exteditor string` `Shift`+`R` で使用する外部エディター
 * `-o filename` 保存時に表示されるファイル名の初期値を指定する（標準入力から読み取った場合）
 * `-delimiter string` 区切り文字を指定する
+* `-version` バージョンを表示して終了する
 
 [IANA名]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
@@ -285,6 +286,7 @@ Acknowledgements
 - [toolleeo](https://github.com/toolleeo)
 - [wumfi](https://github.com/wumfi)
 - [presianbg (Presian Yankulov)](https://github.com/presianbg)
+- [gsmitheidw (Graham Smith)](https://github.com/gsmitheidw)
 
 Author
 ------
