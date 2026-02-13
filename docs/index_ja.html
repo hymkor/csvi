@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-<title>&#34;CSVI&#34; Terminal CSV Editor</title>
+<title>Csvi - A terminal CSV editor</title>
 <style type="text/css">
 /* light */
 .markdown-body {
@@ -1140,14 +1140,16 @@ a.permalink:hover{
 </style>
 </head><body>
 <div class="main markdown-body">
+<img src='./csvi-logo-s.png' align='left' />
 <h1 id="csvi---%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8-csv-%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">Csvi - ターミナル用 CSV エディタ</h1>
-<!-- raw HTML omitted -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/badges@master | -->
 <p><a href="https://github.com/hymkor/csvi/actions/workflows/go.yml"><img src="https://github.com/hymkor/csvi/actions/workflows/go.yml/badge.svg" alt="Go Test" /></a>
 <a href="https://github.com/hymkor/csvi/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-MIT-red" alt="License" /></a>
 <a href="https://pkg.go.dev/github.com/hymkor/csvi"><img src="https://pkg.go.dev/badge/github.com/hymkor/csvi.svg" alt="Go Reference" /></a></p>
-<!-- raw HTML omitted -->
+<!-- -->
 <p>( <a href="./index.html">&lt;English&gt;</a> / <strong>&lt;Japanese&gt;</strong> )</p>
 <p><strong>Csvi</strong> は、UNIX系システムや Windows のターミナル上で動作する CSV エディタです。</p>
+<p><img src="./csvi.gif" alt="image" /></p>
 <h2 id="%E4%B8%BB%E3%81%AA%E7%89%B9%E5%BE%B4">主な特徴</h2>
 <ul>
 <li>
@@ -1194,7 +1196,6 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 </ul>
 </li>
 </ul>
-<p><img src="./csvi.gif" alt="image" /></p>
 <p><a href="https://github.com/emisjerry">@emisjerry</a> さんによる <a href="https://www.youtube.com/watch?v=_cxBQKpfUds">紹介動画</a></p>
 <h2 id="install">Install</h2>
 <h3 id="manual-installation">Manual Installation</h3>
@@ -1203,7 +1204,7 @@ CSVファイルを直接開くだけでなく、パイプ経由のデータも�
 <p>⚠️ Note: macOS用バイナリは実験的ビルドで、検証できていません。
 もし何らかの問題を確認されましたらお知らせください！</p>
 </blockquote>
-<!-- raw HTML omitted -->
+<!-- go run github.com/hymkor/example-into-readme/cmd/how2install@master ja | -->
 <h3 id="eget-%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC%E3%82%92%E4%BD%BF%E3%81%86%E5%A0%B4%E5%90%88-%E3%82%AF%E3%83%AD%E3%82%B9%E3%83%97%E3%83%A9%E3%83%83%E3%83%88%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0"><a href="https://github.com/zyedidia/eget">eget</a> インストーラーを使う場合 (クロスプラットフォーム)</h3>
 <pre><code class="language-sh">brew install eget        # Unix-like systems
 # or
@@ -1223,7 +1224,7 @@ scoop install csvi
 <pre><code>go install github.com/hymkor/csvi/cmd/csvi@latest
 </code></pre>
 <p><code>go install</code> は <code>$HOME/go/bin</code> もしくは <code>$GOPATH/bin</code> へ実行ファイルを導入するので、<code>csvi</code> を実行するにはそのディレクトリを <code>$PATH</code> に追加する必要があります。</p>
-<!-- raw HTML omitted -->
+<!-- -->
 <h2 id="usage">Usage</h2>
 <pre><code>$ csvi {options} FILENAME(...)
 </code></pre>
@@ -1252,6 +1253,7 @@ scoop install csvi
 <li><code>-exteditor string</code> <code>Shift</code>+<code>R</code> で使用する外部エディター</li>
 <li><code>-o filename</code> 保存時に表示されるファイル名の初期値を指定する（標準入力から読み取った場合）</li>
 <li><code>-delimiter string</code> 区切り文字を指定する</li>
+<li><code>-version</code> バージョンを表示して終了する</li>
 </ul>
 <h2 id="%E3%82%AD%E3%83%BC%E3%83%90%E3%82%A4%E3%83%B3%E3%83%89">キーバインド</h2>
 <ul>
@@ -1396,6 +1398,7 @@ func main() {
 <li><a href="https://github.com/toolleeo">toolleeo</a></li>
 <li><a href="https://github.com/wumfi">wumfi</a></li>
 <li><a href="https://github.com/presianbg">presianbg (Presian Yankulov)</a></li>
+<li><a href="https://github.com/gsmitheidw">gsmitheidw (Graham Smith)</a></li>
 </ul>
 <h2 id="author">Author</h2>
 <ul>
@@ -1411,8 +1414,6 @@ func main() {
 </div>
 </div><!-- "main" -->
 <div class="sidebar markdown-body">
-<ul>
-<li><a href="#csvi-%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E7%94%A8-csv-%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF">Csvi - ターミナル用 CSV エディタ</a>
 <ul>
 <li><a href="#%E4%B8%BB%E3%81%AA%E7%89%B9%E5%BE%B4">主な特徴</a></li>
 <li><a href="#install">Install</a>
@@ -1437,8 +1438,6 @@ func main() {
 <li><a href="#release-note">Release Note</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
 <li><a href="#author">Author</a></li>
-</ul>
-</li>
 </ul>
 </div><!-- "sidebar" -->
 </body></html>

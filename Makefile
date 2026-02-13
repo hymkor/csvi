@@ -61,16 +61,9 @@ readme:
 	$(GO) run github.com/hymkor/example-into-readme@master -target README_ja.md
 
 docs:
-	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README.md > docs\index.html
-	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README_ja.md > docs\index_ja.html
-	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs\release_note_en.html
-	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs\release_note_ja.html
-
-get:
-	$(GO) get -u
-	$(GO) get golang.org/x/sys@v0.30.0
-	$(GO) get golang.org/x/text@v0.22.0
-	$(GO) get golang.org/x/term@v0.29.0 
-	$(GO) mod tidy
+	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README.md > docs/index.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README_ja.md > docs/index_ja.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs/release_note_en.html
+	go run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs/release_note_ja.html
 
 .PHONY: all test dist _dist clean release manifest readme docs
