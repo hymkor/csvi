@@ -32,7 +32,7 @@ func findVersion1(fname string) (string, error) {
 }
 
 func findVersion(args []string) (string, error) {
-	for _,arg := range args {
+	for _, arg := range args {
 		notes, err := filepath.Glob(arg)
 		if err != nil {
 			notes = []string{arg}
