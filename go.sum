@@ -2,8 +2,6 @@ github.com/clipperhouse/uax29/v2 v2.2.0 h1:ChwIKnQN3kcZteTXMgb1wztSgaU+ZemkgWdoh
 github.com/clipperhouse/uax29/v2 v2.2.0/go.mod h1:EFJ2TJMRUaplDxHKj1qAEhCtQPW2tJSwu5BF98AuoVM=
 github.com/hymkor/struct2flag v0.0.3 h1:11HtV5NN2f4wMM8DYyJWkzZqyH8E+9YFM78+PyxpvAE=
 github.com/hymkor/struct2flag v0.0.3/go.mod h1:Je1TEampOZlaARtEv1LFIuw1dVT1BZmIa1swu8NZh2M=
-github.com/hymkor/sxencode-go v0.3.0 h1:IfsgPuLLJptw3fczZKLSZjtT4cJ0qfPnFMEWnaG9yuU=
-github.com/hymkor/sxencode-go v0.3.0/go.mod h1:zdsmILW2sJbtydTaB7lwTqnl63XCTxRjTqDDZBA5hV0=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
 github.com/mattn/go-colorable v0.1.14/go.mod h1:6LmQG8QLFO4G5z1gPvYEzlUgJ2wF+stgPZH1UqBm1s8=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
@@ -18,8 +16,8 @@ github.com/nyaosorg/go-inline-animation v0.3.0 h1:LrOHowED2PrXEUWGagL1bLR+XTXD06
 github.com/nyaosorg/go-inline-animation v0.3.0/go.mod h1:GLb7BXeLMuA12LMN3c8l69GQcmlAxit3oZRKILztOsU=
 github.com/nyaosorg/go-readline-ny v1.14.1 h1:bWyXpR6jRaCXysx4bnioxk36+YjQ6dypHKMjHnzIXdk=
 github.com/nyaosorg/go-readline-ny v1.14.1/go.mod h1:/BDf3/H/AScnvey4LoDws1bjTZDB76EE7uKnW2apoKU=
-github.com/nyaosorg/go-readline-skk v0.6.1 h1:k8A50gJKb9WpDKEKHdXAZriOAWi8APJSZf07tPqb5ok=
-github.com/nyaosorg/go-readline-skk v0.6.1/go.mod h1:wjcWJkHorPQ2BepphQH33TbdAXcVmmYDeXZc4Y6dbzc=
+github.com/nyaosorg/go-readline-skk v0.6.2 h1:UUBt4qS0UwEaqKgaju8yQOogSF0Ozs4KXHDEhEsqjDM=
+github.com/nyaosorg/go-readline-skk v0.6.2/go.mod h1:afNC+dqTeuu+5KHNFjbv/up7bfehvHp6HULXljTzvyw=
 github.com/nyaosorg/go-ttyadapter v0.3.0 h1:/Y7+rGJ0LEcs+AExevwNmND2VJvvpBmgbMuCbntKq3c=
 github.com/nyaosorg/go-ttyadapter v0.3.0/go.mod h1:w6ySb/Y8rpr0uIju4vN/TMRHC/6ayabORHmEVs6d/qE=
 github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=
