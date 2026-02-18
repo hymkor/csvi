@@ -39,13 +39,13 @@ dist:
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
 bump:
-	$(GO) run bump.go -suffix "-goinstall" -gosource main release_note*.md > cmd/csvi/version.go
+	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc main release_note*.md > cmd/csvi/version.go
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
 
 release:
-	$(GO) run github.com/hymkor/latest-notes@master | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
+	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
 	$(GO) run github.com/hymkor/make-scoop-manifest@master -all *-windows-*.zip > $(NAME).json
