@@ -271,11 +271,11 @@ func main() {
 }
 ```
 
-Release Note
-------------
+Changelog
+---------
 
-- [English](./release_note_en.md)
-- [Japanese](./release_note_ja.md)
+- [English](./CHANGELOG.md)
+- [Japanese](./CHANGELOG_ja.md)
 
 Acknowledgements
 ----------------

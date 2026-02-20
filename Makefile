@@ -39,7 +39,7 @@ dist:
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
 bump:
-	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc main release_note*.md > cmd/csvi/version.go
+	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc main CHANGELOG*.md > cmd/csvi/version.go
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
@@ -63,7 +63,7 @@ readme:
 docs:
 	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README.md > docs/index.html
 	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README_ja.md > docs/index_ja.html
-	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_en.md > docs/release_note_en.html
-	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index release_note_ja.md > docs/release_note_ja.html
+	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index CHANGELOG.md > docs/CHANGELOG.html
+	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - Release notes" -outline-in-sidebar -readme-to-index CHANGELOG_ja.md > docs/CHANGELOG_ja.html
 
 .PHONY: all test dist _dist clean release manifest readme docs
