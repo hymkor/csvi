@@ -1,6 +1,8 @@
-Release notes
-=============
-( [English](release_note_en.md) / **Japanese** )
+Changelog
+=========
+( [English](CHANGELOG.md) / **Japanese** )
+
+- 変更履歴を記録するファイルを `release_note_en.md`, `release_note_ja.md` から `CHANGELOG.md`, `CHANGELOG_ja.md` へ改名
 
 v1.22.0
 -------
