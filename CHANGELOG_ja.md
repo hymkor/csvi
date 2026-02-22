@@ -2,7 +2,8 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
-- 変更履歴を記録するファイルを `release_note_en.md`, `release_note_ja.md` から `CHANGELOG.md`, `CHANGELOG_ja.md` へ改名
+- 変更履歴を記録するファイルを `release_note_en.md`, `release_note_ja.md` から `CHANGELOG.md`, `CHANGELOG_ja.md` へ改名 (#94)
+- ファイル保存時に出力が完了するまで一時ファイル名を使い、元のファイルが不完全な状態になる時間をゼロとした (#95)
 
 v1.22.0
 -------
