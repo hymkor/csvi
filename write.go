@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"sync"
 
 	"github.com/nyaosorg/go-inline-animation"
 
 	"github.com/hymkor/csvi/internal/ansi"
+	"github.com/hymkor/csvi/internal/safewrite"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -40,49 +40,16 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		return "Output to STDOUT", nil
 	}
 
-	perm := os.FileMode(0666)
-	openflag := os.O_WRONLY | os.O_EXCL | os.O_CREATE
-
-	fd, err := os.OpenFile(fname, openflag, perm)
-	if err == nil {
-		end := animation.Dots.Progress(app.out)
-		defer end()
-		app.dump(fd)
-		if err := fd.Close(); err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("Saved as \"%s\"", fname), nil
+	prompt := func() bool {
+		return app.yesNo("Overwrite as \"" + fname + "\" [y/n] ?")
 	}
-	if !errors.Is(err, os.ErrExist) {
-		return "", err
-	}
-	stat, err := os.Stat(fname)
-	if err != nil {
-		return "", err
-	}
-	perm = stat.Mode().Perm()
-	if _, done := overWritten[fname]; done || !stat.Mode().IsRegular() {
-		openflag = os.O_WRONLY | os.O_CREATE | os.O_TRUNC
-	} else {
-		if !app.yesNo("Overwrite as \"" + fname + "\" [y/n] ?") {
-			return "", errCanceled
-		}
-		backup := fname + "~"
-		if err := os.Remove(backup); err != nil && !errors.Is(err, fs.ErrNotExist) {
-			return "", err
-		}
-		if err := os.Rename(fname, backup); err != nil {
-			return "", err
-		}
-		overWritten[fname] = struct{}{}
-	}
-	fd, err = os.OpenFile(fname, openflag, perm)
+	fd, err := safewrite.Open(fname, prompt)
 	if err != nil {
 		return "", err
 	}
 	end := animation.Dots.Progress(app.out)
-	defer end()
 	app.dump(fd)
+	end()
 	if err := fd.Close(); err != nil {
 		return "", err
 	}
