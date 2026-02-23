@@ -4,6 +4,10 @@ Changelog
 
 - 変更履歴を記録するファイルを `release_note_en.md`, `release_note_ja.md` から `CHANGELOG.md`, `CHANGELOG_ja.md` へ改名 (#94)
 - ファイル保存時に出力が完了するまで一時ファイル名を使い、元のファイルが不完全な状態になる時間をゼロとした (#95)
+- 保存に時間がかかった時、テキストアニメの消去位置が狂う問題を修正 ([go-inline-animation#6], [go-inline-animation#7], #96)
+
+[go-inline-animation#6]: https://github.com/nyaosorg/go-inline-animation/pull/6
+[go-inline-animation#7]: https://github.com/nyaosorg/go-inline-animation/pull/7
 
 v1.22.0
 -------
