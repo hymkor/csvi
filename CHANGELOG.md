@@ -4,6 +4,10 @@ Changelog
 
 - Rename release note files to `CHANGELOG.md` and `CHANGELOG_ja`.md. (#94)
 - Changed file saving to use a temporary file until writing completes, eliminating any window where the original file could be left in a partial state. (#95)
+- Fixed an issue where the progress animation was cleared at the wrong position during long save operations. ([go-inline-animation#6], [go-inline-animation#7], #96)
+
+[go-inline-animation#6]: https://github.com/nyaosorg/go-inline-animation/pull/6
+[go-inline-animation#7]: https://github.com/nyaosorg/go-inline-animation/pull/7
 
 v1.22.0
 -------
