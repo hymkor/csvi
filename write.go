@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/nyaosorg/go-inline-animation"
@@ -58,6 +59,21 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 	app.dump(fd)
 	end()
 	if err := fd.Close(); err != nil {
+		var be *safewrite.BackupError
+		if errors.As(err, &be) {
+			return "",
+				fmt.Errorf("Failed to backup %q to %q (tmp: %q)",
+					filepath.Base(be.Target),
+					filepath.Base(be.Backup),
+					filepath.Base(be.Tmp))
+		}
+		var re *safewrite.ReplaceError
+		if errors.As(err, &re) {
+			return "",
+				fmt.Errorf("Failed to replace %q to %q",
+					filepath.Base(re.Tmp),
+					filepath.Base(re.Target))
+		}
 		return "", err
 	}
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
