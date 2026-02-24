@@ -42,6 +42,12 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 	}
 
 	prompt := func(info *safewrite.Info) bool {
+		if info.ReadOnly() {
+			if app.yesNo("Overwrite READONLY file \"" + info.Name + "\" [y/n] ?") {
+				return true
+			}
+			return false
+		}
 		return app.yesNo("Overwrite as \"" + info.Name + "\" [y/n] ?")
 	}
 	fd, err := safewrite.Open(fname, prompt)
