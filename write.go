@@ -9,8 +9,9 @@ import (
 
 	"github.com/nyaosorg/go-inline-animation"
 
+	"github.com/hymkor/go-safewrite"
+
 	"github.com/hymkor/csvi/internal/ansi"
-	"github.com/hymkor/csvi/internal/safewrite"
 	"github.com/hymkor/csvi/uncsv"
 )
 
@@ -40,8 +41,8 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		return "Output to STDOUT", nil
 	}
 
-	prompt := func() bool {
-		return app.yesNo("Overwrite as \"" + fname + "\" [y/n] ?")
+	prompt := func(info *safewrite.Info) bool {
+		return app.yesNo("Overwrite as \"" + info.Name + "\" [y/n] ?")
 	}
 	fd, err := safewrite.Open(fname, prompt)
 	if err != nil {
