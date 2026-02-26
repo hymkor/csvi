@@ -79,6 +79,9 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		}
 		return "", err
 	}
+	app.registerOnClose(fname, func() {
+		safewrite.RestorePerm(fd)
+	})
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
