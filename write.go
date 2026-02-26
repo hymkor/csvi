@@ -43,6 +43,9 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 	}
 
 	prompt := func(info *safewrite.Info) bool {
+		if info.Status != safewrite.NONE {
+			return true
+		}
 		if info.ReadOnly() {
 			if app.yesNo("Overwrite READONLY file \"" + info.Name + "\" [y/n] ?") {
 				return true
@@ -76,6 +79,9 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		}
 		return "", err
 	}
+	app.registerOnClose(fname, func() {
+		safewrite.RestorePerm(fd)
+	})
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
