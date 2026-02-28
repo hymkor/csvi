@@ -18,6 +18,7 @@ import (
 
 	"github.com/hymkor/csvi/candidate"
 	"github.com/hymkor/csvi/uncsv"
+	"github.com/hymkor/go-safewrite/perm"
 
 	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/internal/manualctl"
@@ -250,7 +251,6 @@ type Application struct {
 	lfCount      int
 	fetchFunc    func() (*uncsv.Row, error)
 	tryFetchFunc func() (*uncsv.Row, error)
-	onClose      map[string]func()
 	*Config
 }
 
@@ -264,21 +264,7 @@ func (cfg *Config) newApplication(out io.Writer) *Application {
 		Config:    cfg,
 		csvLines:  list.New(),
 		out:       out,
-		onClose:   map[string]func(){},
 	}
-}
-
-func (app *Application) Close() {
-	for _, f := range app.onClose {
-		f()
-	}
-}
-
-func (app *Application) registerOnClose(name string, f func()) {
-	if _, ok := app.onClose[name]; ok {
-		return
-	}
-	app.onClose[name] = f
 }
 
 func (app *Application) clearCache() {
@@ -594,6 +580,8 @@ func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 }
 
 func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+	defer perm.RestoreAll()
+
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
 	}
@@ -621,7 +609,6 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		cfg.Pilot = pilot
 	}
 	app := cfg.newApplication(out)
-	defer app.Close()
 	if fetch != nil {
 		if row, err := fetch(); err == nil && !row.IsZero() {
 			app.push(row)

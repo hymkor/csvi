@@ -1,7 +1,7 @@
 github.com/clipperhouse/uax29/v2 v2.2.0 h1:ChwIKnQN3kcZteTXMgb1wztSgaU+ZemkgWdohwgs8tY=
 github.com/clipperhouse/uax29/v2 v2.2.0/go.mod h1:EFJ2TJMRUaplDxHKj1qAEhCtQPW2tJSwu5BF98AuoVM=
-github.com/hymkor/go-safewrite v0.3.0 h1:+XlKrRnqW9PmYtCUWPb3rKxvAsM/PU7IkEn7Lgi7U0U=
-github.com/hymkor/go-safewrite v0.3.0/go.mod h1:UiLRe1/Al1kAkJJK65+xAFMhiacBwK6oEVHsu9+n4fo=
+github.com/hymkor/go-safewrite v0.4.0 h1:ppq0/DPwYo+ETRvIeaNMfRBKeFL0U3g3pJAbJNiwm1E=
+github.com/hymkor/go-safewrite v0.4.0/go.mod h1:UiLRe1/Al1kAkJJK65+xAFMhiacBwK6oEVHsu9+n4fo=
 github.com/hymkor/struct2flag v0.0.3 h1:11HtV5NN2f4wMM8DYyJWkzZqyH8E+9YFM78+PyxpvAE=
 github.com/hymkor/struct2flag v0.0.3/go.mod h1:Je1TEampOZlaARtEv1LFIuw1dVT1BZmIa1swu8NZh2M=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
