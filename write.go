@@ -11,6 +11,7 @@ import (
 	"github.com/nyaosorg/go-inline-animation"
 
 	"github.com/hymkor/go-safewrite"
+	"github.com/hymkor/go-safewrite/perm"
 
 	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/uncsv"
@@ -79,6 +80,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		}
 		return "", err
 	}
+	perm.Track(fd)
 	return fmt.Sprintf("Saved as \"%s\"", fname), nil
 }
 
