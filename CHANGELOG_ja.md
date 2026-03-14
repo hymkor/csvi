@@ -2,6 +2,10 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
+v1.23.0
+-------
+Mar 14, 2026
+
 ### 不具合修正
 
 - 保存に時間がかかった時、テキストアニメの消去位置が狂う問題を修正 ([go-inline-animation#6], [go-inline-animation#7], #96)

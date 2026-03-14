@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v1.23.0
+-------
+Mar 14, 2026
+
 ### Bug fixes
 
 - Fixed an issue where the progress animation was cleared at the wrong position during long save operations. ([go-inline-animation#6], [go-inline-animation#7], #96)
