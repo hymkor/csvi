@@ -1142,6 +1142,22 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="changelog">Changelog</h1>
 <p>( <strong>English</strong> / <a href="CHANGELOG_ja.html">Japanese</a> )</p>
+<h2 id="v1230">v1.23.0</h2>
+<p>Mar 14, 2026</p>
+<h3 id="bug-fixes">Bug fixes</h3>
+<ul>
+<li>Fixed an issue where the progress animation was cleared at the wrong position during long save operations. (<a href="https://github.com/nyaosorg/go-inline-animation/pull/6">go-inline-animation#6</a>, <a href="https://github.com/nyaosorg/go-inline-animation/pull/7">go-inline-animation#7</a>, #96)</li>
+<li>Preserve original file permissions when overwriting files (#97, #100)</li>
+</ul>
+<h3 id="new-features">New features</h3>
+<ul>
+<li>Changed file saving to use a temporary file until writing completes, eliminating any window where the original file could be left in a partial state. (#95)</li>
+<li>Indicate READONLY files explicitly when prompting for overwrite confirmation (#97)</li>
+</ul>
+<h3 id="documents">Documents</h3>
+<ul>
+<li>Rename release note files to <code>CHANGELOG.md</code> and <code>CHANGELOG_ja</code>.md. (#94)</li>
+</ul>
 <h2 id="v1220">v1.22.0</h2>
 <p>Feb 13, 2026</p>
 <h3 id="user-facing-changes">User-Facing Changes</h3>
@@ -1289,7 +1305,7 @@ a.permalink:hover{
 </ul>
 <h2 id="v1160">v1.16.0</h2>
 <p>Nov 24, 2025</p>
-<h3 id="bug-fixes">Bug Fixes</h3>
+<h3 id="bug-fixes-1">Bug Fixes</h3>
 <ul>
 <li>Fix: Kill buffer of readline was cleared between sessions (#11)</li>
 </ul>
@@ -1336,7 +1352,7 @@ When the environment variable <code>COLORFGBG</code> is defined as <code>(FG);(B
 <code>csvi</code> now automatically uses color settings for light backgrounds (equivalent to <code>-rv</code>).</p>
 </li>
 </ul>
-<h3 id="bug-fixes-1">Bug Fixes</h3>
+<h3 id="bug-fixes-2">Bug Fixes</h3>
 <ul>
 <li>
 <p>Fixed an issue where executing</p>
@@ -1707,6 +1723,13 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <ul>
 <li><a href="#changelog">Changelog</a>
 <ul>
+<li><a href="#v1230">v1.23.0</a>
+<ul>
+<li><a href="#bug-fixes">Bug fixes</a></li>
+<li><a href="#new-features">New features</a></li>
+<li><a href="#documents">Documents</a></li>
+</ul>
+</li>
 <li><a href="#v1220">v1.22.0</a>
 <ul>
 <li><a href="#user-facing-changes">User-Facing Changes</a></li>
@@ -1734,7 +1757,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 </li>
 <li><a href="#v1160">v1.16.0</a>
 <ul>
-<li><a href="#bug-fixes">Bug Fixes</a></li>
+<li><a href="#bug-fixes-1">Bug Fixes</a></li>
 <li><a href="#specification-changes-1">Specification Changes</a></li>
 <li><a href="#internal-changes-1">Internal Changes</a></li>
 </ul>
@@ -1742,7 +1765,7 @@ If you're a macOS user and willing to help, <strong>please try it and report bac
 <li><a href="#v1151">v1.15.1</a>
 <ul>
 <li><a href="#specification-changes-2">Specification Changes</a></li>
-<li><a href="#bug-fixes-1">Bug Fixes</a></li>
+<li><a href="#bug-fixes-2">Bug Fixes</a></li>
 <li><a href="#internal-changes-2">Internal Changes</a></li>
 </ul>
 </li>

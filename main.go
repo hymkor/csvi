@@ -18,6 +18,7 @@ import (
 
 	"github.com/hymkor/csvi/candidate"
 	"github.com/hymkor/csvi/uncsv"
+	"github.com/hymkor/go-safewrite/perm"
 
 	"github.com/hymkor/csvi/internal/ansi"
 	"github.com/hymkor/csvi/internal/manualctl"
@@ -579,6 +580,8 @@ func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 }
 
 func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
+	defer perm.RestoreAll()
+
 	if cfg.KeyMap == nil {
 		cfg.KeyMap = make(map[string]func(*KeyEventArgs) (*CommandResult, error))
 	}
