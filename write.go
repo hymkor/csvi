@@ -17,8 +17,6 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 )
 
-var overWritten = map[string]struct{}{}
-
 func (app *Application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
