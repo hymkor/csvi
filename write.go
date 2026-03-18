@@ -46,10 +46,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 			return true
 		}
 		if info.ReadOnly() {
-			if app.yesNo("Overwrite READONLY file \"" + info.Name + "\" [y/n] ?") {
-				return true
-			}
-			return false
+			return app.yesNo("Overwrite READONLY file \"" + info.Name + "\" [y/n] ?")
 		}
 		return app.yesNo("Overwrite as \"" + info.Name + "\" [y/n] ?")
 	}
