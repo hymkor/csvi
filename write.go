@@ -17,8 +17,6 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 )
 
-var overWritten = map[string]struct{}{}
-
 func (app *Application) dump(w io.Writer) {
 	cursor := app.Front()
 	app.Config.Mode.DumpBy(
@@ -48,10 +46,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 			return true
 		}
 		if info.ReadOnly() {
-			if app.yesNo("Overwrite READONLY file \"" + info.Name + "\" [y/n] ?") {
-				return true
-			}
-			return false
+			return app.yesNo("Overwrite READONLY file \"" + info.Name + "\" [y/n] ?")
 		}
 		return app.yesNo("Overwrite as \"" + info.Name + "\" [y/n] ?")
 	}
@@ -66,7 +61,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		var be *safewrite.BackupError
 		if errors.As(err, &be) {
 			return "",
-				fmt.Errorf("Failed to backup %q to %q (tmp: %q)",
+				fmt.Errorf("failed to backup %q to %q (tmp: %q)",
 					filepath.Base(be.Target),
 					filepath.Base(be.Backup),
 					filepath.Base(be.Tmp))
@@ -74,7 +69,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 		var re *safewrite.ReplaceError
 		if errors.As(err, &re) {
 			return "",
-				fmt.Errorf("Failed to replace %q to %q",
+				fmt.Errorf("failed to replace %q to %q",
 					filepath.Base(re.Tmp),
 					filepath.Base(re.Target))
 		}
