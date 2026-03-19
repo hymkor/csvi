@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"sync"
 
@@ -37,7 +36,7 @@ func (app *Application) dump(ctx context.Context, w io.Writer) error {
 var errCanceled = errors.New("canceled")
 
 func (app *Application) dumpWithAnimationAndCancel(fd io.Writer) error {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, cancel := app.ctrlC.NotifyContext(context.Background())
 	defer cancel()
 
 	end := animation.Dots.Progress(app.out)
@@ -95,7 +94,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 func (app *Application) cmdSave() (string, error) {
 	var wg sync.WaitGroup
 
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, cancel := app.ctrlC.NotifyContext(context.Background())
 
 	if app.fetchFunc != nil {
 		wg.Add(1)

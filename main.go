@@ -251,6 +251,7 @@ type Application struct {
 	lfCount      int
 	fetchFunc    func() (*uncsv.Row, error)
 	tryFetchFunc func() (*uncsv.Row, error)
+	ctrlC        *ScopedInterrupt
 	*Config
 }
 
@@ -264,7 +265,12 @@ func (cfg *Config) newApplication(out io.Writer) *Application {
 		Config:    cfg,
 		csvLines:  list.New(),
 		out:       out,
+		ctrlC:     NewScopedInterrupt(),
 	}
+}
+
+func (app *Application) Close() {
+	app.ctrlC.Close()
 }
 
 func (app *Application) clearCache() {
@@ -609,6 +615,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 		cfg.Pilot = pilot
 	}
 	app := cfg.newApplication(out)
+	defer app.Close()
 	if fetch != nil {
 		if row, err := fetch(); err == nil && !row.IsZero() {
 			app.push(row)
