@@ -3,6 +3,7 @@ package uncsv
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -401,8 +402,8 @@ func (row *Row) Rebuild(mode *Mode) []byte {
 	return buffer.Bytes()
 }
 
-func (mode *Mode) Dump(rows []Row, w io.Writer) {
-	mode.DumpBy(func() *Row {
+func (mode *Mode) Dump(ctx context.Context, rows []Row, w io.Writer) error {
+	return mode.DumpBy(ctx, func() *Row {
 		if len(rows) <= 0 {
 			return nil
 		}
@@ -412,8 +413,9 @@ func (mode *Mode) Dump(rows []Row, w io.Writer) {
 	}, w)
 }
 
-func (mode *Mode) DumpBy(fetch func() *Row, w io.Writer) {
+func (mode *Mode) DumpBy(ctx context.Context, fetch func() *Row, w io.Writer) error {
 	bw := bufio.NewWriter(w)
+	defer bw.Flush()
 	if mode.hasBom == triTrue {
 		switch mode.endian {
 		case utf16le:
@@ -425,13 +427,15 @@ func (mode *Mode) DumpBy(fetch func() *Row, w io.Writer) {
 		}
 	}
 	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		row := fetch()
 		if row == nil {
-			break
+			return nil
 		}
 		bw.Write(row.Rebuild(mode))
 	}
-	bw.Flush()
 }
 
 func newCell(text string, mode *Mode) Cell {
