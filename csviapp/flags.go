@@ -29,6 +29,8 @@ type Options struct {
 	SavePath      string `flag:"o,preset output filename in the save prompt (used with standard input)"`
 	Delimiter     string `flag:"delimiter,Specify the field separator"`
 	Version       bool   `flag:"version,print version and exit"`
+	Lf            bool   `flag:"lf,use LF as the default line ending for newly added lines"`
+	CrLf          bool   `flag:"crlf,use CRLF as the default line ending for newly added lines"`
 	flagSet       *flag.FlagSet
 }
 
