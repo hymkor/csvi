@@ -29,6 +29,14 @@ func (f *Options) mode() (*uncsv.Mode, error) {
 			return nil, fmt.Errorf("-iana %w", err)
 		}
 	}
+	if f.Lf {
+		mode.DefaultTerm = "\n"
+		if f.CrLf {
+			return nil, errors.New("options -lf and -crlf are mutually exclusive")
+		}
+	} else if f.CrLf {
+		mode.DefaultTerm = "\r\n"
+	}
 	if f.NonUTF8 {
 		mode.NonUTF8 = true
 	}
