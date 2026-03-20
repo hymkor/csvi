@@ -1,6 +1,7 @@
 package csvi
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -17,9 +18,10 @@ import (
 	"github.com/hymkor/csvi/uncsv"
 )
 
-func (app *Application) dump(w io.Writer) {
+func (app *Application) dump(ctx context.Context, w io.Writer) error {
 	cursor := app.Front()
-	app.Config.Mode.DumpBy(
+	return app.Config.Mode.DumpBy(
+		ctx,
 		func() *uncsv.Row {
 			if cursor == nil {
 				return nil
@@ -33,12 +35,17 @@ func (app *Application) dump(w io.Writer) {
 
 var errCanceled = errors.New("canceled")
 
+func (app *Application) dumpWithAnimationAndCancel(fd io.Writer) error {
+	ctx, cancel := app.withSlowOperation("Saving...")
+	defer cancel()
+
+	return app.dump(ctx, fd)
+}
+
 func (app *Application) cmdWrite(fname string) (string, error) {
 	if fname == "-" {
-		end := animation.Dots.Progress(app.out)
-		defer end()
-		app.dump(os.Stdout)
-		return "Output to STDOUT", nil
+		err := app.dumpWithAnimationAndCancel(os.Stdout)
+		return "Output to STDOUT", err
 	}
 
 	prompt := func(info *safewrite.Info) bool {
@@ -54,9 +61,11 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	end := animation.Dots.Progress(app.out)
-	app.dump(fd)
-	end()
+
+	if err := app.dumpWithAnimationAndCancel(fd); err != nil {
+		return "", err
+	}
+
 	if err := fd.Close(); err != nil {
 		var be *safewrite.BackupError
 		if errors.As(err, &be) {
@@ -81,32 +90,30 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 
 func (app *Application) cmdSave() (string, error) {
 	var wg sync.WaitGroup
-	chStop := make(chan struct{})
-	defer close(chStop)
+
+	ctx, cancel := app.ctrlC.NotifyContext(context.Background())
 
 	if app.fetchFunc != nil {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for {
-				select {
-				case <-chStop:
+				if ctx.Err() != nil {
 					return
-				default:
-					row, err := app.fetchFunc()
-					if err != nil && !errors.Is(err, io.EOF) {
-						app.fetchFunc = nil
-						app.tryFetchFunc = nil
-						return
-					}
-					if row != nil {
-						app.push(row)
-					}
-					if errors.Is(err, io.EOF) {
-						app.fetchFunc = nil
-						app.tryFetchFunc = nil
-						return
-					}
+				}
+				row, err := app.fetchFunc()
+				if err != nil && !errors.Is(err, io.EOF) {
+					app.fetchFunc = nil
+					app.tryFetchFunc = nil
+					return
+				}
+				if row != nil {
+					app.push(row)
+				}
+				if errors.Is(err, io.EOF) {
+					app.fetchFunc = nil
+					app.tryFetchFunc = nil
+					return
 				}
 			}
 		}()
@@ -115,10 +122,15 @@ func (app *Application) cmdSave() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	io.WriteString(app.out, ansi.YELLOW+"\rw: Wait a moment for reading all data..."+ansi.ERASE_LINE)
+	io.WriteString(app.out, ansi.YELLOW+"\rReading all data... "+ansi.ERASE_SCRN_AFTER)
 	end := animation.Dots.Progress(app.out)
 	wg.Wait()
 	end()
+	ctxErr := ctx.Err()
+	cancel()
+	if ctxErr != nil {
+		return "", errors.New("Save interrupted")
+	}
 	message, err := app.cmdWrite(fname)
 	if err == nil {
 		app.resetDirty()
