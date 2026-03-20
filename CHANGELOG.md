@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v1.23.1
+-------
+Mar 21, 2026
+
 ### Bug fixes
 
 - Fix missing newlines when saving data entered entirely via terminal input; use OS default line endings when unspecified (#106)
