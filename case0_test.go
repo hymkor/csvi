@@ -7,12 +7,14 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/hymkor/csvi/uncsv"
 )
 
 func TestFileIO(t *testing.T) {
 	src := ""
 	op := "i|ahaha"
-	exp := "ahaha"
+	exp := "ahaha" + uncsv.OsNewline
 	testCase(t, src, op, exp)
 }
 

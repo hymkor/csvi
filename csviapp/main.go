@@ -41,7 +41,13 @@ func (f *Options) mode() (*uncsv.Mode, error) {
 	delimiterCount := 0
 	if len(f.flagSet.Args()) <= 0 && isatty.IsTerminal(uintptr(os.Stdin.Fd())) {
 		// Start with one empty line
-		mode.Comma = '\t'
+		if f.Tsv {
+			mode.Comma = '\t'
+		} else if f.Csv {
+			mode.Comma = ','
+		} else {
+			mode.Comma = '\t'
+		}
 	} else {
 		mode.Comma = ','
 		args := f.flagSet.Args()

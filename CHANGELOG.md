@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+### Bug fixes
+
+- Fix an issue where, when editing from an empty state (no input data) and all content was entered via the terminal, the saved file had no newline characters and always used tab as the field delimiter. Newlines now default to the OS standard line ending, and the delimiter defaults to tab but follows options such as `-c` and `-t`. (#106)
+
 ### New features
 
 - Allow canceling save and search operations with Ctrl-C (#105)

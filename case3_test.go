@@ -5,6 +5,8 @@ import (
 	"io"
 	"path/filepath"
 	"testing"
+
+	"github.com/hymkor/csvi/uncsv"
 )
 
 func TestCase3(t *testing.T) {
@@ -39,5 +41,5 @@ func TestDataStreamIsNil(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	checkResult(t, outputPath, "foo")
+	checkResult(t, outputPath, "foo"+uncsv.OsNewline)
 }
