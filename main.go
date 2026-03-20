@@ -3,6 +3,7 @@ package csvi
 import (
 	"bufio"
 	"container/list"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -813,7 +814,13 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if lastWord == "" {
 					break
 				}
-				r, c := lastSearch(app.cursorRow, app.cursorCol, lastWord)
+				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				r, c, err := lastSearch(ctx, app.cursorRow, app.cursorCol, lastWord)
+				cancel()
+				if err != nil {
+					message = err.Error()
+					break
+				}
 				if r == nil {
 					message = fmt.Sprintf("%s: not found", lastWord)
 					break
@@ -824,7 +831,13 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if lastWord == "" {
 					break
 				}
-				r, c := lastSearchRev(app.cursorRow, app.cursorCol, lastWord)
+				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				r, c, err := lastSearchRev(ctx, app.cursorRow, app.cursorCol, lastWord)
+				cancel()
+				if err != nil {
+					message = err.Error()
+					break
+				}
 				if r == nil {
 					message = fmt.Sprintf("%s: not found", lastWord)
 					break
@@ -843,7 +856,13 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					lastSearch = searchExactBackward
 					lastSearchRev = searchExactForward
 				}
-				r, c := lastSearch(app.cursorRow, app.cursorCol, lastWord)
+				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				r, c, err := lastSearch(ctx, app.cursorRow, app.cursorCol, lastWord)
+				cancel()
+				if err != nil {
+					message = err.Error()
+					break
+				}
 				if r == nil {
 					message = fmt.Sprintf("%s: not found", lastWord)
 					break
@@ -867,7 +886,13 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					lastSearch = searchBackward
 					lastSearchRev = searchForward
 				}
-				r, c := lastSearch(app.cursorRow, app.cursorCol, lastWord)
+				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				r, c, err := lastSearch(ctx, app.cursorRow, app.cursorCol, lastWord)
+				cancel()
+				if err != nil {
+					message = err.Error()
+					break
+				}
 				if r == nil {
 					message = fmt.Sprintf("%s: not found", lastWord)
 					break

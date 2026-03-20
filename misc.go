@@ -1,6 +1,7 @@
 package csvi
 
 import (
+	"context"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
@@ -81,65 +82,77 @@ func makeCandidate(row, col int, cursor *RowPtr) candidate.Candidate {
 	return result
 }
 
-func searchForward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
+func searchForward(ctx context.Context, cursor *RowPtr, c int, target string) (*RowPtr, int, error) {
 	c++
 	for cursor != nil {
+		if err := ctx.Err(); err != nil {
+			return cursor, c, err
+		}
 		for c < len(cursor.Cell) {
 			if strings.Contains(cursor.Cell[c].Text(), target) {
-				return cursor, c
+				return cursor, c, nil
 			}
 			c++
 		}
 		cursor = cursor.Next()
 		c = 0
 	}
-	return nil, c
+	return nil, c, nil
 }
 
-func searchExactForward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
+func searchExactForward(ctx context.Context, cursor *RowPtr, c int, target string) (*RowPtr, int, error) {
 	c++
 	for cursor != nil {
+		if err := ctx.Err(); err != nil {
+			return cursor, c, err
+		}
 		for c < len(cursor.Cell) {
 			if strings.EqualFold(cursor.Cell[c].Text(), target) {
-				return cursor, c
+				return cursor, c, nil
 			}
 			c++
 		}
 		cursor = cursor.Next()
 		c = 0
 	}
-	return nil, c
+	return nil, c, nil
 }
 
-func searchBackward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
+func searchBackward(ctx context.Context, cursor *RowPtr, c int, target string) (*RowPtr, int, error) {
 	c--
 	for {
+		if err := ctx.Err(); err != nil {
+			return cursor, c, err
+		}
 		for c >= 0 {
 			if strings.Contains(cursor.Cell[c].Text(), target) {
-				return cursor, c
+				return cursor, c, nil
 			}
 			c--
 		}
 		cursor = cursor.Prev()
 		if cursor == nil {
-			return nil, c
+			return nil, c, nil
 		}
 		c = len(cursor.Cell) - 1
 	}
 }
 
-func searchExactBackward(cursor *RowPtr, c int, target string) (*RowPtr, int) {
+func searchExactBackward(ctx context.Context, cursor *RowPtr, c int, target string) (*RowPtr, int, error) {
 	c--
 	for {
+		if err := ctx.Err(); err != nil {
+			return cursor, c, err
+		}
 		for c >= 0 {
 			if strings.EqualFold(cursor.Cell[c].Text(), target) {
-				return cursor, c
+				return cursor, c, nil
 			}
 			c--
 		}
 		cursor = cursor.Prev()
 		if cursor == nil {
-			return nil, c
+			return nil, c, nil
 		}
 		c = len(cursor.Cell) - 1
 	}
