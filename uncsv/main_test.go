@@ -3,6 +3,7 @@ package uncsv
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"io"
 	"strings"
 	"testing"
@@ -47,8 +48,9 @@ func upd(t *testing.T, source string, expect string, f func([]Row, *Mode)) {
 
 	f(rows, mode)
 
+	ctx := context.Background()
 	var buffer strings.Builder
-	mode.Dump(rows, &buffer)
+	mode.Dump(ctx, rows, &buffer)
 	result := buffer.String()
 	if result != expect {
 		t.Fatalf("expect `%v`, but `%v`", expect, result)
