@@ -14,6 +14,7 @@ import (
 
 	"github.com/mattn/go-runewidth"
 
+	"github.com/nyaosorg/go-inline-animation"
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/keys"
 
@@ -369,6 +370,16 @@ func (app *Application) yesNo(message string) bool {
 
 func first[T any](value T, _ error) T {
 	return value
+}
+
+func (app *Application) withSlowOperation(message string) (context.Context, context.CancelFunc) {
+	fmt.Fprint(app.out, "\r", ansi.YELLOW, message, " ", ansi.ERASE_SCRN_AFTER)
+	end := animation.Dots.Progress(app.out)
+	ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+	return ctx, func() {
+		cancel()
+		end()
+	}
 }
 
 func (app *Application) printStatusLine() {
@@ -814,7 +825,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if lastWord == "" {
 					break
 				}
-				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				ctx, cancel := app.withSlowOperation("Searching...")
 				r, c, err := lastSearch(ctx, app.cursorRow, app.cursorCol, lastWord)
 				cancel()
 				if err != nil {
@@ -831,7 +842,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				if lastWord == "" {
 					break
 				}
-				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				ctx, cancel := app.withSlowOperation("Searching...")
 				r, c, err := lastSearchRev(ctx, app.cursorRow, app.cursorCol, lastWord)
 				cancel()
 				if err != nil {
@@ -856,7 +867,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					lastSearch = searchExactBackward
 					lastSearchRev = searchExactForward
 				}
-				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				ctx, cancel := app.withSlowOperation("Searching...")
 				r, c, err := lastSearch(ctx, app.cursorRow, app.cursorCol, lastWord)
 				cancel()
 				if err != nil {
@@ -886,7 +897,7 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					lastSearch = searchBackward
 					lastSearchRev = searchForward
 				}
-				ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+				ctx, cancel := app.withSlowOperation("Searching...")
 				r, c, err := lastSearch(ctx, app.cursorRow, app.cursorCol, lastWord)
 				cancel()
 				if err != nil {

@@ -36,11 +36,8 @@ func (app *Application) dump(ctx context.Context, w io.Writer) error {
 var errCanceled = errors.New("canceled")
 
 func (app *Application) dumpWithAnimationAndCancel(fd io.Writer) error {
-	ctx, cancel := app.ctrlC.NotifyContext(context.Background())
+	ctx, cancel := app.withSlowOperation("Saving...")
 	defer cancel()
-
-	end := animation.Dots.Progress(app.out)
-	defer end()
 
 	return app.dump(ctx, fd)
 }
@@ -125,7 +122,7 @@ func (app *Application) cmdSave() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	io.WriteString(app.out, ansi.YELLOW+"\rw: Wait a moment for reading all data... "+ansi.ERASE_LINE)
+	io.WriteString(app.out, ansi.YELLOW+"\rReading all data... "+ansi.ERASE_SCRN_AFTER)
 	end := animation.Dots.Progress(app.out)
 	wg.Wait()
 	end()
