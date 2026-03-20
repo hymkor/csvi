@@ -140,6 +140,17 @@ Options
 
 [IANA-registered-name]: https://www.iana.org/assignments/character-sets/character-sets.xhtml
 
+### Line Endings
+
+By default, the editor uses the line ending detected from the input file.
+If no input data is provided, it falls back to the OS default line ending.
+You can override this behavior with the following options:
+
+* `-lf` Use LF (`\n`) as the default line ending for newly added lines.
+* `-crlf` Use CRLF (`\r\n`) as the default line ending for newly added lines.
+
+These options are mutually exclusive. Specifying both will result in an error.
+
 Key-binding
 -----------
 
