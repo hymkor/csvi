@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+### New features
+
+- Allow canceling save and search operations with Ctrl-C (#105)
+
 v1.23.0
 -------
 Mar 14, 2026

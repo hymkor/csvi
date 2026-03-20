@@ -2,6 +2,8 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
+- Ctrl-C で保存や検索操作を中断できるようにした (#105)
+
 v1.23.0
 -------
 Mar 14, 2026
