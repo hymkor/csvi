@@ -3,6 +3,8 @@ package csvi_test
 import (
 	"path/filepath"
 	"testing"
+
+	"github.com/hymkor/csvi/uncsv"
 )
 
 func TestUndo1(t *testing.T) {
@@ -35,4 +37,9 @@ func TestUndo2(t *testing.T) {
 ら,り,る,れ,ろ
 わ,を,ん`
 	testCase(t, aiueo, op, exp)
+}
+
+func TestZeroLines(t *testing.T) {
+	exp := "1,2,3" + uncsv.OsNewline + "4,5" + uncsv.OsNewline
+	testCase(t, "", "i|1|a|2|a|3|o|4|a|5", exp)
 }

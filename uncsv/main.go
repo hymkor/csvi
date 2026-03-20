@@ -482,10 +482,17 @@ func (c Cell) Quote(mode *Mode) Cell {
 	return Cell{source: source, text: text, original: c.original}
 }
 
+func (mode *Mode) newline() string {
+	if mode.DefaultTerm == "" {
+		return OsNewline
+	}
+	return mode.DefaultTerm
+}
+
 func NewRow(mode *Mode) Row {
 	return Row{
 		Cell: []Cell{newCell("", mode)},
-		Term: mode.DefaultTerm,
+		Term: mode.newline(),
 	}
 }
 
@@ -496,7 +503,7 @@ func NewRowFromStringSlice(mode *Mode, texts []string) Row {
 	}
 	return Row{
 		Cell: cells,
-		Term: mode.DefaultTerm,
+		Term: mode.newline(),
 	}
 }
 
