@@ -1256,6 +1256,15 @@ scoop install csvi
 <li><code>-delimiter string</code> Specify the field separator</li>
 <li><code>-version</code> Print version and exit</li>
 </ul>
+<h3 id="line-endings">Line Endings</h3>
+<p>By default, the editor uses the line ending detected from the input file.
+If no input data is provided, it falls back to the OS default line ending.
+You can override this behavior with the following options:</p>
+<ul>
+<li><code>-lf</code> Use LF (<code>\n</code>) as the default line ending for newly added lines.</li>
+<li><code>-crlf</code> Use CRLF (<code>\r\n</code>) as the default line ending for newly added lines.</li>
+</ul>
+<p>These options are mutually exclusive. Specifying both will result in an error.</p>
 <h2 id="key-binding">Key-binding</h2>
 <ul>
 <li>Move Cursor
@@ -1439,7 +1448,11 @@ func main() {
 <li><a href="#use-go-install-requires-go-toolchain">Use &quot;go install&quot; (requires Go toolchain)</a></li>
 </ul>
 </li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#line-endings">Line Endings</a></li>
+</ul>
+</li>
 <li><a href="#key-binding">Key-binding</a></li>
 <li><a href="#environment-variables">Environment Variables</a>
 <ul>
