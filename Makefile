@@ -23,10 +23,10 @@ EXE:=$(shell $(GO) env GOEXE)
 
 all:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build -C "cmd/csvi" -o "$(CURDIR)" $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/csvi"
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && $(GO) build -C "cmd/csvi" -o "$(CURDIR)" $(GOOPT)
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/csvi"
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
