@@ -23,10 +23,10 @@ EXE:=$(shell $(GO) env GOEXE)
 
 all:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/csvi"
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
 
 _dist:
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/csvi"
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
 	zip -9 $(NAME)-$(VERSION)-$(GOOS)-$(GOARCH).zip $(NAME)$(EXE)
 
 dist:
@@ -39,7 +39,7 @@ dist:
 	$(SET) "GOOS=linux"   && $(SET) "GOARCH=amd64" && $(MAKE) _dist
 
 bump:
-	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc main CHANGELOG*.md > cmd/csvi/version.go
+	$(GO) run github.com/hymkor/latest-notes@latest -suffix "-goinstall" -gosrc main CHANGELOG*.md > cmd/$(NAME)/version.go
 
 clean:
 	$(DEL) *.zip $(NAME)$(EXE)
@@ -48,7 +48,7 @@ release:
 	$(GO) run github.com/hymkor/latest-notes@latest | gh release create -d --notes-file - -t $(VERSION) $(VERSION) $(wildcard $(NAME)-$(VERSION)-*.zip)
 
 manifest:
-	$(GO) run github.com/hymkor/make-scoop-manifest@master -all *-windows-*.zip > $(NAME).json
+	$(GO) run github.com/hymkor/make-scoop-manifest@latest -all *-windows-*.zip > $(NAME).json
 
 test:
 	$(GO) test -v ./...
@@ -57,8 +57,8 @@ benchmark:
 	pwsh test/benchmark.ps1
 
 readme:
-	$(GO) run github.com/hymkor/example-into-readme@master
-	$(GO) run github.com/hymkor/example-into-readme@master -target README_ja.md
+	$(GO) run github.com/hymkor/example-into-readme@latest
+	$(GO) run github.com/hymkor/example-into-readme@latest -target README_ja.md
 
 docs:
 	$(GO) run github.com/hymkor/minipage@latest -title "Csvi - A terminal CSV editor" -outline-in-sidebar -readme-to-index "<img src='./csvi-logo-s.png' align='left' />" README.md > docs/index.html
