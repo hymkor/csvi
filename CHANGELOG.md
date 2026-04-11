@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+- Change Ctrl-L behavior during input (e.g. cell or filename editing) (#110):
+  - Redraw the current input instead of clearing the entire screen.
+  - Update go-readline-ny to v1.14.3 supporting redrawing the current input.
+
 v1.23.1
 -------
 Mar 21, 2026
