@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mattn/go-runewidth v0.0.19
 	github.com/nyaosorg/go-inline-animation v0.3.1
-	github.com/nyaosorg/go-readline-ny v1.14.1
+	github.com/nyaosorg/go-readline-ny v1.14.3
 	github.com/nyaosorg/go-readline-skk v0.6.2
 	github.com/nyaosorg/go-ttyadapter v0.3.0
 	github.com/nyaosorg/go-windows-mbcs v0.4.4
