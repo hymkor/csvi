@@ -11,7 +11,7 @@ require (
 	github.com/nyaosorg/go-inline-animation v0.3.1
 	github.com/nyaosorg/go-readline-ny v1.14.3
 	github.com/nyaosorg/go-readline-skk v0.6.2
-	github.com/nyaosorg/go-ttyadapter v0.3.0
+	github.com/nyaosorg/go-ttyadapter v0.5.0
 	github.com/nyaosorg/go-windows-mbcs v0.4.4
 	golang.org/x/text v0.22.0
 )
