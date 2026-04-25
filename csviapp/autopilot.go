@@ -1,50 +1,33 @@
 package csviapp
 
 import (
-	"fmt"
 	"io"
 	"strings"
-	"unicode/utf8"
+
+	"github.com/nyaosorg/go-ttyadapter/auto"
 
 	"github.com/hymkor/csvi/candidate"
 )
 
 type autoPilot struct {
-	script string
+	*auto.Pilot
 }
 
-func (ap *autoPilot) Size() (int, int, error) {
-	return 80, 25, nil
-}
-
-func (ap *autoPilot) next() (string, error) {
-	if ap.script == "" {
-		return "", io.EOF
+func newAutoPilot(script string) *autoPilot {
+	text := strings.Split(script, "|")
+	return &autoPilot{
+		Pilot: &auto.Pilot{
+			Text: text,
+		},
 	}
-	var command string
-	command, ap.script, _ = strings.Cut(ap.script, "|")
-	return command, nil
 }
 
-func (ap *autoPilot) ReadLine(io.Writer, string, string, candidate.Candidate) (string, error) {
-	return ap.next()
+func (ap *autoPilot) ReadLine(_ io.Writer, x string, y string, _ candidate.Candidate) (rc string, err error) {
+	rc, err = ap.Pilot.GetKey()
+	return
 }
 
-func (ap *autoPilot) GetKey() (string, error) {
-	key, err := ap.next()
-	if err != nil || len(key) <= 1 || key[0] == '\x1B' {
-		return key, err
-	}
-	if utf8.RuneCountInString(key) != 1 {
-		return key, fmt.Errorf("%#v: too long string for getkey", key)
-	}
-	return key, nil
-}
-
-func (ap *autoPilot) GetFilename(out io.Writer, prompt string, defaultName string) (string, error) {
-	return ap.next()
-}
-
-func (ap *autoPilot) Close() error {
-	return nil
+func (ap *autoPilot) GetFilename(out io.Writer, prompt string, defaultName string) (rc string, err error) {
+	rc, err = ap.Pilot.GetKey()
+	return
 }
