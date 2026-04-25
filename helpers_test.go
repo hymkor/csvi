@@ -41,7 +41,7 @@ func testRun(t *testing.T, dataSource io.Reader, args ...string) {
 	}
 }
 
-func checkResult(t *testing.T, path, expect string) {
+func checkResult(t *testing.T, op, path, expect string) {
 	t.Helper()
 	bin, err := os.ReadFile(path)
 	if err != nil {
@@ -49,19 +49,20 @@ func checkResult(t *testing.T, path, expect string) {
 	}
 	result := string(bin)
 	if expect != result {
-		t.Fatalf("Expect %#v, but %#v", expect, result)
+		t.Fatalf("Operation %#v\nExpect %#v,\n   Got %#v", op, expect, result)
 	}
 }
 
-func testCase(t *testing.T, source, process, result string, options ...string) {
+func testCase(t *testing.T, source, op, result string, options ...string) {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "test.csv")
 	args := make([]string, 0, len(options)+3)
 	args = append(args, options...)
 	args = append(args, "-auto")
-	args = append(args, fmt.Sprintf("%s|w|%s|q|y", process, path))
+	op = fmt.Sprintf("%s|w|%s|q|y", op, path)
+	args = append(args, op)
 	testRun(t, strings.NewReader(source), args...)
-	checkResult(t, path, result)
+	checkResult(t, op, path, result)
 }
 
 func makeSource(t *testing.T, name, content string) string {
