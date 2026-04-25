@@ -51,7 +51,7 @@ manifest:
 	$(GO) run github.com/hymkor/make-scoop-manifest@latest -all *-windows-*.zip > $(NAME).json
 
 test:
-	$(GO) test -v ./...
+	$(GO) test ./...
 
 benchmark:
 	pwsh test/benchmark.ps1
