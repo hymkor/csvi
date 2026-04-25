@@ -15,7 +15,8 @@ func TestCase3(t *testing.T) {
 	path3 := makeSource(t, "t3.csv", "third\n")
 	outputPath := filepath.Join(t.TempDir(), "t4.csv")
 
-	instance, err := newTestOptions("-auto", fmt.Sprintf("w|%s|q|y", outputPath), path1, path2, path3)
+	op := fmt.Sprintf("w|%s|q|y", outputPath)
+	instance, err := newTestOptions("-auto", op, path1, path2, path3)
 
 	if err != nil {
 		t.Fatal(err.Error())
@@ -26,12 +27,13 @@ func TestCase3(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	checkResult(t, outputPath, "first\nsecond\nthird\n")
+	checkResult(t, op, outputPath, "first\nsecond\nthird\n")
 }
 
 func TestDataStreamIsNil(t *testing.T) {
 	outputPath := filepath.Join(t.TempDir(), "nulltest.csv")
-	instance, err := newTestOptions("-auto", fmt.Sprintf("i|foo|w|%s|q|y", outputPath))
+	op := fmt.Sprintf("i|foo|w|%s|q|y", outputPath)
+	instance, err := newTestOptions("-auto", op)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -41,5 +43,5 @@ func TestDataStreamIsNil(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	checkResult(t, outputPath, "foo"+uncsv.OsNewline)
+	checkResult(t, op, outputPath, "foo"+uncsv.OsNewline)
 }

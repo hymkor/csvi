@@ -19,7 +19,8 @@ func TestFileIO(t *testing.T) {
 }
 
 func TestPipelineIO(t *testing.T) {
-	instance, err := newTestOptions("-auto", "w|-|q|y")
+	const op = "w|-|q|y"
+	instance, err := newTestOptions("-auto", op)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -42,5 +43,5 @@ func TestPipelineIO(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	checkResult(t, path, "ihihi\r\n")
+	checkResult(t, op, path, "ihihi\r\n")
 }

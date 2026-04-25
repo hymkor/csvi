@@ -23,7 +23,7 @@ EXE:=$(shell $(GO) env GOEXE)
 
 all:
 	$(GO) fmt ./...
-	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
+	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) -tags debug "./cmd/$(NAME)"
 
 _dist:
 	$(SET) "CGO_ENABLED=0" && $(GO) build $(GOOPT) "./cmd/$(NAME)"
@@ -51,7 +51,7 @@ manifest:
 	$(GO) run github.com/hymkor/make-scoop-manifest@latest -all *-windows-*.zip > $(NAME).json
 
 test:
-	$(GO) test -v ./...
+	$(GO) test ./...
 
 benchmark:
 	pwsh test/benchmark.ps1

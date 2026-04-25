@@ -113,7 +113,7 @@ func (f *Options) pilot() csvi.Pilot {
 	if f.Auto == "" {
 		return nil
 	}
-	return &autoPilot{script: f.Auto}
+	return newAutoPilot(f.Auto)
 }
 
 func (f *Options) Run() error {
