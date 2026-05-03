@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/nyaosorg/go-ttyadapter"
-	"github.com/nyaosorg/go-ttyadapter/tty8pe"
+	"github.com/nyaosorg/go-ttyadapter/fav"
 
 	"github.com/nyaosorg/go-readline-ny"
 	"github.com/nyaosorg/go-readline-ny/completion"
@@ -41,7 +41,7 @@ type ManualCtl struct {
 
 func New() (*ManualCtl, error) {
 	mc := &ManualCtl{
-		Tty: &tty8pe.Tty{},
+		Tty: &fav.Tty{},
 	}
 	return mc, mc.Open(nil)
 }
