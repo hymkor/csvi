@@ -1142,6 +1142,14 @@ a.permalink:hover{
 <div class="main markdown-body">
 <h1 id="changelog">Changelog</h1>
 <p>( <a href="CHANGELOG.html">English</a> / <strong>Japanese</strong> )</p>
+<h2 id="v1233">v1.23.3</h2>
+<p>Aug 26, 2026</p>
+<ul>
+<li>読み取りデータが１行しかなく、かつ改行がない時に空行と差し替えてしまう不具合を修正 (#114-1,#115)</li>
+<li>デフォルト改行コードがないまま、最初の行で EOF になってしまったとき、デフォルト改行コードを OS 改行コードにするようにした (#114-2,#115)</li>
+<li>現在行前に改行コードのない行をペーストした時(&quot;P&quot;)、デフォルト改行コードで補うようにした (#114-3,#115)</li>
+</ul>
+<p>Thanks to @ikawaha</p>
 <h2 id="v1232">v1.23.2</h2>
 <p>Apr 11, 2026</p>
 <ul>
@@ -1741,6 +1749,7 @@ Go 製である本ツールは理論上 macOS でも動作可能ですが、作�
 <ul>
 <li><a href="#changelog">Changelog</a>
 <ul>
+<li><a href="#v1233">v1.23.3</a></li>
 <li><a href="#v1232">v1.23.2</a></li>
 <li><a href="#v1231">v1.23.1</a>
 <ul>
