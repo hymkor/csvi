@@ -75,6 +75,9 @@ func (app *Application) makeRowPaster(dup *uncsv.Row) pasteFunc {
 				}()
 			}
 			*dst = (*dst).InsertBefore(dup)
+			if (*dst).Term == "" {
+				(*dst).Term = app.Config.Mode.DefaultTerm
+			}
 		}
 		return nil
 	}
