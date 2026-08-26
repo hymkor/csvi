@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v1.23.3
+-------
+Aug 26, 2026
+
 - Fix handling of single-line files without a trailing newline (#114-1,#115)
 - Use OS newline as default for single-line files without a trailing newline (#114-2,#115)
 - Add default newline when pasting a line without a trailing newline before the current line (#114-3,#115)
