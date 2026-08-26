@@ -43,3 +43,8 @@ func TestZeroLines(t *testing.T) {
 	exp := "1,2,3" + uncsv.OsNewline + "4,5" + uncsv.OsNewline
 	testCase(t, "", "i|1|a|2|a|3|o|4|a|5", exp)
 }
+
+func TestSingleLine1(t *testing.T) {
+	data := `foo,baa,bazz`
+	testCase(t, data, "<", data)
+}

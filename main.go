@@ -631,6 +631,10 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 	if fetch != nil {
 		if row, err := fetch(); err == nil && !row.IsZero() {
 			app.push(row)
+		} else if err == io.EOF && !row.IsZero() {
+			// single-line files without a trailing newline
+			app.push(row)
+			fetch = nil
 		} else {
 			newRow := uncsv.NewRow(mode)
 			app.push(&newRow)
