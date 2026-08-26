@@ -48,3 +48,10 @@ func TestSingleLine1(t *testing.T) {
 	data := `foo,baa,bazz`
 	testCase(t, data, "<", data)
 }
+
+func TestSingleLine2(t *testing.T) {
+	src := "foo,baa,bazz"
+	op := "o|new1|a|new2|a|new3"
+	exp := "foo,baa,bazz" + uncsv.OsNewline + "new1,new2,new3"
+	testCase(t, src, op, exp)
+}
