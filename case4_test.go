@@ -55,3 +55,10 @@ func TestSingleLine2(t *testing.T) {
 	exp := "foo,baa,bazz" + uncsv.OsNewline + "new1,new2,new3"
 	testCase(t, src, op, exp)
 }
+
+func TestSingleLine3(t *testing.T) {
+	src := "a,b\nc,d"
+	op := ">|y|y|<|P"
+	exp := "c,d\na,b\nc,d"
+	testCase(t, src, op, exp)
+}
