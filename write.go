@@ -90,6 +90,7 @@ func (app *Application) cmdWrite(fname string) (string, error) {
 
 func (app *Application) cmdSave() (string, error) {
 	var wg sync.WaitGroup
+	var drainErr error
 
 	ctx, cancel := app.ctrlC.NotifyContext(context.Background())
 
@@ -97,25 +98,7 @@ func (app *Application) cmdSave() (string, error) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for {
-				if ctx.Err() != nil {
-					return
-				}
-				row, err := app.fetchFunc()
-				if err != nil && !errors.Is(err, io.EOF) {
-					app.fetchFunc = nil
-					app.tryFetchFunc = nil
-					return
-				}
-				if row != nil {
-					app.push(row)
-				}
-				if errors.Is(err, io.EOF) {
-					app.fetchFunc = nil
-					app.tryFetchFunc = nil
-					return
-				}
-			}
+			drainErr = app.drainAllData(ctx)
 		}()
 	}
 	fname, err := app.GetFilename(app, "write to>", app.getSavePath())
@@ -130,6 +113,9 @@ func (app *Application) cmdSave() (string, error) {
 	cancel()
 	if ctxErr != nil {
 		return "", errors.New("Save interrupted")
+	}
+	if drainErr != nil {
+		return "", drainErr
 	}
 	message, err := app.cmdWrite(fname)
 	if err == nil {
