@@ -597,6 +597,36 @@ func (app *Application) nextOrFetch(p *RowPtr) *RowPtr {
 	return nil
 }
 
+// drainAllData reads any rows the background loader has not yet
+// delivered, blocking until the source is exhausted or ctx is
+// canceled. It polls tryFetchFunc instead of calling the blocking
+// fetchFunc directly, so Ctrl-C takes effect even on a stalled source.
+func (app *Application) drainAllData(ctx context.Context) error {
+	for app.fetchFunc != nil {
+		if ctx.Err() != nil {
+			return nil
+		}
+		row, err := app.tryFetchFunc()
+		if errors.Is(err, os.ErrDeadlineExceeded) {
+			continue
+		}
+		if err != nil && !errors.Is(err, io.EOF) {
+			app.fetchFunc = nil
+			app.tryFetchFunc = nil
+			return err
+		}
+		if row != nil && !row.IsZero() {
+			app.push(row)
+		}
+		if errors.Is(err, io.EOF) {
+			app.fetchFunc = nil
+			app.tryFetchFunc = nil
+			return nil
+		}
+	}
+	return nil
+}
+
 func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Result, error) {
 	defer perm.RestoreAll()
 
@@ -1115,6 +1145,8 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				modifiedAfter := cursor.Modified()
 				app.updateSoftDirty(modifiedBefore, modifiedAfter)
+			case "s", "S":
+				message = app.cmdSort(cfg, ch == "s")
 			case "w":
 				if msg, err := app.cmdSave(); err != nil {
 					message = err.Error()

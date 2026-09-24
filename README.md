@@ -192,6 +192,8 @@ Key-binding
     * `p` (paste the values of kill-buffer after the current cell, row or column)
     * `P` (paste the values of kill-buffer before the current cell, row or column)
     * `Meta`+`p` (overwrite the current cell/row/column with the content of the kill-buffer)
+    * `s` (sort the rows below the header by the current column, ascending)
+    * `S` (sort the rows below the header by the current column, descending)
 * Display settings
     * `L` (reload the file using a specified encoding)
     * `Ctrl`+`L` (Repaint)
