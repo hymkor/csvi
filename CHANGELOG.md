@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v1.24.0
+-------
+Sep 24, 2026
+
 - Add `s`/`S` keys to sort rows by the current column (#117, #118)
 - Update go-readline-ny to v1.16.1
 
