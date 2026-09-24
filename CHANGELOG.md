@@ -2,6 +2,10 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+- Add `s`/`S` keys to sort rows by the current column (#117, #118)
+
+Thanks to @iwakawa
+
 v1.23.3
 -------
 Aug 26, 2026

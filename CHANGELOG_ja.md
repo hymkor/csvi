@@ -2,6 +2,10 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
+- ソート機能(`s`/`S`) 追加 (#117, #118)
+
+Thanks to @iwakawa
+
 v1.23.3
 -------
 Aug 26, 2026
