@@ -2,6 +2,15 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
+v1.24.0
+-------
+Sep 24, 2026
+
+- ソート機能(`s`/`S`) 追加 (#117, #118)
+- go-readeline-ny を v1.16.1 へ更新
+
+Thanks to @iwakawa
+
 v1.23.3
 -------
 Aug 26, 2026

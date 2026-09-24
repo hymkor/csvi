@@ -1,3 +1,3 @@
 package main
 
-var version = "v1.23.3-goinstall"
+var version = "v1.24.0-goinstall"
