@@ -1164,6 +1164,22 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					cellWidth.Set(app.cursorCol, w)
 				}
 				app.clearCache()
+			case "=":
+				maxW := 0
+				for p := app.startRow; p != nil; p = p.Next() {
+					w := runewidth.StringWidth(p.Row.Cell[app.cursorCol].Text())
+					if w > maxW {
+						maxW = w
+					}
+				}
+				maxW++
+				if maxW < 3 {
+					maxW = 3
+				} else if maxW > 40 {
+					maxW = 40
+				}
+				cellWidth.Set(app.cursorCol, maxW)
+				app.clearCache()
 			}
 		}
 		if L := len(app.cursorRow.Cell); L <= 0 {
