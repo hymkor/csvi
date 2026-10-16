@@ -2,7 +2,13 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+v1.25.0
+-------
+Oct 16, 2026
+
 - Add `=` key to fit the current column to its widest content (#120, #121)
+
+Thanks to @Dialga
 
 v1.24.0
 -------
