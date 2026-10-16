@@ -2,6 +2,8 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+- Add `=` key to fit the current column to its widest content (#120, #121)
+
 v1.24.0
 -------
 Sep 24, 2026

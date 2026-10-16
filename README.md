@@ -199,6 +199,7 @@ Key-binding
     * `Ctrl`+`L` (Repaint)
     * `]` (widen the column at the cursor)
     * `[` (narrow the column at the cursor)
+    * `=` (fit the current column to its widest content)
 * Quit: `q` or `Meta`+`q`
 
 `Meta` means either `Alt`+`key` or `Esc` followed by key.
