@@ -318,6 +318,7 @@ Acknowledgements
 - [presianbg (Presian Yankulov)](https://github.com/presianbg)
 - [gsmitheidw (Graham Smith)](https://github.com/gsmitheidw)
 - [ikawaha (ikawaha)](https://github.com/ikawaha)
+- [Dialga](https://github.com/Dialga)
 
 Author
 ------
