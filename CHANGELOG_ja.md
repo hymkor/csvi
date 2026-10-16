@@ -2,6 +2,8 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
+- セル編集で予想表示している際に `End` や `Ctrl`-`E` を押下するとカーソル位置が狂う不具合を修正 ( go-readline-ny を v1.16.2 へ更新, #123)
+
 v1.25.0
 -------
 Oct 16, 2026

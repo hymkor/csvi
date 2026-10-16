@@ -2,6 +2,8 @@ Changelog
 =========
 ( **English** / [Japanese](CHANGELOG_ja.md) )
 
+- Fix cursor positioning when pressing `End` or `Ctrl`-`E` in cell editing with a prediction displayed (update go-readline-ny to v1.16.2, #123)
+
 v1.25.0
 -------
 Oct 16, 2026
