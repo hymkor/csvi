@@ -2,7 +2,13 @@ Changelog
 =========
 ( [English](CHANGELOG.md) / **Japanese** )
 
+v1.25.0
+-------
+Oct 16, 2026
+
 - 現在の列幅を最大セルの内容に合わせるキー `=` を追加 (#120, #121)
+
+Thanks to @Dialga
 
 v1.24.0
 -------
