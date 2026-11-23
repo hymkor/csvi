@@ -4,6 +4,7 @@ Changelog
 
 - Fix cursor positioning when pressing `End` or `Ctrl`-`E` in cell editing with a prediction displayed (update go-readline-ny to v1.16.2, #123)
 - Fixed omission of separators before empty cells when using `-ofs`, while preserving text overflow into empty cells. (#125, #128)
+- Ensure all rows are loaded before column cut/copy/paste operations to prevent inconsistent column counts. (#129)
 
 v1.25.0
 -------
