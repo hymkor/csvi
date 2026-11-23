@@ -1,4 +1,4 @@
-package csviapp
+package app
 
 import (
 	"errors"
