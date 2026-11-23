@@ -227,3 +227,38 @@ func TestSearchTailDownAppend(t *testing.T) {
 わ,を,ん`
 	testCase(t, aiueo, op, exp)
 }
+
+func TestCaseLargeI(t *testing.T) {
+	op := "<|I"
+	exp := `,あ,い,う,え,お
+,か,き,く,け,こ
+,さ,し,す,せ,そ
+,た,ち,つ,て,と
+,な,に,ぬ,ね,の
+,は,ひ,ふ,へ,ほ
+,ま,み,む,め,も
+,や,ゆ,よ
+,ら,り,る,れ,ろ
+,わ,を,ん`
+	testCase(t, aiueo, op, exp)
+	testCase(t, aiueo, op, aiueo, "-fixcol")   // can not update
+	testCase(t, aiueo, op, aiueo, "-readonly") // can not update
+
+}
+
+func TestCaseLargeA(t *testing.T) {
+	op := "<|$|A"
+	exp := `あ,い,う,え,お,
+か,き,く,け,こ,
+さ,し,す,せ,そ,
+た,ち,つ,て,と,
+な,に,ぬ,ね,の,
+は,ひ,ふ,へ,ほ,
+ま,み,む,め,も,
+や,ゆ,よ,,,
+ら,り,る,れ,ろ,
+わ,を,ん,,,`
+	testCase(t, aiueo, op, exp)
+	testCase(t, aiueo, op, aiueo, "-fixcol")   // can not update
+	testCase(t, aiueo, op, aiueo, "-readonly") // can not update
+}
