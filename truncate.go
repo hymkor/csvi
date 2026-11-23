@@ -39,3 +39,9 @@ func truncate(s string, w int, tail string) string {
 	s = runewidth.Truncate(s, w, tail)
 	return s
 }
+
+func isOverflow(s string, w int) bool {
+	s = insDel(s, voicedSoundMark)
+	s = insDel(s, semiVoicedSoundMark)
+	return runewidth.StringWidth(s) > w
+}

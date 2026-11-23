@@ -129,6 +129,7 @@ func (style lineStyle) drawLine(
 
 	screenWidth := style.screenWidth
 	sepLen := runewidth.StringWidth(style.sep)
+	sepLenCurrent := 0
 
 	for len(field) > 0 {
 		cursor := field[0]
@@ -137,7 +138,7 @@ func (style lineStyle) drawLine(
 		nextI := i + 1
 
 		cw := style.cellWidth(i)
-		for len(field) > 0 && field[0].Text() == "" && nextI != cursorPos {
+		for len(field) > 0 && field[0].Text() == "" && nextI != cursorPos && (style.sep == "" || isOverflow(text, cw-sepLenCurrent)) {
 			cw += style.cellWidth(nextI)
 			field = field[1:]
 			nextI++
@@ -155,7 +156,7 @@ func (style lineStyle) drawLine(
 				io.WriteString(out, style.Even.On)
 			}
 		}
-		text = truncate(text, cw-sepLen, "\u2026")
+		text = truncate(text, cw-sepLenCurrent, "\u2026")
 		if i == cursorPos {
 			io.WriteString(out, style.Cursor.On)
 		}
@@ -183,6 +184,7 @@ func (style lineStyle) drawLine(
 			io.WriteString(out, "\x1B[K")
 		}
 		i = nextI
+		sepLenCurrent = sepLen
 	}
 }
 
