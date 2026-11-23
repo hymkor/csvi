@@ -12,12 +12,12 @@ import (
 
 	"github.com/mattn/go-colorable"
 
-	"github.com/hymkor/csvi/csviapp"
+	"github.com/hymkor/csvi/app"
 )
 
-func newTestOptions(args ...string) (*csviapp.Options, error) {
+func newTestOptions(args ...string) (*app.Options, error) {
 	flagSet := flag.NewFlagSet("test", flag.ContinueOnError)
-	opt := csviapp.NewOptions().Bind(flagSet)
+	opt := app.NewOptions().Bind(flagSet)
 	return opt, flagSet.Parse(args)
 }
 

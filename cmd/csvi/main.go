@@ -5,13 +5,13 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/hymkor/csvi/csviapp"
+	"github.com/hymkor/csvi/app"
 )
 
 func main() {
 	fmt.Fprintf(os.Stderr, "Csvi %s-%s-%s <https://hymkor.github.io/csvi>\n",
 		version, runtime.GOOS, runtime.GOARCH)
-	if err := csviapp.Run(); err != nil {
+	if err := app.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
