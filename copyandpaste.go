@@ -120,7 +120,10 @@ func (app *Application) removeCurrentRow(head, src **RowPtr) pasteFunc {
 	return paste
 }
 
-func (app *Application) yankCurrentColumn(col int) pasteFunc {
+func (app *Application) yankCurrentColumn(col int) (pasteFunc, error) {
+	if m := app.drainAllDataWithMessage(); m != "" {
+		return nil, errors.New(m)
+	}
 	dup := []uncsv.Cell{}
 	for p := app.Front(); p != nil; p = p.Next() {
 		var newCell uncsv.Cell
@@ -137,6 +140,9 @@ func (app *Application) yankCurrentColumn(col int) pasteFunc {
 			m = app.checkWriteProtectAndColumn(*dst)
 		}
 		if m != "" {
+			return errors.New(m)
+		}
+		if m = app.drainAllDataWithMessage(); m != "" {
 			return errors.New(m)
 		}
 		pos := *col
@@ -161,16 +167,19 @@ func (app *Application) yankCurrentColumn(col int) pasteFunc {
 			}
 		}
 		return nil
-	}
+	}, nil
 }
 
-func (app *Application) removeCurrentColumn(col int) pasteFunc {
-	paste := app.yankCurrentColumn(col)
+func (app *Application) removeCurrentColumn(col int) (pasteFunc, error) {
+	paste, err := app.yankCurrentColumn(col)
+	if err != nil {
+		return nil, err
+	}
 	for p := app.Front(); p != nil; p = p.Next() {
 		if len(p.Cell) > 1 && col < len(p.Cell) {
 			copy(p.Cell[col:], p.Cell[col+1:])
 			p.Cell = p.Cell[:len(p.Cell)-1]
 		}
 	}
-	return paste
+	return paste, nil
 }
