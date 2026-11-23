@@ -1204,6 +1204,20 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				cellWidth.Set(app.cursorCol, maxW)
 				app.clearCache()
+			case "I":
+				if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
+					message = m
+					break
+				}
+				if m := app.drainAllDataWithMessage(); m != "" {
+					message = m
+					break
+				}
+				for p := app.Front(); p != nil; p = p.Next() {
+					var newCell uncsv.Cell
+					p.InsertCell(app.cursorCol, newCell, app.Config.Mode)
+				}
+				app.clearCache()
 			}
 		}
 		if L := len(app.cursorRow.Cell); L <= 0 {
