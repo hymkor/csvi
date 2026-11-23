@@ -16,15 +16,8 @@ func (app *Application) cmdSort(cfg *Config, ascending bool) string {
 	if cfg.ReadOnly {
 		return msgReadOnly
 	}
-	ctx, cancel := app.withSlowOperation("Reading all data...")
-	drainErr := app.drainAllData(ctx)
-	interrupted := ctx.Err() != nil
-	cancel()
-	if interrupted {
-		return "Sort interrupted"
-	}
-	if drainErr != nil {
-		return drainErr.Error()
+	if m := app.drainAllDataWithMessage(); m != "" {
+		return m
 	}
 	msg, changed := app.sortByColumn(app.cursorCol, ascending)
 	if changed {

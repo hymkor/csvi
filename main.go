@@ -384,6 +384,19 @@ func (app *Application) withSlowOperation(message string) (context.Context, cont
 	}
 }
 
+func (app *Application) drainAllDataWithMessage() string {
+	ctx, cancel := app.withSlowOperation("Reading all data...")
+	defer cancel()
+	err := app.drainAllData(ctx)
+	if ctx.Err() != nil {
+		return "Interrupted"
+	}
+	if err != nil {
+		return err.Error()
+	}
+	return ""
+}
+
 func (app *Application) printStatusLine() {
 	n := 0
 	if app.IsDirty() {
@@ -1069,7 +1082,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				case "y", "r":
 					killbuffer = app.yankCurrentRow(app.cursorRow)
 				case "|", "c":
-					killbuffer = app.yankCurrentColumn(app.cursorCol)
+					if y, err := app.yankCurrentColumn(app.cursorCol); err != nil {
+						message = err.Error()
+					} else {
+						killbuffer = y
+					}
 				}
 			case "d":
 				if m := cfg.checkWriteProtect(app.cursorRow); m != "" {
@@ -1101,7 +1118,12 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 						message = m
 						break
 					}
-					killbuffer = app.removeCurrentColumn(app.cursorCol)
+					if k, err := app.removeCurrentColumn(app.cursorCol); err != nil {
+						message = err.Error()
+						break
+					} else {
+						killbuffer = k
+					}
 					app.repaint()
 					app.clearCache()
 				}
