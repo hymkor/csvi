@@ -512,6 +512,13 @@ func (row *Row) Insert(i int, text string, mode *Mode) {
 }
 
 func (row *Row) InsertCell(i int, newCell Cell, mode *Mode) {
+	if i >= len(row.Cell) {
+		for i > len(row.Cell) {
+			row.Cell = append(row.Cell, Cell{})
+		}
+		row.Cell = append(row.Cell, newCell)
+		return
+	}
 	row.Cell = slicesInsert(row.Cell, i, newCell)
 }
 

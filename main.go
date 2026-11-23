@@ -1218,6 +1218,20 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 					p.InsertCell(app.cursorCol, newCell, app.Config.Mode)
 				}
 				app.clearCache()
+			case "A":
+				if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
+					message = m
+					break
+				}
+				if m := app.drainAllDataWithMessage(); m != "" {
+					message = m
+					break
+				}
+				for p := app.Front(); p != nil; p = p.Next() {
+					var newCell uncsv.Cell
+					p.InsertCell(app.cursorCol+1, newCell, app.Config.Mode)
+				}
+				app.clearCache()
 			}
 		}
 		if L := len(app.cursorRow.Cell); L <= 0 {
