@@ -7,7 +7,7 @@ require (
 	github.com/hymkor/struct2flag v0.0.4
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.22
-	github.com/mattn/go-runewidth v0.0.23
+	github.com/mattn/go-runewidth v0.0.25
 	github.com/nyaosorg/go-inline-animation v0.3.1
 	github.com/nyaosorg/go-readline-ny v1.16.2
 	github.com/nyaosorg/go-readline-skk v0.6.2
