@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/hymkor/go-safewrite v0.4.0
-	github.com/hymkor/struct2flag v0.0.4
+	github.com/hymkor/struct2flag v0.2.0
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.24
 	github.com/mattn/go-runewidth v0.0.25
