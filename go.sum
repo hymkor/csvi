@@ -22,8 +22,8 @@ github.com/nyaosorg/go-readline-skk v0.6.2 h1:UUBt4qS0UwEaqKgaju8yQOogSF0Ozs4KXH
 github.com/nyaosorg/go-readline-skk v0.6.2/go.mod h1:afNC+dqTeuu+5KHNFjbv/up7bfehvHp6HULXljTzvyw=
 github.com/nyaosorg/go-ttyadapter v0.7.0 h1:iBOlx7WJ+A0Fn1x28qYJNedjiFt/kWivlrn1+PTSViU=
 github.com/nyaosorg/go-ttyadapter v0.7.0/go.mod h1:w6ySb/Y8rpr0uIju4vN/TMRHC/6ayabORHmEVs6d/qE=
-github.com/nyaosorg/go-windows-dbg v0.0.0-20240724174901-9645d9b1df23 h1:PsACS2RhmWIsc39eiIQ4EeEww+OFT0gn60TG0MFObrg=
-github.com/nyaosorg/go-windows-dbg v0.0.0-20240724174901-9645d9b1df23/go.mod h1:2KBQW9Jv7m6jB8WDgvZOVsJXwtbk4MRIpOWt/n/EDwg=
+github.com/nyaosorg/go-windows-dbg v0.1.0 h1:nJt8s4GVavdaHW8TFUyjsCDQkXS+CH3sqalu7y9Z5OY=
+github.com/nyaosorg/go-windows-dbg v0.1.0/go.mod h1:2KBQW9Jv7m6jB8WDgvZOVsJXwtbk4MRIpOWt/n/EDwg=
 github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=
 github.com/nyaosorg/go-windows-mbcs v0.4.4/go.mod h1:P610Wyc6LcgDbx2VZhwUQn02XRuwjqGK2l/3wox3auA=
 golang.org/x/sys v0.30.0 h1:QjkSwP/36a20jFYWkSue1YwXzLmsV5Gfq7Eiy72C1uc=

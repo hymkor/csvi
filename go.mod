@@ -12,7 +12,7 @@ require (
 	github.com/nyaosorg/go-readline-ny v1.16.2
 	github.com/nyaosorg/go-readline-skk v0.6.2
 	github.com/nyaosorg/go-ttyadapter v0.7.0
-	github.com/nyaosorg/go-windows-dbg v0.0.0-20240724174901-9645d9b1df23
+	github.com/nyaosorg/go-windows-dbg v0.1.0
 	github.com/nyaosorg/go-windows-mbcs v0.4.4
 	golang.org/x/text v0.22.0
 )
