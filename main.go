@@ -859,12 +859,17 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			case "$", keys.CtrlE:
 				app.cursorCol = len(app.cursorRow.Cell) - 1
 			case "g":
-				ch, err := app.MessageAndGetKey("g- [\"g\": move to the beginning of file ]")
-				if err == nil && ch == "g" {
-					app.cursorRow = app.Front()
-					app.startRow = app.Front()
-					app.cursorCol = 0
-					app.startCol = 0
+				ch, err := app.MessageAndGetKey(`g- ["g": move to the beginning of file, "=": fit all columns ]`)
+				if err == nil {
+					switch ch {
+					case "g":
+						app.cursorRow = app.Front()
+						app.startRow = app.Front()
+						app.cursorCol = 0
+						app.startCol = 0
+					case "=":
+						app.fitWidthAll(cellWidth)
+					}
 				}
 			case "<":
 				app.cursorRow = app.Front()
@@ -1179,31 +1184,11 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				}
 				app.clearCache()
 			case "]":
-				if w := cellWidth.Get(app.cursorCol); w < 40 {
-					cellWidth.Set(app.cursorCol, w+1)
-				}
-				app.clearCache()
+				app.widen(cellWidth)
 			case "[":
-				if w := cellWidth.Get(app.cursorCol) - 1; w > 3 {
-					cellWidth.Set(app.cursorCol, w)
-				}
-				app.clearCache()
+				app.narrow(cellWidth)
 			case "=":
-				maxW := 0
-				for p := app.startRow; p != nil; p = p.Next() {
-					w := runewidth.StringWidth(p.Row.Cell[app.cursorCol].Text())
-					if w > maxW {
-						maxW = w
-					}
-				}
-				maxW++
-				if maxW < 3 {
-					maxW = 3
-				} else if maxW > 40 {
-					maxW = 40
-				}
-				cellWidth.Set(app.cursorCol, maxW)
-				app.clearCache()
+				app.fitWidthCurrent(cellWidth)
 			case "I":
 				if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
 					message = m
