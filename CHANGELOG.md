@@ -6,7 +6,7 @@ Changelog
 - Fixed omission of separators before empty cells when using `-ofs`, while preserving text overflow into empty cells. (#125, #128)
 - Ensure all rows are loaded before column cut/copy/paste operations to prevent inconsistent column counts. (#129)
 - Add `I` (Shift-i) and `A` (Shift-a) keybindings to insert a column before or after the current column. (#126, #130)
-- Add `g=` keybinding to fit the all columns to their widest content (#124, #131)
+- Add `Meta`+`=` keybinding to fit the all columns to their widest content (#124, #131, #132)
 
 Thanks to @toolleeo
 
