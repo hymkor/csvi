@@ -859,17 +859,12 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 			case "$", keys.CtrlE:
 				app.cursorCol = len(app.cursorRow.Cell) - 1
 			case "g":
-				ch, err := app.MessageAndGetKey(`g- ["g": move to the beginning of file, "=": fit all columns ]`)
-				if err == nil {
-					switch ch {
-					case "g":
-						app.cursorRow = app.Front()
-						app.startRow = app.Front()
-						app.cursorCol = 0
-						app.startCol = 0
-					case "=":
-						app.fitWidthAll(cellWidth)
-					}
+				ch, err := app.MessageAndGetKey("g- [\"g\": move to the beginning of file ]")
+				if err == nil && ch == "g" {
+					app.cursorRow = app.Front()
+					app.startRow = app.Front()
+					app.cursorCol = 0
+					app.startCol = 0
 				}
 			case "<":
 				app.cursorRow = app.Front()
@@ -1189,6 +1184,8 @@ func (cfg *Config) edit(fetch func() (*uncsv.Row, error), out io.Writer) (*Resul
 				app.narrow(cellWidth)
 			case "=":
 				app.fitWidthCurrent(cellWidth)
+			case "\x1B=":
+				app.fitWidthAll(cellWidth)
 			case "I":
 				if m := cfg.checkWriteProtectAndColumn(app.cursorRow); m != "" {
 					message = m

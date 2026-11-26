@@ -202,7 +202,7 @@ Key-binding
     * `]` (widen the column at the cursor)
     * `[` (narrow the column at the cursor)
     * `=` (fit the current column to its widest content)
-    * `g=` (fit all columns to their widest contents)
+    * `Meta`+`=` (fit all columns to their widest contents)
 * Quit: `q` or `Meta`+`q`
 
 `Meta` means either `Alt`+`key` or `Esc` followed by key.
