@@ -184,6 +184,8 @@ Key-binding
     * `w` (write to a file or STDOUT(`'-'`))
     * `o` (append a new line after the current one)
     * `O` (insert a new line before the current one)
+    * `I` (Insert a column before the current column)
+    * `A` (Insert a column after the current column)
     * `"` (enclose or remove double quotations if possible)
     * `u` (restore the original value of the current cell)
     * `yl`, `y`+`SPACE`, `y`+`TAB`, `yv` (copy the values of the current cell to kill-buffer)
@@ -200,6 +202,7 @@ Key-binding
     * `]` (widen the column at the cursor)
     * `[` (narrow the column at the cursor)
     * `=` (fit the current column to its widest content)
+    * `Meta`+`=` (fit all columns to their widest contents)
 * Quit: `q` or `Meta`+`q`
 
 `Meta` means either `Alt`+`key` or `Esc` followed by key.
